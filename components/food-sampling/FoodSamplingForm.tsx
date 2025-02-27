@@ -1,30 +1,32 @@
 'use client';
 
-import { FoodSamplingInput, FoodSamplingSchema } from '@/types/food-sampling';
 import React, { useState } from 'react';
+import { FoodSamplingInput, FoodSamplingSchema } from '@/types/food-sampling';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { addFoodSampling } from '@/lib/food-sampling';
 import { Label } from '@/components/ui/label';
+import { addFoodSampling } from '@/lib/food-sampling';
 
 interface FoodSamplingFormProps {
-  setIsModalOpen: (open: boolean) => void
-  pondId: string
-  cycleId: string
+  setIsModalOpen: (open: boolean) => void;
+  pondId: string;
+  cycleId: string;
 }
 
 const FOOD_QUANTITY_THRESHOLD = 1000;
 
 const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, setIsModalOpen }) => {
-  const [error, setError] = useState<string | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
-    watch
+    watch,
+    reset
   } = useForm<FoodSamplingInput>({
     resolver: zodResolver(FoodSamplingSchema),
     defaultValues: {
@@ -35,31 +37,31 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
   const foodQuantity = watch('food_quantity');
 
   const onSubmit = async (data: FoodSamplingInput) => {
-    try {
-      setError(null);
-      const res = await addFoodSampling(data, pondId, cycleId);
+    if (data.food_quantity > FOOD_QUANTITY_THRESHOLD) {
+      setShowPopup(true);
+      return;
+    }
 
+    try {
+      const res = await addFoodSampling(data, pondId, cycleId);
       if (!res.success) {
-        console.log(res.message);
-        setError('Gagal menyimpan sample makanan');
+        console.error("Gagal menyimpan sample makanan");
         return;
       }
 
       reset();
       setIsModalOpen(false);
       window.location.reload();
-
     } catch (error) {
-      setError('Gagal menyimpan sample makanan');
+      console.error("Gagal menyimpan sample makanan");
     }
   };
 
   return (
     <div>
       <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
-
-        <div className='col-span-2'>
-          <Label className='text-sm' htmlFor='food_quantity'>
+        <div className="col-span-2">
+          <Label className="text-sm" htmlFor="food_quantity">
             Kuantitas Makanan
           </Label>
           <Input
@@ -78,9 +80,38 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
         >
           Simpan
         </Button>
-
-        {error && <p className="w-full text-center text-red-500">{error}</p>}
       </form>
+
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+            <div className="text-3xl mb-2">⚠️</div>
+            <h2 className="text-lg font-bold">Indikator Tidak Sehat!</h2>
+            <p className="text-sm text-gray-600">Lihat detail untuk melihat faktor penyebabnya</p>
+
+            {showDetail && (
+              <p className="mt-3 text-sm font-medium text-red-500">
+                Maksimal kuantitas makanan adalah 1000!
+              </p>
+            )}
+
+            <div className="grid grid-cols-2 gap-2 mt-4 border-t pt-3">
+              <button
+                onClick={() => setShowPopup(false)}
+                className="text-black font-medium"
+              >
+                Tutup
+              </button>
+              <button
+                onClick={() => setShowDetail(true)}
+                className="text-red-500 font-medium"
+              >
+                Lihat Detail
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
