@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import FoodSamplingForm from '../FoodSamplingForm';
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -20,4 +20,25 @@ describe('FoodSamplingForm Component', () => {
 
     expect(screen.getByText(/Indikator Tidak Sehat!/i)).toBeInTheDocument();
   });
+
+  test("Menampilkan teks detail setelah tombol 'Lihat Detail' diklik", async () => {
+    render(<FoodSamplingForm setIsModalOpen={() => {}} pondId="1" cycleId="1" />);
+  
+    const input = screen.getByLabelText("Kuantitas Makanan");
+    fireEvent.change(input, { target: { value: "1001" } });
+  
+    const submitButton = screen.getByText("Simpan");
+    fireEvent.click(submitButton);
+  
+    // Cek apakah pop up muncul
+    expect(screen.getByTestId("popup-warning")).toBeInTheDocument();
+  
+    // Tes tombol "Lihat Detail"
+    const detailButton = screen.getByTestId("detail-button");
+    fireEvent.click(detailButton);
+  
+    await waitFor(() => {
+      expect(screen.getByText("Maksimal kuantitas makanan adalah 1000!")).toBeInTheDocument();
+    });
+  });  
 });
