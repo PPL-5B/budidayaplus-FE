@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FoodSamplingInput, FoodSamplingSchema } from '@/types/food-sampling';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,7 +26,8 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
     handleSubmit,
     formState: { errors, isSubmitting },
     watch,
-    reset
+    reset,
+    setValue
   } = useForm<FoodSamplingInput>({
     resolver: zodResolver(FoodSamplingSchema),
     defaultValues: {
@@ -35,6 +36,14 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
   });
 
   const foodQuantity = watch('food_quantity');
+
+  useEffect(() => {
+    if (foodQuantity > FOOD_QUANTITY_THRESHOLD) {
+      setShowPopup(true);
+    } else {
+      setShowPopup(false);
+    }
+  }, [foodQuantity]);
 
   const onSubmit = async (data: FoodSamplingInput) => {
     if (data.food_quantity > FOOD_QUANTITY_THRESHOLD) {
