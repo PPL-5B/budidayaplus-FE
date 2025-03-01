@@ -75,6 +75,7 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
           </Label>
           <Input
             id="food_quantity"
+            aria-label="Kuantitas Makanan"
             {...register('food_quantity', { setValueAs: value => parseInt(value) })}
             type="number"
             placeholder="Kuantitas Makanan"
@@ -94,7 +95,7 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
 
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80" data-testid="popup-warning">
             <div className="text-3xl mb-2">⚠️</div>
             <h2 className="text-lg font-bold">Indikator Tidak Sehat!</h2>
             <p className="text-sm text-gray-600">Lihat detail untuk melihat faktor penyebabnya</p>
@@ -113,7 +114,7 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
                 Tutup
               </button>
               <button
-                onClick={() => setShowDetail(true)}
+                data-testid="detail-button" onClick={() => setShowDetail(true)}
                 className="text-red-500 font-medium"
               >
                 Lihat Detail
