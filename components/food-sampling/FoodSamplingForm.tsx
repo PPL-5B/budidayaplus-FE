@@ -65,6 +65,7 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
             Kuantitas Makanan
           </Label>
           <Input
+            id="food_quantity"
             {...register('food_quantity', { setValueAs: value => parseInt(value) })}
             type="number"
             placeholder="Kuantitas Makanan"
