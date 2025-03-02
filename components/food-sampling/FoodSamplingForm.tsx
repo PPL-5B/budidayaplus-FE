@@ -108,6 +108,7 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
 
             <div className="grid grid-cols-2 gap-2 mt-4 border-t pt-3">
               <button
+                data-testid="close-button"
                 onClick={() => setShowPopup(false)}
                 className="text-black font-medium"
               >
