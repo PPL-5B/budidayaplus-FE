@@ -40,5 +40,23 @@ describe('FoodSamplingForm Component', () => {
     await waitFor(() => {
       expect(screen.getByText("Maksimal kuantitas makanan adalah 1000!")).toBeInTheDocument();
     });
-  });  
+  });
+  
+  test('Menutup pop up ketika tombol "Tutup" diklik', async () => {
+    render(<FoodSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
+
+    const input = screen.getByLabelText(/Kuantitas Makanan/i);
+    fireEvent.change(input, { target: { value: '1200' } });
+
+    const submitButton = screen.getByText(/Simpan/i);
+    fireEvent.click(submitButton);
+
+    // Tes tombol "Tutup"
+    const closeButton = screen.getByTestId("close-button");
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("popup-warning")).not.toBeInTheDocument();
+    });
+  });
 });
