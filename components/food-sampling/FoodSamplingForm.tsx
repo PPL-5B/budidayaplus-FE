@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { addFoodSampling } from '@/lib/food-sampling';
+import { act } from '@testing-library/react';
 
 interface FoodSamplingFormProps {
   setIsModalOpen: (open: boolean) => void;
@@ -47,7 +48,9 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
 
   const onSubmit = async (data: FoodSamplingInput) => {
     if (data.food_quantity > FOOD_QUANTITY_THRESHOLD) {
-      setShowPopup(true);
+      act(() => {
+        setShowPopup(true);
+      });
       return;
     }
 
