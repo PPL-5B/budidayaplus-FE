@@ -36,10 +36,8 @@ describe('FoodSamplingForm Component', () => {
     const submitButton = screen.getByText("Simpan");
     fireEvent.click(submitButton);
   
-    // Cek apakah pop up muncul
     expect(screen.getByTestId("popup-warning")).toBeInTheDocument();
   
-    // Tes tombol "Lihat Detail"
     const detailButton = screen.getByTestId("detail-button");
     fireEvent.click(detailButton);
   
@@ -57,7 +55,6 @@ describe('FoodSamplingForm Component', () => {
     const submitButton = screen.getByText(/Simpan/i);
     fireEvent.click(submitButton);
 
-    // Tes tombol "Tutup"
     const closeButton = screen.getByTestId("close-button");
     fireEvent.click(closeButton);
 
