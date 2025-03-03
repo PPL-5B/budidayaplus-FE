@@ -11,8 +11,11 @@ import { addFoodSampling } from '@/lib/food-sampling';
 import { act } from '@testing-library/react';
 import FoodSamplingWarningPopup from './FoodSamplingWarningPopUp';
 
-interface FoodSamplingFormProps {
+interface FormPropsBase {
   setIsModalOpen: (open: boolean) => void;
+}
+
+interface FoodSamplingFormProps extends FormPropsBase {
   pondId: string;
   cycleId: string;
 }
