@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { addFoodSampling } from '@/lib/food-sampling';
 import { act } from '@testing-library/react';
+import FoodSamplingWarningPopup from './FoodSamplingWarningPopUp';
 
 interface FoodSamplingFormProps {
   setIsModalOpen: (open: boolean) => void;
@@ -97,35 +98,11 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
       </form>
 
       {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80" data-testid="popup-warning">
-            <div className="text-3xl mb-2">⚠️</div>
-            <h2 className="text-lg font-bold">Indikator Tidak Sehat!</h2>
-            <p className="text-sm text-gray-600">Lihat detail untuk melihat faktor penyebabnya</p>
-
-            {showDetail && (
-              <p className="mt-3 text-sm font-medium text-red-500">
-                Maksimal kuantitas makanan adalah 1000!
-              </p>
-            )}
-
-            <div className="grid grid-cols-2 gap-2 mt-4 border-t pt-3">
-              <button
-                data-testid="close-button"
-                onClick={() => setShowPopup(false)}
-                className="text-black font-medium"
-              >
-                Tutup
-              </button>
-              <button
-                data-testid="detail-button" onClick={() => setShowDetail(true)}
-                className="text-red-500 font-medium"
-              >
-                Lihat Detail
-              </button>
-            </div>
-          </div>
-        </div>
+        <FoodSamplingWarningPopup
+          onClose={() => setShowPopup(false)}
+          onShowDetail={() => setShowDetail(true)}
+          showDetail={showDetail}
+        />
       )}
     </div>
   );
