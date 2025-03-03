@@ -4,7 +4,7 @@ import { FoodSampling } from "@/types/food-sampling";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { Calendar, Package, UserRound } from "lucide-react";
+import { Calendar, Package, UserRound, Target } from "lucide-react";
 
 export const columns: ColumnDef<FoodSampling>[] = [
   {
@@ -52,6 +52,19 @@ export const columns: ColumnDef<FoodSampling>[] = [
           {first_name} {last_name}
         </div>
       );
+    },
+  },
+  {
+    accessorKey: "target_food_quantity",
+    header: () => (
+      <div className="flex gap-2">
+        <Target />
+        <p>Target Kuantitas Makanan (gram)</p>
+      </div>
+    ),
+    cell: ({ row }) => {
+      const targetQuantity = row.original.target_food_quantity;
+      return <div>{targetQuantity} gram</div>;
     },
   },
 ];
