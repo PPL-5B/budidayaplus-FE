@@ -1,0 +1,51 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+
+const ReportFishDeath: React.FC = () => {
+  const [pondId, setPondId] = useState<string>('');
+  const [deadFishCount, setDeadFishCount] = useState<number>(0);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post('/api/fish_death/report/', {
+        pond_id: pondId,
+        dead_fish_count: deadFishCount,
+      });
+      setMessage('Report submitted successfully!');
+    } catch (error) {
+      setMessage('Failed to submit report.');
+    }
+  };
+
+  return (
+    <div>
+      <h2>Report Fish Death</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Pond ID:</label>
+          <input
+            type="text"
+            value={pondId}
+            onChange={(e) => setPondId(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Dead Fish Count:</label>
+          <input
+            type="number"
+            value={deadFishCount}
+            onChange={(e) => setDeadFishCount(parseInt(e.target.value))}
+            required
+          />
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+      {message && <p>{message}</p>}
+    </div>
+  );
+};
+
+export default ReportFishDeath;
