@@ -65,4 +65,18 @@ describe('FoodSamplingForm Component', () => {
       expect(screen.queryByTestId("popup-warning")).not.toBeInTheDocument();
     });
   });
+
+  test('Popup tidak muncul saat kuantitas makanan kurang dari 1000', async () => {
+    render(<FoodSamplingForm pondId="123" cycleId="456" setIsModalOpen={jest.fn()} />);
+  
+    const input = screen.getByLabelText('Kuantitas Makanan');
+    fireEvent.change(input, { target: { value: '500' } });
+  
+    const submitButton = screen.getByText('Simpan');
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+  
+    expect(screen.queryByTestId('popup-warning')).not.toBeInTheDocument();
+  });
 });
