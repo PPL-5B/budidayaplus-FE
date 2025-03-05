@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import PondQualityTable from '@/components/PondQualityTable';
+import PondQualityTable from '@/components/pond-quality/PondQualityTable';
 
 test('menampilkan tabel kualitas air dengan kolom yang sesuai', () => {
   render(<PondQualityTable data={[
