@@ -6,7 +6,7 @@ import { formDataToObject } from "@/lib/utils";
 export interface FishSamplingResponse {
   success: boolean;
   message?: string;
-  warning?: string; // Tambahkan properti warning
+  warning?: string; 
 }
 
 export async function addFishSampling(
@@ -32,7 +32,6 @@ export async function addFishSampling(
     });
 
     const responseData = await response.json();
-
 
     if (response.ok) {
       return {

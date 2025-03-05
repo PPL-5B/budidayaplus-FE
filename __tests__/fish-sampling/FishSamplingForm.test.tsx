@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import FishSamplingForm from '@/components/fish-sampling/FishSamplingForm';
 import { addFishSampling } from '@/lib/fish-sampling';
 
-jest.mock('@/lib/fish-sampling'); // Mock addFishSampling function
+jest.mock('@/lib/fish-sampling'); 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));

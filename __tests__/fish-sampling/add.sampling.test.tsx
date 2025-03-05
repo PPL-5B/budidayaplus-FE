@@ -14,7 +14,6 @@ describe('AddFishSampling', () => {
   });
 
   it('renders the Add Fish Sampling button if cycle is available', async () => {
-
     render(<AddFishSampling pondId={pondId} cycleId={cycleId} />);
 
     await waitFor(() => {

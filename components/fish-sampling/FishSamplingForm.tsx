@@ -20,7 +20,6 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
 
-
   const {
     register,
     handleSubmit,
@@ -30,7 +29,6 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
     resolver: zodResolver(FishSamplingSchema)
   });
 
-
   const onSubmit = async (data: FishSamplingInputForm) => {
     try {
       setError(null);
@@ -38,12 +36,10 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
       const fishSamplingData = objectToFormData(data);
       const res = await addFishSampling(pondId, cycleId, fishSamplingData);
 
-
       if (!res.success) {
         setError(res.message ?? 'Gagal menyimpan sample ikan');
         return;
       }
-
 
       if (res.warning) {
         setWarning(res.warning);
@@ -56,7 +52,6 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
       setError('Gagal menyimpan sample ikan');
     }
   };
-
 
   return (
     <div>
@@ -75,7 +70,6 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
 
       <form className='grid grid-cols-2 gap-4' onSubmit={handleSubmit(onSubmit)}>
 
-
         <div>
           <Label className='text-sm' htmlFor='fish_weight'>
             Berat Ikan (kg)
@@ -89,7 +83,6 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
           {errors.fish_weight && <span className="text-red-500">{errors.fish_weight.message}</span>}
         </div>
 
-
         <div>
           <Label className='text-sm' htmlFor='fish_length'>
             Panjang Ikan (cm)
@@ -102,7 +95,6 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
           />
           {errors.fish_length && <span className="text-red-500">{errors.fish_length.message}</span>}
         </div>
-
 
         <Button className='w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 col-span-2' type='submit' disabled={isSubmitting}>
           Simpan
