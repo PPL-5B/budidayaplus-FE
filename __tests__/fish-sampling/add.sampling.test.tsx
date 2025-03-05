@@ -23,7 +23,7 @@ describe('AddFishSampling', () => {
   });
 
   it('does not render the Add Fish Sampling button if no cycle is available', async () => {
-    render(<AddFishSampling pondId={pondId} cycleId={undefined} />);
+    render(<AddFishSampling pondId={pondId} cycleId={""} />);
 
     await waitFor(() => {
       expect(screen.queryByText('Sample')).not.toBeInTheDocument();
