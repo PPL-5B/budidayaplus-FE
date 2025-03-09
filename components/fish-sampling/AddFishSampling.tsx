@@ -14,10 +14,8 @@ interface AddFishSamplingProps extends React.HTMLAttributes<HTMLDivElement> {
   cycleId: string;
 }
 
-
 const AddFishSampling: React.FC<AddFishSamplingProps> = ({ pondId, fishSampling, cycleId, ...props }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handleConfirm = () => {
@@ -25,7 +23,6 @@ const AddFishSampling: React.FC<AddFishSamplingProps> = ({ pondId, fishSampling,
 
     setIsModalOpen(true);
   };
-
 
   return (
     <div {...props}>
@@ -37,7 +34,6 @@ const AddFishSampling: React.FC<AddFishSamplingProps> = ({ pondId, fishSampling,
             </Button>
           </DialogTrigger>
         )}
-
         <DialogContent title="Timpa Sampling Ikan">
           <p>Apakah anda yakin untuk menimpa data sampling ikan yang sebelumnya?</p>
           <DialogFooter>
@@ -50,10 +46,7 @@ const AddFishSampling: React.FC<AddFishSamplingProps> = ({ pondId, fishSampling,
         </DialogContent>
       </Dialog>
 
-
-
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-      
         {!fishSampling && (
           <DialogTrigger asChild>
             <Button variant={'outline'} size={'sm'} className="flex" data-testid="add-fish-sampling-button">
@@ -70,5 +63,3 @@ const AddFishSampling: React.FC<AddFishSamplingProps> = ({ pondId, fishSampling,
 };
 
 export default AddFishSampling;
-
-
