@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PondQualityDashboard from '@/components/pond-quality/PondQualityDashboard';
 import { getLatestPondDashboard } from '@/lib/pond-quality/getLatestPondDashboard';
