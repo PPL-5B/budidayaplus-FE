@@ -15,61 +15,79 @@ describe('AddFishSampling', () => {
 
   it('renders the Add Fish Sampling button if cycle is available', async () => {
     render(<AddFishSampling pondId={pondId} cycleId={cycleId} />);
-
     await waitFor(() => {
-      expect(screen.getByText('Sample')).toBeInTheDocument();
+      expect(screen.getByTestId('add-fish-sampling-button')).toBeInTheDocument();
     });
   });
 
   it('does not render the Add Fish Sampling button if no cycle is available', async () => {
     render(<AddFishSampling pondId={pondId} cycleId={""} />);
-
     await waitFor(() => {
-      expect(screen.queryByText('Sample')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('add-fish-sampling-button')).not.toBeInTheDocument();
     });
   });
 
-  it('opens modal with FishSamplingForm when Add Fish Sampling button is clicked', async () => {
-    render(<AddFishSampling pondId={pondId} cycleId={cycleId} />);
+  it('opens confirmation modal when clicking Add Fish Sampling button if fishSampling exists', async () => {
+    render(<AddFishSampling pondId={pondId} cycleId={cycleId} fishSampling={{} as any} />);
+    
+    act(() => {
+      fireEvent.click(screen.getByTestId('add-fish-sampling-button'));
+    });
 
     await waitFor(() => {
-      const addButton = screen.getByTestId('add-fish-sampling-button');
-      expect(addButton).toBeInTheDocument();
+      expect(screen.getByText('Apakah anda yakin untuk menimpa data sampling ikan yang sebelumnya?')).toBeInTheDocument();
     });
+  });
+
+  it('opens sampling modal when clicking confirmation button', async () => {
+    render(<AddFishSampling pondId={pondId} cycleId={cycleId} fishSampling={{} as any} />);
 
     act(() => {
       fireEvent.click(screen.getByTestId('add-fish-sampling-button'));
     });
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByText('Apakah anda yakin untuk menimpa data sampling ikan yang sebelumnya?')).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByText('Konfirmasi'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Add Fish Sampling')).toBeInTheDocument();
     });
   });
 
-  it('closes modal when setIsModalOpen is false', async () => {
+  it('opens modal directly if there is no existing fish sampling', async () => {
     render(<AddFishSampling pondId={pondId} cycleId={cycleId} />);
 
-    await waitFor(() => {
-      const addButton = screen.getByText('Sample');
-      expect(addButton).toBeInTheDocument();
-    });
-
-    // Open modal
     act(() => {
-      fireEvent.click(screen.getByText('Sample'));
+      fireEvent.click(screen.getByTestId('add-fish-sampling-button'));
     });
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByText('Add Fish Sampling')).toBeInTheDocument();
     });
+  });
 
-    // Simulate modal close
+  it('closes modal when clicking close button', async () => {
+    render(<AddFishSampling pondId={pondId} cycleId={cycleId} />);
+    
     act(() => {
-      fireEvent.click(screen.getByRole('button', { name: /close/i })); // Assuming there's a close button
+      fireEvent.click(screen.getByTestId('add-fish-sampling-button'));
     });
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.getByText('Add Fish Sampling')).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /close/i })); 
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Add Fish Sampling')).not.toBeInTheDocument();
     });
   });
 });
