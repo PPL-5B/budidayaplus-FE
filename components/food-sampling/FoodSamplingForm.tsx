@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { addFoodSampling } from '@/lib/food-sampling';
-import { act } from '@testing-library/react';
 import FoodSamplingWarningPopup from './FoodSamplingWarningPopUp';
 
 interface FormPropsBase {
@@ -25,6 +24,7 @@ const FOOD_QUANTITY_THRESHOLD = 1000;
 const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, setIsModalOpen }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -32,12 +32,11 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
     formState: { errors, isSubmitting },
     watch,
     reset,
-    setValue
   } = useForm<FoodSamplingInput>({
     resolver: zodResolver(FoodSamplingSchema),
     defaultValues: {
-      food_quantity: 0
-    }
+      food_quantity: 0,
+    },
   });
 
   const foodQuantity = watch('food_quantity');
@@ -52,24 +51,23 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
 
   const onSubmit = async (data: FoodSamplingInput) => {
     if (data.food_quantity > FOOD_QUANTITY_THRESHOLD) {
-      act(() => {
-        setShowPopup(true);
-      });
+      setShowPopup(true);
       return;
     }
 
     try {
       const res = await addFoodSampling(data, pondId, cycleId);
       if (!res.success) {
-        console.error("Gagal menyimpan sample makanan");
+        setErrorMessage('Gagal menyimpan sample makanan');
         return;
       }
 
-      reset();
+      reset(); // Reset form ke nilai default
       setIsModalOpen(false);
       window.location.reload();
     } catch (error) {
-      console.error("Gagal menyimpan sample makanan");
+      console.error('Gagal menyimpan sample makanan:', error);
+      setErrorMessage('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
     }
   };
 
@@ -83,13 +81,20 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
           <Input
             id="food_quantity"
             aria-label="Kuantitas Makanan"
-            {...register('food_quantity', { setValueAs: value => parseInt(value) })}
+            {...register('food_quantity', { setValueAs: (value) => parseInt(value) })}
             type="number"
             placeholder="Kuantitas Makanan"
             className={foodQuantity > FOOD_QUANTITY_THRESHOLD ? 'text-red-500' : ''}
           />
           {errors.food_quantity && <span>{errors.food_quantity.message}</span>}
         </div>
+
+        {/* Tampilkan pesan error jika ada */}
+        {errorMessage && (
+          <div className="col-span-2 text-red-500 text-sm" data-testid="error-message">
+            {errorMessage}
+          </div>
+        )}
 
         <Button
           className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 col-span-2"
