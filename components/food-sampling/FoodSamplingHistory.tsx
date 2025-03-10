@@ -2,7 +2,7 @@ import React from 'react';
 import { getFoodSamplingHistory } from '@/lib/food-sampling';
 import { DataTable } from '@/components/ui/data-table';
 import { columns } from '@/components/food-sampling';
-import { Utensils } from 'lucide-react';
+import { History } from 'lucide-react';
 
 interface FoodSamplingHistoryProps {
   pondId: string;
@@ -16,7 +16,7 @@ const FoodSamplingHistory: React.FC<FoodSamplingHistoryProps> = async ({ pondId 
     <div className="w-full">
       <div className="flex justify-center">
         <div className="w-[80%] flex gap-4">
-          <Utensils className="w-10 h-10 text-[#2154C5]" />
+          <History className="w-10 h-10 text-[#2154C5]" />
           <p className="w-full text-start text-3xl font-semibold">Riwayat Sampling Pakan</p>
         </div>
       </div>
