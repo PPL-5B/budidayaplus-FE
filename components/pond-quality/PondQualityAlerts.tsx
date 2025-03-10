@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertCircle, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -15,8 +15,24 @@ interface PondAlertPopupProps {
   alerts: Alert[];
 }
 
+const formatParameterName = (param: string) => param.replace('_', ' ').toUpperCase();
+
+const AlertItem: React.FC<{ alert: Alert }> = ({ alert }) => (
+  <div className="p-2 bg-red-100 rounded-md">
+    <p className="font-semibold">{formatParameterName(alert.parameter)}</p>
+    <p>Actual: {alert.actual_value}</p>
+    <p>Target: {alert.target_value}</p>
+    <p className="text-red-500">Status: {alert.status}</p>
+  </div>
+);
+
 const PondAlertPopup: React.FC<PondAlertPopupProps> = ({ alerts }) => {
   const [open, setOpen] = useState<boolean>(alerts.length > 0);
+
+  // Sync `open` state with `alerts`
+  useEffect(() => {
+    setOpen(alerts.length > 0);
+  }, [alerts]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -35,12 +51,7 @@ const PondAlertPopup: React.FC<PondAlertPopupProps> = ({ alerts }) => {
         </DialogHeader>
         <div className="space-y-2">
           {alerts.map((alert, index) => (
-            <div key={index} className="p-2 bg-red-100 rounded-md">
-              <p className="font-semibold">{alert.parameter.replace('_', ' ').toUpperCase()}</p>
-              <p>Actual: {alert.actual_value}</p>
-              <p>Target: {alert.target_value}</p>
-              <p className="text-red-500">Status: {alert.status}</p>
-            </div>
+            <AlertItem key={index} alert={alert} />
           ))}
         </div>
       </DialogContent>

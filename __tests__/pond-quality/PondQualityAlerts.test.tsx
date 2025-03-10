@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import PondQualityAlerts from "@/components/pond-quality/PondQualityAlerts";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import PondQualityAlerts from '@/components/pond-quality/PondQualityAlerts';
 
 const mockAlerts = [
   { parameter: "ph_level", actual_value: 6.5, target_value: 7.5, status: "Below Target" },
@@ -16,13 +16,13 @@ describe("PondQualityAlerts Component", () => {
     expect(screen.getByText("SALINITY: 20 (Target: 30) → Below Target")).toBeInTheDocument();
   });
 
-  test("menutup notifikasi saat tombol close diklik", () => {
+  test("menutup notifikasi saat tombol close diklik", async () => {
     render(<PondQualityAlerts alerts={mockAlerts} />);
     
     const closeButton = screen.getByRole("button", { name: /close/i });
     fireEvent.click(closeButton);
     
-    expect(screen.queryByRole("alert")).toBeNull();
+    await waitFor(() => expect(screen.queryByRole("alert")).toBeNull());
   });
 
   test("tidak menampilkan notifikasi jika tidak ada alert", () => {
