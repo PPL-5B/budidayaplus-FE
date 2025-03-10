@@ -16,7 +16,7 @@ export async function getLatestPondDashboard(pondId: string, cycleId: string) {
     });
 
     const data = await response.json();
-    console.log("🔍 DEBUG: API Response for Latest Pond Quality:", data); // ✅ Log response
+    console.log("🔍 DEBUG: API Response for Latest Pond Quality:", data);
 
     return response.ok ? data : null;
   } catch (error) {

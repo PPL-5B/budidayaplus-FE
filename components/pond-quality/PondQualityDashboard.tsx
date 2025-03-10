@@ -33,13 +33,13 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
       try {
         setLoading(true);
         const latest = await getLatestPondDashboard(pondId, cycleId);
-        
+
         // Check if data is available before setting it
         if (!latest) {
           setError('Failed to load data');
           return;
         }
-        
+
         setLatestData(latest);
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
