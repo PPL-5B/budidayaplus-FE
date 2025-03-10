@@ -9,7 +9,6 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-// Mock window.location.reload
 const mockReload = jest.fn();
 Object.defineProperty(window, 'location', {
   value: { reload: mockReload },
@@ -102,7 +101,6 @@ describe('FishSamplingForm', () => {
   it('handles API errors and warnings properly', async () => {
     render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={mockSetIsModalOpen} />);
 
-    // Case: API warning
     mockAddFishSampling.mockResolvedValueOnce({ success: true, warning: 'Data mendekati batas maksimal' });
     fireEvent.change(screen.getByPlaceholderText('Berat Ikan (kg)'), { target: { value: '9.5' } });
     fireEvent.change(screen.getByPlaceholderText('Panjang Ikan (cm)'), { target: { value: '99' } });
@@ -129,7 +127,6 @@ describe('FishSamplingForm', () => {
   });
 
   it('handles unexpected API errors with default error message', async () => {
-    // Simulate an unexpected error by throwing an error
     mockAddFishSampling.mockRejectedValueOnce(new Error('Unexpected error'));
     render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={mockSetIsModalOpen} />);
 
@@ -145,7 +142,6 @@ describe('FishSamplingForm', () => {
   it('closes error modal when "Perbaiki Input" is clicked', async () => {
     render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={mockSetIsModalOpen} />);
 
-    // Trigger an error
     fireEvent.change(screen.getByPlaceholderText('Berat Ikan (kg)'), { target: { value: '0' } });
     fireEvent.change(screen.getByPlaceholderText('Panjang Ikan (cm)'), { target: { value: '0' } });
     fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
@@ -154,7 +150,6 @@ describe('FishSamplingForm', () => {
       expect(screen.getByText('Berat dan panjang ikan harus lebih dari 0, harap pastikan data benar.')).toBeInTheDocument();
     });
 
-    // Close error modal
     const fixInputButton = screen.getByText('Perbaiki Input');
     fireEvent.click(fixInputButton);
 
@@ -166,7 +161,6 @@ describe('FishSamplingForm', () => {
   it('closes warning modal when "Oke, Saya Mengerti" is clicked', async () => {
     render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={mockSetIsModalOpen} />);
 
-    // Trigger a warning
     mockAddFishSampling.mockResolvedValueOnce({ success: true, warning: 'Data mendekati batas maksimal' });
     fireEvent.change(screen.getByPlaceholderText('Berat Ikan (kg)'), { target: { value: '9.5' } });
     fireEvent.change(screen.getByPlaceholderText('Panjang Ikan (cm)'), { target: { value: '99' } });
@@ -176,7 +170,6 @@ describe('FishSamplingForm', () => {
       expect(screen.getByText('Data mendekati batas maksimal')).toBeInTheDocument();
     });
 
-    // Close warning modal
     const okButton = screen.getByText('Oke, Saya Mengerti');
     fireEvent.click(okButton);
 

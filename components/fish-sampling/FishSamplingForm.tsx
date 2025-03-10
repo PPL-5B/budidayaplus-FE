@@ -52,8 +52,6 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
         return;
       }
   
-
-
       // Konversi manual ke FormData
       const formData = new FormData();
       formData.append("fish_weight", data.fish_weight.toString());
@@ -143,4 +141,3 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
 };
 
 export default FishSamplingForm;
-
