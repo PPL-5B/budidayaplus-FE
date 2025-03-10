@@ -3,7 +3,12 @@ name: Deploy Staging to VM
 on:
   push:
     branches:
-      - development
+      - staging
+      - main
+  pull_request:
+    branches:
+      - staging
+      - main
 
 jobs:
   build:
@@ -21,14 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Uncomment this if you want to run tests before deploying
       # - name: Run application tests
       #   run: npm run test:coverage
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker using GitHub Container Registry (GHCR)
+      - name: Login to Docker using ghcr.io
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -63,3 +67,4 @@ jobs:
             docker run -d --name budidayaplus_fe_staging -p 3001:3000 \
               -e API_BASE_URL=${{ secrets.API_BASE_URL_STAGING }} \
               $IMAGE_NAME
+
