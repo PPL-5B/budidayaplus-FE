@@ -62,7 +62,7 @@ describe("FishSamplingDashboard", () => {
     render(<FishSamplingDashboard pondId={pondId} />);
 
     await waitFor(() => {
-      expect(screen.getByText("N/A")).toBeInTheDocument();
+      expect(screen.getAllByText("N/A").length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -71,5 +71,50 @@ describe("FishSamplingDashboard", () => {
 
     const { container } = render(<FishSamplingDashboard pondId={pondId} />);
     expect(container.querySelector("svg")).toBeInTheDocument();
+  });
+
+  test("applies red text style when fish weight is below target", async () => {
+    (useLatestFishSampling as jest.Mock).mockReturnValue({
+      fish_weight: 2.0, // Below target 2.5
+      fish_length: 42,
+    });
+
+    render(<FishSamplingDashboard pondId={pondId} />);
+
+    await waitFor(() => {
+      const weightCell = screen.getByText("2.0");
+      expect(weightCell).toHaveClass("text-red-500");
+    });
+  });
+
+  test("applies red text style when fish length is below target", async () => {
+    (useLatestFishSampling as jest.Mock).mockReturnValue({
+      fish_weight: 2.8,
+      fish_length: 35, // Below target 40
+    });
+
+    render(<FishSamplingDashboard pondId={pondId} />);
+
+    await waitFor(() => {
+      const lengthCell = screen.getByText("35");
+      expect(lengthCell).toHaveClass("text-red-500");
+    });
+  });
+
+  test("does not apply red text when fish weight and length meet or exceed target", async () => {
+    (useLatestFishSampling as jest.Mock).mockReturnValue({
+      fish_weight: 2.5, 
+      fish_length: 40, 
+    });
+
+    render(<FishSamplingDashboard pondId={pondId} />);
+
+    await waitFor(() => {
+      const weightCell = screen.getByText("2.5");
+      const lengthCell = screen.getByText("40");
+
+      expect(weightCell).not.toHaveClass("text-red-500");
+      expect(lengthCell).not.toHaveClass("text-red-500");
+    });
   });
 });
