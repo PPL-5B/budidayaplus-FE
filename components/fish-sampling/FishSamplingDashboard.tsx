@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useLatestFishSampling } from "@/hooks/useFishSampling";
-import { Waves } from "lucide-react";
+import { FishSymbol } from "lucide-react";
 
 const targetValues = {
   fish_weight: 2.5, // kg
@@ -12,12 +12,18 @@ const targetValues = {
 const FishSamplingDashboard = ({ pondId }: { pondId: string }) => {
   const latestData = useLatestFishSampling(pondId);
 
-  if (!latestData) return <p className="text-center text-gray-500">Loading data...</p>;
-
+  if (!latestData) {
+    return (
+      <div className="border border-gray-200 p-3 rounded-md text-gray-500 text-center w-fit mx-auto">
+        Data belum tersedia, silakan isi data terlebih dahulu.
+      </div>
+    );
+  }  
+  
   return (
     <div className="mt-10">
       <h2 className="text-2xl font-semibold text-center flex items-center justify-center">
-        <Waves className="w-10 h-10 text-[#2154C5] mr-2" /> Dashboard Sampling Ikan Terbaru
+        <FishSymbol className="w-10 h-10 text-[#2154C5] mr-2" /> Dashboard Sampling Ikan Terbaru
       </h2>
       <div className="flex justify-center mt-4">
         
