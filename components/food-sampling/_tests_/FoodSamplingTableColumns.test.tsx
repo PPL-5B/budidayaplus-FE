@@ -29,7 +29,7 @@ const createMockRow = (original: FoodSampling) => ({
 
 describe('FoodSamplingTableColumns', () => {
   test('columns array has correct length', () => {
-    expect(columns).toHaveLength(4);
+    expect(columns).toHaveLength(3);
   });
 
   test('recorded_at column renders date correctly', () => {
@@ -78,22 +78,6 @@ describe('FoodSamplingTableColumns', () => {
     const mockRow = createMockRow(mockFoodSampling);
     const { getByText: getCellText } = render(<CellComponent row={mockRow} />);
     expect(getCellText('udin sedunia')).toBeInTheDocument();
-  });
-
-  test('target_food_quantity column renders correctly', () => {
-    // Find column by checking if the accessorKey property equals 'target_food_quantity'
-    const column = columns.find(col => 'accessorKey' in col && col.accessorKey === 'target_food_quantity');
-    
-    // Test header
-    const HeaderComponent = column?.header as () => React.ReactElement;
-    const { getByText } = render(<HeaderComponent />);
-    expect(getByText('Target Kuantitas Makanan (gram)')).toBeInTheDocument();
-
-    // Test cell
-    const CellComponent = column?.cell as ({ row }: { row: any }) => React.ReactElement;
-    const mockRow = createMockRow(mockFoodSampling);
-    const { getByText: getCellText } = render(<CellComponent row={mockRow} />);
-    expect(getCellText('800 gram')).toBeInTheDocument();
   });
 
   test('all columns have icons in header', () => {
