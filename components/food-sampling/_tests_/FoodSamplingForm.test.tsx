@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {fireEvent, render, screen, waitFor } from '@testing-library/react';
 import FoodSamplingForm from '../FoodSamplingForm';
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -105,7 +105,7 @@ describe('FoodSamplingForm Component', () => {
     fireEvent.click(screen.getByText(/Simpan/i));
 
     await waitFor(() => {
-      expect(input).toHaveValue(0); // Pastikan input form di-reset ke nilai default (0)
+      expect(input).toHaveValue(0); 
     });
   });
 

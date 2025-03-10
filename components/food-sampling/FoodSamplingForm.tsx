@@ -19,7 +19,7 @@ interface FoodSamplingFormProps extends FormPropsBase {
   cycleId: string;
 }
 
-const FOOD_QUANTITY_THRESHOLD = 1000;
+const FOOD_QUANTITY_THRESHOLD = parseInt(process.env.NEXT_PUBLIC_FOOD_QUANTITY_THRESHOLD ?? '1000', 10);
 
 const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, setIsModalOpen }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -62,7 +62,7 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
         return;
       }
 
-      reset(); // Reset form ke nilai default
+      reset();
       setIsModalOpen(false);
       window.location.reload();
     } catch (error) {
@@ -89,7 +89,6 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
           {errors.food_quantity && <span>{errors.food_quantity.message}</span>}
         </div>
 
-        {/* Tampilkan pesan error jika ada */}
         {errorMessage && (
           <div className="col-span-2 text-red-500 text-sm" data-testid="error-message">
             {errorMessage}
