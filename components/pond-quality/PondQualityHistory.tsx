@@ -7,12 +7,17 @@ import { Waves } from 'lucide-react';
 import PondQualityDashboard from './PondQualityDashboard';
 import { columns } from '@/components/pond-quality';
 
+// Import the existing PondQuality type instead of redefining it
+// This assumes you have a type definition file somewhere in your project
+import { PondQuality } from '@/types/pond-quality'; // Adjust this import based on your project structure
+
 interface PondQualityHistoryProps {
   pondId: string;
 }
 
 const PondQualityHistory: React.FC<PondQualityHistoryProps> = ({ pondId }) => {
-  const [history, setHistory] = useState<any[]>([]);
+  // Use the imported PondQuality type
+  const [history, setHistory] = useState<PondQuality[]>([]);
   const [cycleId, setCycleId] = useState<string | null>(null);
 
   useEffect(() => {

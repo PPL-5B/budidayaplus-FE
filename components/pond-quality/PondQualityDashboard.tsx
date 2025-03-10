@@ -9,13 +9,13 @@ interface PondQualityDashboardProps {
   cycleId: string | null;
 }
 
-// Define a type for your pond data
 interface PondData {
   ph_level?: number;
   salinity?: number;
   water_temperature?: number;
   water_clarity?: number;
-  [key: string]: any;
+
+  [key: string]: number | string | undefined;
 }
 
 const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cycleId }) => {
@@ -34,7 +34,6 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
         setLoading(true);
         const latest = await getLatestPondDashboard(pondId, cycleId);
 
-        // Check if data is available before setting it
         if (!latest) {
           setError('Failed to load data');
           return;
@@ -52,7 +51,6 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
     fetchLatestData();
   }, [pondId, cycleId]);
 
-  // Hardcoded Target Values (Dummy Data)
   const targetValues = {
     ph_level: 7.5,
     salinity: 30,
