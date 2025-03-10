@@ -1,5 +1,5 @@
-import { PondQualityHistory } from '@/components/pond-quality'
-import React from 'react'
+import PondQualityHistory from '@/components/pond-quality/PondQualityHistory';
+import React from 'react';
 
 const PondQualityHistoryPage = ({ params }: { params: { id: string } }) => {
   return (
@@ -8,7 +8,7 @@ const PondQualityHistoryPage = ({ params }: { params: { id: string } }) => {
         <PondQualityHistory pondId={params.id} />
       </div>
     </div>
-  )
+  );
 }
 
-export default PondQualityHistoryPage
+export default PondQualityHistoryPage;
