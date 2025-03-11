@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import PondQualityAlerts from '@/components/pond-quality/PondQualityAlerts';
 
 const mockAlerts = [
@@ -20,8 +21,8 @@ describe("PondQualityAlerts Component", () => {
     render(<PondQualityAlerts alerts={mockAlerts} />);
     
     const closeButton = screen.getByRole("button", { name: /close/i });
-    fireEvent.click(closeButton);
-    
+    await userEvent.click(closeButton);  //Pakai userEvent.click() agar lebih realistis
+
     await waitFor(() => expect(screen.queryByRole("alert")).toBeNull());
   });
 

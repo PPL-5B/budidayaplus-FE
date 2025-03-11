@@ -32,10 +32,8 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
     formState: { errors, isSubmitting },
     watch,
     reset,
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
     setValue
   } = useForm<FoodSamplingInput>({
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
     resolver: zodResolver(FoodSamplingSchema),
     defaultValues: {
       food_quantity: 0
