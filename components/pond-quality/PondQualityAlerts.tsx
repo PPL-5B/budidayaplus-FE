@@ -1,8 +1,9 @@
 'use client';
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AlertCircle, X } from 'lucide-react';
+import { formatParameterName } from '@/components/pond-quality/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
 
 interface Alert {
   parameter: string;
@@ -13,11 +14,22 @@ interface Alert {
 
 interface PondAlertPopupProps {
   alerts: Alert[];
+  onClose?: () => void; // OCP: Callback agar cara menutup popup bisa dikustom
 }
 
-const formatParameterName = (param: string) => param.replace('_', ' ').toUpperCase();
+// Custom Hook untuk mengelola state open
+export const useAlertState = (alerts: Alert[]) => {
+  const [open, setOpen] = useState<boolean>(alerts.length > 0);
 
-const AlertItem: React.FC<{ alert: Alert }> = ({ alert }) => (
+  useEffect(() => {
+    setOpen(alerts.length > 0);
+  }, [alerts]);
+
+  return { open, setOpen };
+};
+
+// Komponen AlertItem dipisahkan
+export const AlertItem: React.FC<{ alert: Alert }> = ({ alert }) => (
   <div className="p-2 bg-red-100 rounded-md">
     <p className="font-semibold">{formatParameterName(alert.parameter)}</p>
     <p>Actual: {alert.actual_value}</p>
@@ -26,14 +38,16 @@ const AlertItem: React.FC<{ alert: Alert }> = ({ alert }) => (
   </div>
 );
 
-const PondAlertPopup: React.FC<PondAlertPopupProps> = ({ alerts }) => {
-  const [open, setOpen] = useState<boolean>(alerts.length > 0);
+// PondAlertPopup dengan refaktor (OCP + Custom Hook)
+const PondAlertPopup: React.FC<PondAlertPopupProps> = ({ alerts, onClose }) => {
+  const { open, setOpen } = useAlertState(alerts);
 
-  // Sync `open` state with `alerts`
-  useEffect(() => {
-    setOpen(alerts.length > 0);
-  }, [alerts]);
-
+  // Optimisasi: Menggunakan useCallback agar handleClose tidak dibuat ulang setiap render
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    if (onClose) onClose();
+  }, [setOpen, onClose]); // Sekarang setOpen juga ada dalam dependensi
+  
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
@@ -44,7 +58,7 @@ const PondAlertPopup: React.FC<PondAlertPopupProps> = ({ alerts }) => {
           <button
             aria-label="close"
             className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-            onClick={() => setOpen(false)}
+            onClick={handleClose}
           >
             <X className="w-5 h-5" />
           </button>
