@@ -1,4 +1,4 @@
-'use server'
+'use server';
 
 import { cookies } from "next/headers";
 import { formDataToObject } from "@/lib/utils";
@@ -19,7 +19,7 @@ export async function addFishSampling(
   const token = cookies().get('accessToken')?.value;
   const apiUrl = `${API_BASE_URL}/api/fish-sampling/${pondId}/${cycleId}/`;
   const samplingData = formDataToObject(data);
-
+  
   try {
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -44,6 +44,8 @@ export async function addFishSampling(
         message: responseData?.message || 'Gagal menambahkan data pengambilan sampel ikan'
       };
     }
+
+    return { success: true, message: "Data pengambilan sampel ikan berhasil ditambahkan" };
   } catch (error) {
     return { success: false, message: "Gagal terhubung ke server" };
   }
