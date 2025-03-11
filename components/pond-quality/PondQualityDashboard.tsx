@@ -62,6 +62,19 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
   if (error) return <p className="text-center text-red-500">{error}</p>;
   if (!latestData) return null;
 
+  const getValueClassName = (key: string) => {
+    const actualValue = latestData[key];
+    const targetValue = targetValues[key as keyof typeof targetValues];
+    
+    if (actualValue === undefined || actualValue === null) {
+      return "";
+    }
+    
+    return typeof actualValue === 'number' && actualValue < targetValue 
+      ? "text-red-500 font-medium" 
+      : "";
+  };
+
   return (
     <div className="mt-10">
       <h2 className="text-2xl font-semibold text-center flex items-center justify-center">
@@ -79,8 +92,10 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
           <tbody>
             {Object.keys(targetValues).map((key) => (
               <tr key={key}>
-                <td className="border border-gray-300 px-4 py-2">{key.replace('_', ' ')}</td>
-                <td className="border border-gray-300 px-4 py-2">{latestData[key] ?? 'N/A'}</td>
+                <td className="border border-gray-300 px-4 py-2 capitalize">{key.replace('_', ' ')}</td>
+                <td className={`border border-gray-300 px-4 py-2 ${getValueClassName(key)}`}>
+                  {latestData[key] ?? 'N/A'}
+                </td>
                 <td className="border border-gray-300 px-4 py-2">{targetValues[key as keyof typeof targetValues]}</td>
               </tr>
             ))}
