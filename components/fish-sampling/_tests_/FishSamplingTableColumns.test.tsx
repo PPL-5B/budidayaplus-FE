@@ -24,10 +24,8 @@ const mockFishSampling: FishSampling = {
   recorded_at: "2023-05-15T12:00:00Z",
 };
 
-// Mock row object as expected by the cell render functions
-const createMockRow = (original: FishSampling) => ({
-  original
-});
+// Define type for mock row
+const createMockRow = (original: FishSampling): { original: FishSampling } => ({ original });
 
 describe('FishSamplingTableColumns', () => {
   test('columns array has correct length', () => {
@@ -43,7 +41,7 @@ describe('FishSamplingTableColumns', () => {
     expect(getByText('Tanggal')).toBeInTheDocument();
 
     // Test cell
-    const CellComponent = column?.cell as ({ row }: { row: any }) => React.ReactElement;
+    const CellComponent = column?.cell as ({ row }: { row: { original: FishSampling } }) => React.ReactElement;
     const mockRow = createMockRow(mockFishSampling);
     const { getByText: getCellText } = render(<CellComponent row={mockRow} />);
     expect(getCellText(format(new Date(mockFishSampling.recorded_at), "dd-MM-yyyy", { locale: id }))).toBeInTheDocument();
@@ -86,7 +84,7 @@ describe('FishSamplingTableColumns', () => {
     expect(getByText('Reporter')).toBeInTheDocument();
 
     // Test cell
-    const CellComponent = column?.cell as ({ row }: { row: any }) => React.ReactElement;
+    const CellComponent = column?.cell as ({ row }: { row: { original: FishSampling } }) => React.ReactElement;
     const mockRow = createMockRow(mockFishSampling);
     const { getByText: getCellText } = render(<CellComponent row={mockRow} />);
     expect(getCellText('Udin Sedunia')).toBeInTheDocument();

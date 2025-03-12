@@ -5,6 +5,11 @@ import { columns } from '../FoodSamplingTableColumns';
 import { FoodSampling } from "@/types/food-sampling";
 import User from "@/types/auth/user";
 
+// Define a Row type that matches the structure expected by the cell render functions
+interface Row {
+  original: FoodSampling;
+}
+
 const mockUser: User = {
   id: 99,
   first_name: 'udin',
@@ -23,7 +28,7 @@ const mockFoodSampling: FoodSampling = {
 };
 
 // Mock row object as expected by the cell render functions
-const createMockRow = (original: FoodSampling) => ({
+const createMockRow = (original: FoodSampling): Row => ({
   original
 });
 
@@ -42,7 +47,7 @@ describe('FoodSamplingTableColumns', () => {
     expect(getByText('Tanggal')).toBeInTheDocument();
 
     // Test cell
-    const CellComponent = column?.cell as ({ row }: { row: any }) => React.ReactElement;
+    const CellComponent = column?.cell as ({ row }: { row: Row }) => React.ReactElement;
     const mockRow = createMockRow(mockFoodSampling);
     const { getByText: getCellText } = render(<CellComponent row={mockRow} />);
     expect(getCellText('15-05-2023')).toBeInTheDocument();
@@ -58,7 +63,7 @@ describe('FoodSamplingTableColumns', () => {
     expect(getByText('Kuantitas Makanan (gram)')).toBeInTheDocument();
 
     // Test cell
-    const CellComponent = column?.cell as ({ row }: { row: any }) => React.ReactElement;
+    const CellComponent = column?.cell as ({ row }: { row: Row }) => React.ReactElement;
     const mockRow = createMockRow(mockFoodSampling);
     const { getByText: getCellText } = render(<CellComponent row={mockRow} />);
     expect(getCellText('500 gram')).toBeInTheDocument();
@@ -74,7 +79,7 @@ describe('FoodSamplingTableColumns', () => {
     expect(getByText('Reporter')).toBeInTheDocument();
 
     // Test cell
-    const CellComponent = column?.cell as ({ row }: { row: any }) => React.ReactElement;
+    const CellComponent = column?.cell as ({ row }: { row: Row }) => React.ReactElement;
     const mockRow = createMockRow(mockFoodSampling);
     const { getByText: getCellText } = render(<CellComponent row={mockRow} />);
     expect(getCellText('udin sedunia')).toBeInTheDocument();

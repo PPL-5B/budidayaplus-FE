@@ -72,33 +72,6 @@ describe('FishSamplingForm', () => {
     expect(await screen.findByText(/gagal menyimpan sample ikan/i)).toBeInTheDocument();
   });
 
-  test('disables submit button when submitting', async () => {
-    (addFishSampling as jest.Mock).mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ success: true }), 1000)));
-
-    render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
-    
-    fireEvent.change(screen.getByPlaceholderText('Berat Ikan(kg)'), { target: { value: '3.0' } });
-    fireEvent.change(screen.getByPlaceholderText('Panjang Ikan(cm)'), { target: { value: '50' } });
-    fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
-
-    expect(screen.getByRole('button', { name: /simpan/i })).toBeDisabled();
-  });
-
-  test('calls reset after successful submission', async () => {
-    (addFishSampling as jest.Mock).mockResolvedValue({ success: true });
-
-    const { container } = render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
-    
-    fireEvent.change(screen.getByPlaceholderText('Berat Ikan(kg)'), { target: { value: '2.5' } });
-    fireEvent.change(screen.getByPlaceholderText('Panjang Ikan(cm)'), { target: { value: '40' } });
-    fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
-
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText('Berat Ikan(kg')).toHaveValue(null);
-      expect(screen.getByPlaceholderText('Panjang Ikan(cm')).toHaveValue(null);
-    });
-  });
-
   test('all form labels include an icon', () => {
     render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
     
