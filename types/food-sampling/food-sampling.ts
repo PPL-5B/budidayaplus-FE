@@ -7,4 +7,5 @@ export type FoodSampling = {
     reporter: User;
     food_quantity: number;
     recorded_at: Date;
+    target_food_quantity: number;
 };
