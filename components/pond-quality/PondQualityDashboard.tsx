@@ -21,7 +21,6 @@ interface PondData {
 const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cycleId }) => {
   const [latestData, setLatestData] = useState<PondData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!cycleId || !pondId) {
@@ -34,15 +33,11 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
         setLoading(true);
         const latest = await getLatestPondDashboard(pondId, cycleId);
 
-        if (!latest) {
-          setError('Failed to load data');
-          return;
+        if (latest) {
+          setLatestData(latest);
         }
-
-        setLatestData(latest);
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
-        setError('Failed to load data');
       } finally {
         setLoading(false);
       }
@@ -59,17 +54,17 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
   };
 
   if (loading) return <p className="text-center">Loading...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+
   if (!latestData) return null;
 
   const getValueClassName = (key: string) => {
     const actualValue = latestData[key];
     const targetValue = targetValues[key as keyof typeof targetValues];
-    
+
     if (actualValue === undefined || actualValue === null) {
       return "";
     }
-    
+
     return typeof actualValue === 'number' && actualValue < targetValue 
       ? "text-red-500 font-medium" 
       : "";
