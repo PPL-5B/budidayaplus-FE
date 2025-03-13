@@ -2,7 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { getLatestPondDashboard } from '@/lib/pond-quality/getLatestPondDashboard';
+import PondAlertPopup from './PondAlertPopup';  // Import komponen pop-up alert
 import { Waves } from 'lucide-react';
+import { getPopUpAlert } from '@/lib/pond-quality/getPopUpAlert';  // Import fungsi untuk mendapatkan alert
 
 interface PondQualityDashboardProps {
   pondId: string;
@@ -20,6 +22,7 @@ interface PondData {
 
 const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cycleId }) => {
   const [latestData, setLatestData] = useState<PondData | null>(null);
+  const [alerts, setAlerts] = useState<any[]>([]);  // Menyimpan alerts
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -31,10 +34,15 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
     const fetchLatestData = async () => {
       try {
         setLoading(true);
+        // Ambil data terbaru dari dashboard
         const latest = await getLatestPondDashboard(pondId, cycleId);
 
         if (latest) {
           setLatestData(latest);
+
+          // Ambil data alert menggunakan fungsi getPopUpAlert
+          const newAlerts = await getPopUpAlert(pondId, cycleId);
+          setAlerts(newAlerts);  // Update alerts jika ada pelanggaran
         }
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
@@ -97,6 +105,9 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
           </tbody>
         </table>
       </div>
+
+      {/* Tampilkan pop-up alert jika ada alert */}
+      {alerts.length > 0 && <PondAlertPopup alerts={alerts} />}
     </div>
   );
 };
