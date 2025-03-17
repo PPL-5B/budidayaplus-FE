@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import PondAlertPopup, { AlertItem, useAlertState } from '@/components/pond-quality/PondQualityAlerts';
-
+import PondAlertPopup, { AlertItem } from '@/components/pond-quality/PondAlertPopup';
+import { formatParameterName } from "@/components/pond-quality/utils";
+import { useAlertState } from "@/hooks/useAlertState";
 
 // Mock Data
 const mockAlerts = [
