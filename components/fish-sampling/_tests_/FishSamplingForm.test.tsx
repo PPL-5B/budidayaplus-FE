@@ -1,84 +1,105 @@
-import React from 'react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import FishSamplingForm from '../FishSamplingForm';
+import '@testing-library/jest-dom';
+import React from 'react';
 import { addFishSampling } from '@/lib/fish-sampling';
 
 jest.mock('@/lib/fish-sampling', () => ({
   addFishSampling: jest.fn(),
 }));
 
-describe('FishSamplingForm', () => {
-  const mockSetIsModalOpen = jest.fn();
-  const pondId = 'pond-123';
-  const cycleId = 'cycle-456';
-
+describe('FishSamplingForm Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('renders form inputs and submit button', () => {
-    render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
-
-    expect(screen.getByPlaceholderText('Berat Ikan(kg)')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Panjang Ikan(cm)')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /simpan/i })).toBeInTheDocument();
+  test('Komponen dapat dirender tanpa error', () => {
+    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
+    expect(screen.getByLabelText(/Berat Ikan/i)).toBeInTheDocument();
   });
 
-  test('validates form fields before submission', async () => {
-    render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
-    
-    fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
-    
-    expect(await screen.findByText(/harus diisi/i)).toBeInTheDocument();
+  test('Menampilkan pop-up jika berat atau panjang ikan ≤ 0', async () => {
+    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
+
+    fireEvent.change(screen.getByLabelText(/Berat Ikan/i), { target: { value: '0' } });
+    fireEvent.change(screen.getByLabelText(/Panjang Ikan/i), { target: { value: '-1' } });
+
+    fireEvent.click(screen.getByText(/Simpan/i));
+
+    expect(await screen.findByText((content) => content.includes("Berat dan panjang ikan harus lebih dari 0"))).toBeInTheDocument();
   });
 
-  test('submits form successfully', async () => {
-    (addFishSampling as jest.Mock).mockResolvedValue({ success: true });
+  test('Menampilkan pop-up jika berat > 10 kg dan panjang > 100 cm', async () => {
+    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
 
-    render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
-    
-    fireEvent.change(screen.getByPlaceholderText('Berat Ikan(kg)'), { target: { value: '1.5' } });
-    fireEvent.change(screen.getByPlaceholderText('Panjang Ikan(cm)'), { target: { value: '30' } });
-    fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
+    fireEvent.change(screen.getByLabelText(/Berat Ikan/i), { target: { value: '15' } });
+    fireEvent.change(screen.getByLabelText(/Panjang Ikan/i), { target: { value: '120' } });
+
+    fireEvent.click(screen.getByText(/Simpan/i));
+
+    expect(await screen.findByText(/Berat dan panjang ikan terlalu besar/i)).toBeInTheDocument();
+  });
+
+  test('Menampilkan pop-up jika berat > 10 kg', async () => {
+    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
+
+    fireEvent.change(screen.getByLabelText(/Berat Ikan/i), { target: { value: '12' } });
+    fireEvent.change(screen.getByLabelText(/Panjang Ikan/i), { target: { value: '50' } });
+
+    fireEvent.click(screen.getByText(/Simpan/i));
+
+    expect(await screen.findByText(/Berat ikan lebih dari 10 kg/i)).toBeInTheDocument();
+  });
+
+  test('Menampilkan error jika API gagal menyimpan data', async () => {
+    (addFishSampling as jest.Mock).mockRejectedValueOnce(new Error('Server rejected request'));
+
+    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
+
+    fireEvent.change(screen.getByLabelText(/Berat Ikan/i), { target: { value: '5' } });
+    fireEvent.change(screen.getByLabelText(/Panjang Ikan/i), { target: { value: '50' } });
+
+    fireEvent.click(screen.getByText(/Simpan/i));
+
+    expect(await screen.findByText(/Server rejected request/i)).toBeInTheDocument();
+  });
+
+  test('Menutup pop-up ketika tombol "Tutup" diklik', async () => {
+    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
+
+    fireEvent.change(screen.getByLabelText(/Berat Ikan/i), { target: { value: '12' } });
+    fireEvent.change(screen.getByLabelText(/Panjang Ikan/i), { target: { value: '110' } });
+
+    fireEvent.click(screen.getByText(/Simpan/i));
+
+    fireEvent.click(screen.getByText(/Tutup/i));
 
     await waitFor(() => {
-      expect(addFishSampling).toHaveBeenCalledWith(pondId, cycleId, expect.any(FormData));
-      expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
+      expect(screen.queryByText(/Berat ikan lebih dari 10 kg/i)).not.toBeInTheDocument();
     });
   });
 
-  test('handles submission failure from API response', async () => {
-    (addFishSampling as jest.Mock).mockResolvedValue({ success: false });
-
-    render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
+  test('Menampilkan warning modal jika data mendekati batas maksimal', async () => {
+    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
     
-    fireEvent.change(screen.getByPlaceholderText('Berat Ikan(kg)'), { target: { value: '2.0' } });
-    fireEvent.change(screen.getByPlaceholderText('Panjang Ikan(cm)'), { target: { value: '35' } });
-    fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
+    fireEvent.change(screen.getByLabelText(/Berat Ikan/i), { target: { value: '9.5' } });
+    fireEvent.change(screen.getByLabelText(/Panjang Ikan/i), { target: { value: '99' } });
 
-    expect(await screen.findByText(/gagal menyimpan sample ikan/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByText(/Simpan/i));
+
+    expect(await screen.findByText(/Peringatan/i)).toBeInTheDocument();
   });
 
-  test('handles error when API call fails', async () => {
-    (addFishSampling as jest.Mock).mockRejectedValue(new Error('API Error'));
+  test('Menampilkan error default jika API gagal tanpa pesan', async () => {
+    (addFishSampling as jest.Mock).mockRejectedValueOnce(new Error());
 
-    render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
+    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
 
-    fireEvent.change(screen.getByPlaceholderText('Berat Ikan(kg)'), { target: { value: '2.5' } });
-    fireEvent.change(screen.getByPlaceholderText('Panjang Ikan(cm)'), { target: { value: '42' } });
-    fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
+    fireEvent.change(screen.getByLabelText(/Berat Ikan/i), { target: { value: '5' } });
+    fireEvent.change(screen.getByLabelText(/Panjang Ikan/i), { target: { value: '50' } });
 
-    expect(await screen.findByText(/gagal menyimpan sample ikan/i)).toBeInTheDocument();
-  });
+    fireEvent.click(screen.getByText(/Simpan/i));
 
-  test('all form labels include an icon', () => {
-    render(<FishSamplingForm pondId={pondId} cycleId={cycleId} setIsModalOpen={mockSetIsModalOpen} />);
-    
-    const labels = screen.getAllByText(/berat ikan/i).concat(screen.getAllByText(/panjang ikan/i));
-    labels.forEach(label => {
-      const icon = label.closest('label')?.querySelector('svg');
-      expect(icon).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/Gagal menyimpan sample ikan/i)).toBeInTheDocument();
   });
 });

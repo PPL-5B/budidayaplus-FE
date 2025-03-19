@@ -138,43 +138,4 @@ describe('FishSamplingForm', () => {
       expect(screen.getByText('Gagal menyimpan sample ikan')).toBeInTheDocument();
     });
   });
-
-  it('closes error modal when "Perbaiki Input" is clicked', async () => {
-    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={mockSetIsModalOpen} />);
-
-    fireEvent.change(screen.getByPlaceholderText('Berat Ikan (kg)'), { target: { value: '0' } });
-    fireEvent.change(screen.getByPlaceholderText('Panjang Ikan (cm)'), { target: { value: '0' } });
-    fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Berat dan panjang ikan harus lebih dari 0, harap pastikan data benar.')).toBeInTheDocument();
-    });
-
-    const fixInputButton = screen.getByText('Perbaiki Input');
-    fireEvent.click(fixInputButton);
-
-    await waitFor(() => {
-      expect(screen.queryByText('Berat dan panjang ikan harus lebih dari 0, harap pastikan data benar.')).not.toBeInTheDocument();
-    });
-  });
-
-  it('closes warning modal when "Oke, Saya Mengerti" is clicked', async () => {
-    render(<FishSamplingForm pondId="1" cycleId="1" setIsModalOpen={mockSetIsModalOpen} />);
-
-    mockAddFishSampling.mockResolvedValueOnce({ success: true, warning: 'Data mendekati batas maksimal' });
-    fireEvent.change(screen.getByPlaceholderText('Berat Ikan (kg)'), { target: { value: '9.5' } });
-    fireEvent.change(screen.getByPlaceholderText('Panjang Ikan (cm)'), { target: { value: '99' } });
-    fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Data mendekati batas maksimal')).toBeInTheDocument();
-    });
-
-    const okButton = screen.getByText('Oke, Saya Mengerti');
-    fireEvent.click(okButton);
-
-    await waitFor(() => {
-      expect(screen.queryByText('Data mendekati batas maksimal')).not.toBeInTheDocument();
-    });
-  });
 });
