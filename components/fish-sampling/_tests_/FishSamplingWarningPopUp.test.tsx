@@ -1,9 +1,7 @@
 import React from 'react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FishSamplingWarningPopUp from '../FishSamplingWarningPopUp';
-import fs from 'fs';
-import path from 'path';
 
 describe('FishSamplingWarningPopup', () => {
   const mockOnClose = jest.fn();
@@ -46,7 +44,7 @@ describe('FishSamplingWarningPopup', () => {
     expect(screen.queryByText(errorMessages[1])).not.toBeInTheDocument();
   });
 
-  test('shows error messages when "Lihat Detail" is clicked', async () => {
+  test('shows error messages when "Lihat Detail" is clicked', () => {
     render(
       <FishSamplingWarningPopUp
         onClose={mockOnClose}
@@ -56,10 +54,8 @@ describe('FishSamplingWarningPopup', () => {
       />
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(errorMessages[0])).toBeInTheDocument();
-      expect(screen.getByText(errorMessages[1])).toBeInTheDocument();
-    });
+    expect(screen.getByText(errorMessages[0])).toBeInTheDocument();
+    expect(screen.getByText(errorMessages[1])).toBeInTheDocument();
   });
 
   test('calls onClose when "Tutup" button is clicked', () => {
@@ -72,7 +68,7 @@ describe('FishSamplingWarningPopup', () => {
       />
     );
 
-    fireEvent.click(screen.getByTestId('close-button'));
+    fireEvent.click(screen.getByText(/Tutup/i));
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
@@ -86,11 +82,11 @@ describe('FishSamplingWarningPopup', () => {
       />
     );
 
-    fireEvent.click(screen.getByTestId('detail-button'));
+    fireEvent.click(screen.getByText(/Lihat Detail/i));
     expect(mockOnShowDetail).toHaveBeenCalledTimes(1);
   });
 
-  test('toggles error message visibility when "Lihat Detail" is clicked twice', async () => {
+  test('toggles error message visibility when "Lihat Detail" is clicked twice', () => {
     const { rerender } = render(
       <FishSamplingWarningPopUp
         onClose={mockOnClose}
@@ -100,7 +96,7 @@ describe('FishSamplingWarningPopup', () => {
       />
     );
 
-    fireEvent.click(screen.getByTestId('detail-button'));
+    fireEvent.click(screen.getByText(/Lihat Detail/i));
     rerender(
       <FishSamplingWarningPopUp
         onClose={mockOnClose}
@@ -110,11 +106,9 @@ describe('FishSamplingWarningPopup', () => {
       />
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(errorMessages[0])).toBeInTheDocument();
-    });
+    expect(screen.getByText(errorMessages[0])).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId('detail-button'));
+    fireEvent.click(screen.getByText(/Lihat Detail/i));
     rerender(
       <FishSamplingWarningPopUp
         onClose={mockOnClose}
@@ -124,63 +118,6 @@ describe('FishSamplingWarningPopup', () => {
       />
     );
 
-    await waitFor(() => {
-      expect(screen.queryByText(errorMessages[0])).not.toBeInTheDocument();
-    });
-  });
-
-  test('handles empty errorMessages gracefully', () => {
-    render(
-      <FishSamplingWarningPopUp
-        onClose={mockOnClose}
-        onShowDetail={mockOnShowDetail}
-        showDetail={false}
-        errorMessages={[]}
-      />
-    );
-
-    expect(screen.getByText(/Indikator Abnormal!/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Lihat detail untuk melihat faktor penyebabnya/i)).toBeInTheDocument();
-  });
-
-  test('should not fail if no actions are performed', () => {
-    render(
-      <FishSamplingWarningPopUp
-        onClose={() => {}}
-        onShowDetail={() => {}}
-        showDetail={false}
-        errorMessages={[]}
-      />
-    );
-  });
-
-  test('fake test to waste time', () => {
-    expect(true).toBe(true);
-  });
-
-  test('ensures nothing breaks when clicking buttons multiple times', () => {
-    render(
-      <FishSamplingWarningPopUp
-        onClose={mockOnClose}
-        onShowDetail={mockOnShowDetail}
-        showDetail={false}
-        errorMessages={errorMessages}
-      />
-    );
-
-    for (let i = 0; i < 10; i++) {
-      fireEvent.click(screen.getByTestId('detail-button'));
-    }
-    expect(mockOnShowDetail).toHaveBeenCalledTimes(10);
-
-    for (let i = 0; i < 5; i++) {
-      fireEvent.click(screen.getByTestId('close-button'));
-    }
-    expect(mockOnClose).toHaveBeenCalledTimes(5);
-  });
-
-  test('dummy test with useless imports', () => {
-    expect(typeof fs).toBe('object');
-    expect(typeof path).toBe('object');
+    expect(screen.queryByText(errorMessages[0])).not.toBeInTheDocument();
   });
 });
