@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { addFishDeath } from '@/lib/fish-sampling/addFishDeath'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Modal as DialogContent } from '@/components/ui/modal';
@@ -14,13 +15,26 @@ interface AddFishDeathProps {
 
 const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [fishDeath, setFishDeath] = useState<number>(0); 
+  const [fishDeath, setFishDeath] = useState<number | ''>('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    if (!fishDeath || fishDeath <= 0) {
+      alert('Jumlah kematian ikan harus lebih dari 0.');
+      return;
+    }
+
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); 
+    const result = await addFishDeath(pondId, cycleId, fishDeath);
     setLoading(false);
+
+    if (result.success) {
+      alert('Data kematian ikan berhasil disimpan.');
+      setIsModalOpen(false);
+      setFishDeath('');
+    } else {
+      alert(result.message);
+    }
   };
 
   return (
@@ -38,7 +52,7 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId }) => {
               value={fishDeath}
               onChange={(e) => {
                 const value = e.target.value;
-                setFishDeath(value === '' ? 0 : Number(value)); 
+                setFishDeath(value === '' ? '' : Number(value));
               }}
               min={1}
               placeholder="Masukkan jumlah ikan mati"
