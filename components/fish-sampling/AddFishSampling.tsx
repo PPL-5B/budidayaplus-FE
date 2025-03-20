@@ -30,7 +30,7 @@ const AddFishSampling: React.FC<AddFishSamplingProps> = ({ pondId, fishSampling,
         {fishSampling && (
           <DialogTrigger asChild>
             <Button variant={'outline'} size={'sm'} className="flex" data-testid="add-fish-sampling-button">
-              Sample <IoIosAdd size={20} className="ml-1" /> {/* ini tombol form sample */}
+              Sample <IoIosAdd size={20} className="ml-1" />
             </Button>
           </DialogTrigger>
         )}
