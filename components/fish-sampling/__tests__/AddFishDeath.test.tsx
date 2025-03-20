@@ -4,7 +4,6 @@ import '@testing-library/jest-dom';
 import AddFishDeath from '@/components/fish-sampling/AddFishDeath';
 import { addFishDeath } from '@/lib/fish-sampling/addFishDeath';
 
-// Mock fungsi addFishDeath
 jest.mock('@/lib/fish-sampling/addFishDeath', () => ({
   addFishDeath: jest.fn(),
 }));
