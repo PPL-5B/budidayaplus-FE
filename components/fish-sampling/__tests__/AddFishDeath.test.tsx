@@ -117,7 +117,10 @@ describe('AddFishDeath Component', () => {
   });
 
   test('displays loading state while submitting', async () => {
-    (addFishDeath as jest.Mock).mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ success: true }), 500)));
+    (addFishDeath as jest.Mock).mockImplementation(async () => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { success: true };
+    });    
 
     render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
 
