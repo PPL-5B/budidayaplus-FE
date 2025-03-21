@@ -17,23 +17,24 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [fishDeath, setFishDeath] = useState<number | ''>('');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); 
 
   const handleSubmit = async () => {
     if (!fishDeath || fishDeath <= 0) {
-      alert('Jumlah kematian ikan harus lebih dari 0.');
+      setErrorMessage('Jumlah kematian ikan harus lebih dari 0.');
       return;
     }
 
     setLoading(true);
+    setErrorMessage(null); 
     const result = await addFishDeath(pondId, cycleId, fishDeath);
     setLoading(false);
 
     if (result.success) {
-      alert('Data kematian ikan berhasil disimpan.');
       setIsModalOpen(false);
       setFishDeath('');
     } else {
-      alert(result.message);
+      setErrorMessage(result.message);
     }
   };
 
@@ -53,12 +54,14 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId }) => {
               onChange={(e) => {
                 const value = e.target.value;
                 setFishDeath(value === '' ? '' : Number(value));
+                setErrorMessage(null); 
               }}
               min={1}
               placeholder="Masukkan jumlah ikan mati"
               data-testid="fish-death-input"
             />
-            <Button onClick={handleSubmit} disabled={loading} className='bg-blue-500 hover:bg-blue-600 text-white' data-testid="submit-button">
+            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>} 
+            <Button onClick={handleSubmit} disabled={loading} className="bg-blue-500 hover:bg-blue-600 text-white" data-testid="submit-button">
               {loading ? 'Menyimpan...' : 'Simpan'}
             </Button>
           </div>
