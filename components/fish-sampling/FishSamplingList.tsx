@@ -73,14 +73,6 @@ const FishSamplingList: React.FC<FishSamplingProps> = ({ fishSampling, pondId, c
               </p>
             </div>
           </div>
-          <div className="flex flex-col mt-4">
-            <div className="flex gap-2">
-              <Skull size={18} /> Kematian Ikan
-            </div>
-            <p className="text-xl font-semibold text-neutral-600" data-testid="fish-death">
-              {loading ? 'Loading...' : fishDeathCount}
-            </p>
-          </div>
         </div>
       ) : (
         <p className="text-lg text-neutral-600">Tidak ada sampling ikan</p>
