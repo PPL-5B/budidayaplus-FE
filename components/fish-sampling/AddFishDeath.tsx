@@ -11,30 +11,40 @@ import { IoIosAdd } from 'react-icons/io';
 interface AddFishDeathProps {
   pondId: string;
   cycleId: string;
+  onSuccess?: () => void;
 }
 
-const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId }) => {
+const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onSuccess }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [fishDeath, setFishDeath] = useState<number | ''>('');
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    if (!fishDeath || fishDeath <= 0) {
+    if (fishDeath === '' || fishDeath <= 0 || isNaN(fishDeath)) {
       setErrorMessage('Jumlah kematian ikan harus lebih dari 0.');
       return;
     }
-
+  
     setLoading(true);
-    setErrorMessage(null); 
-    const result = await addFishDeath(pondId, cycleId, fishDeath);
-    setLoading(false);
-
-    if (result.success) {
-      setIsModalOpen(false);
-      setFishDeath('');
-    } else {
-      setErrorMessage(result.message);
+    setErrorMessage(null);
+  
+    try {
+      const result = await addFishDeath(pondId, cycleId, fishDeath);
+      setLoading(false);
+  
+      if (result && result.success) {
+        console.log("Data berhasil dikirim!");
+        setIsModalOpen(false);
+        setFishDeath('');
+        onSuccess?.(); // Panggil callback onSuccess
+      } else {
+        throw new Error(result?.message || 'Terjadi kesalahan saat mengirim data.');
+      }
+    } catch (error: any) {
+      console.error("Gagal mengirim data:", error.message);
+      setErrorMessage(error.message);
+      setLoading(false);
     }
   };
 
@@ -53,15 +63,21 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId }) => {
               value={fishDeath}
               onChange={(e) => {
                 const value = e.target.value;
-                setFishDeath(value === '' ? '' : Number(value));
-                setErrorMessage(null); 
+                const parsedValue = Number(value);
+                setFishDeath(value === '' ? '' : parsedValue);
+                setErrorMessage(null);
               }}
               min={1}
               placeholder="Masukkan jumlah ikan mati"
               data-testid="fish-death-input"
             />
-            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>} 
-            <Button onClick={handleSubmit} disabled={loading} className="bg-blue-500 hover:bg-blue-600 text-white" data-testid="submit-button">
+            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+            <Button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+              data-testid="submit-button"
+            >
               {loading ? 'Menyimpan...' : 'Simpan'}
             </Button>
           </div>
