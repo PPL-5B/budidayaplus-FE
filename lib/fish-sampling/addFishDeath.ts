@@ -1,18 +1,47 @@
 'use server';
 
+
 import { cookies } from "next/headers";
+import { FishDeathInput } from "@/types/fish-death";
+
 
 const API_BASE_URL = process.env.API_BASE_URL?.replace(/\/$/, "");
 
-export async function addFishDeath(pondId: string, cycleId: string, fishDeath: number) {
+
+export async function addFishDeath(
+  data: FishDeathInput,
+  pondId: string,
+  cycleId: string,
+): Promise<{ success: boolean; message?: string; data?: FishDeathInput }> {
   const token = cookies().get('accessToken')?.value;
+
 
   if (!token) {
     console.error("❌ Token tidak ditemukan!");
     return { success: false, message: "Unauthorized: Token tidak ditemukan" };
   }
 
+
   const apiUrl = `${API_BASE_URL}/api/fish-death/${pondId}/${cycleId}/`;
+
+
+  // Pastikan `data` adalah object yang valid sebelum stringify
+  if (typeof data !== "object" || data === null) {
+    console.error("🚨 Data yang dikirim bukan object!", data);
+    return { success: false, message: "Invalid data format: expected an object" };
+  }
+
+
+  const payload = {
+    ...data,
+    recorded_at: new Date().toISOString(),  
+  };
+
+
+  console.log("🔍 Payload yang dikirim:", JSON.stringify(payload, null, 2));
+  console.log("🔗 API URL:", apiUrl);
+  console.log("🔑 Token:", token);
+
 
   try {
     const response = await fetch(apiUrl, {
@@ -21,64 +50,26 @@ export async function addFishDeath(pondId: string, cycleId: string, fishDeath: n
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ fish_death_count: fishDeath }),
+      body: JSON.stringify(payload),
     });
-  
-    const responseText = await response.text(); // Ambil respons sebagai teks
-    console.log("📩 Response:", responseText); // Log respons untuk debugging
-  
-    if (!response.ok) {
-      try {
-        const errorData = JSON.parse(responseText); // Coba parse sebagai JSON
-        throw new Error(errorData?.message || "Gagal mencatat data kematian ikan");
-      } catch {
-        throw new Error("Server mengembalikan response yang tidak valid");
-      }
+
+
+    if (response.ok) {
+      return { success: true, message: 'Fish death data submitted successfully' };
+    } else {
+      const errorResponse = await response.json();
+      console.error("❌ Error Response:", errorResponse);
+      return { success: false, message: errorResponse?.detail || 'Failed to submit fish death data' };
     }
-  
-    const data = JSON.parse(responseText); // Parse respons sebagai JSON
-    return { success: true, data };
   } catch (error: unknown) {
-    let errorMessage = "Terjadi kesalahan tidak diketahui";
+    let errorMessage = 'An unknown error occurred';
     if (error instanceof Error) {
       errorMessage = error.message;
     }
+    console.error("❌ Fetch Error:", errorMessage);
     return { success: false, message: errorMessage };
   }
 }
 
-// Tambahkan fungsi getLatestFishDeath dan ekspor
-export async function getLatestFishDeath(pondId: string, cycleId: string) {
-  const token = cookies().get('accessToken')?.value;
 
-  if (!token) {
-    console.error("❌ Token tidak ditemukan!");
-    return { success: false, message: "Unauthorized: Token tidak ditemukan" };
-  }
 
-  const apiUrl = `${API_BASE_URL}/api/fish-death/${pondId}/${cycleId}/latest/`;
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData?.message || "Gagal mengambil data kematian ikan");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error: unknown) {
-    let errorMessage = "Terjadi kesalahan tidak diketahui";
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    return { success: false, message: errorMessage };
-  }
-}
