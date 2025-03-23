@@ -1,13 +1,9 @@
 'use server';
 
-
 import { cookies } from "next/headers";
-
 
 const API_BASE_URL = process.env.API_BASE_URL?.replace(/\/$/, "");
 
-
-// Tambahkan fungsi getLatestFishDeath dan ekspor
 export async function getLatestFishDeath(pondId: string, cycleId: string) {
     const token = cookies().get('accessToken')?.value;
  
@@ -42,6 +38,3 @@ export async function getLatestFishDeath(pondId: string, cycleId: string) {
       return { success: false, message: errorMessage };
     }
   }
-
-
-

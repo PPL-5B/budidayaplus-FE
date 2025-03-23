@@ -1,6 +1,5 @@
 import User from "@/types/auth/user";
 
-
 export type FishDeath = {
     sampling_id: string;
     pond_id: string;

@@ -1,6 +1,5 @@
 'use client';
 
-
 import { FishSampling } from '@/types/fish-sampling';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -9,18 +8,15 @@ import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { getLatestFishDeath } from '@/lib/fish-sampling/getLatestFishDeath';
 
-
 interface FishSamplingProps extends React.HTMLAttributes<HTMLDivElement> {
   fishSampling: FishSampling | undefined;
   pondId: string;
   cycleId: string;
 }
 
-
 const FishSamplingList: React.FC<FishSamplingProps> = ({ fishSampling, pondId, cycleId, ...props }) => {
   const [fishDeathCount, setFishDeathCount] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
 
   const fetchFishDeath = async () => {
     try {
@@ -38,11 +34,9 @@ const FishSamplingList: React.FC<FishSamplingProps> = ({ fishSampling, pondId, c
     }
   };
 
-
   useEffect(() => {
     fetchFishDeath();
   }, [pondId, cycleId]);
-
 
   return (
     <div {...props}>
@@ -87,6 +81,4 @@ const FishSamplingList: React.FC<FishSamplingProps> = ({ fishSampling, pondId, c
   );
 };
 
-
 export default FishSamplingList;
-
