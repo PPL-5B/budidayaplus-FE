@@ -6,13 +6,16 @@ import { History } from 'lucide-react'
 import { fetchLatestFishSampling } from '@/lib/fish-sampling'
 import AddFishDeath from '@/components/fish-sampling/AddFishDeath';
 
+
 interface FishSamplingCardProps extends React.HTMLAttributes<HTMLDivElement> {
   pondId: string
   cycleId?: string
 }
 
+
 const FishSamplingCard: React.FC<FishSamplingCardProps> = async ({ pondId, cycleId, ...props }) => {
   const fishSampling = cycleId ? await fetchLatestFishSampling(pondId, cycleId) : undefined
+
 
   return (
     <div {...props}>
@@ -30,14 +33,21 @@ const FishSamplingCard: React.FC<FishSamplingCardProps> = async ({ pondId, cycle
               </Button>
             </div>
 
+
             {/* Tombol Kematian Ikan berada di bawah */}
             <AddFishDeath pondId={pondId} cycleId={cycleId} />
           </>
         )}
         </div>
-      <FishSamplingList className='mt-5' fishSampling={fishSampling} />
+      {cycleId && (
+        <FishSamplingList className='mt-5' fishSampling={fishSampling} pondId={pondId} cycleId={cycleId} />
+      )}
     </div>
   )
 }
 
+
 export default FishSamplingCard
+
+
+
