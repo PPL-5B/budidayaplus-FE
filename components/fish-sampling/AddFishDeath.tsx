@@ -1,7 +1,9 @@
 'use client';
 
+
 import React, { useState, useEffect } from 'react';
-import { addFishDeath, getLatestFishDeath } from '@/lib/fish-sampling/addFishDeath'; 
+import { addFishDeath } from '@/lib/fish-sampling/addFishDeath';
+import { getLatestFishDeath } from '@/lib/fish-sampling/getLatestFishDeath';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Modal as DialogContent } from '@/components/ui/modal';
@@ -9,11 +11,13 @@ import { Dialog, DialogTrigger, DialogFooter, DialogClose } from '@/components/u
 import { IoIosAdd } from 'react-icons/io';
 import { Skull } from 'lucide-react';
 
+
 interface AddFishDeathProps {
   pondId: string;
   cycleId: string;
   onFishDeathUpdate?: (count: number) => void;
 }
+
 
 const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeathUpdate }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,6 +26,7 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fishDeathCount, setFishDeathCount] = useState<number>(0);
+
 
   useEffect(() => {
     const fetchLatestFishDeath = async () => {
@@ -33,13 +38,16 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
       }
     };
 
+
     fetchLatestFishDeath();
   }, [pondId, cycleId]);
+
 
   const handleConfirm = () => {
     setIsConfirmOpen(false);
     setIsModalOpen(true);
   };
+
 
   const handleSubmit = async () => {
     if (fishDeath === '' || fishDeath <= 0 || isNaN(fishDeath)) {
@@ -47,17 +55,21 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
       return;
     }
 
+
     setLoading(true);
     setErrorMessage(null);
 
+
     try {
-      const result = await addFishDeath(pondId, cycleId, fishDeath);
+      const result = await addFishDeath({ fish_death_count: fishDeath }, pondId, cycleId);
       if (result && result.success) {
         console.log("✅ Data berhasil dikirim!");
+
 
         const latestData = await getLatestFishDeath(pondId, cycleId);
         setFishDeathCount(latestData.fish_death_count);
         onFishDeathUpdate?.(latestData.fish_death_count);
+
 
         setFishDeath('');
         setIsModalOpen(false);
@@ -71,6 +83,7 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
       setLoading(false);
     }
   };
+
 
   return (
     <div>
@@ -93,6 +106,7 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         {fishDeathCount === 0 && (
@@ -119,6 +133,7 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
         </DialogContent>
       </Dialog>
 
+
       <div className="flex flex-col mt-4">
         <div className="flex gap-2">
           <Skull size={18} /> Kematian Ikan
@@ -131,4 +146,8 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
   );
 };
 
+
 export default AddFishDeath;
+
+
+
