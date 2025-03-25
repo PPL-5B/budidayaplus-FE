@@ -85,6 +85,33 @@ describe('ContactForm', () => {
     consoleSpy.mockRestore();
   });
 
+  it('displays error when user data is not available during submission', async () => {
+    // Mock getUser to return null
+    (getUser as jest.Mock).mockResolvedValue(null);
+  
+    render(<ContactForm />);
+  
+    // Wait for the form to render
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Tulis pesan Anda di sini')).toBeInTheDocument();
+    });
+    
+    // Fill in the message
+    const messageTextarea = screen.getByPlaceholderText('Tulis pesan Anda di sini');
+    fireEvent.change(messageTextarea, { target: { value: 'Test message' } });
+  
+    // Submit the form
+    const submitButton = screen.getByText('Kirim Pesan');
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+        expect(screen.getByText('Data pengguna tidak tersedia. Silakan coba lagi nanti')).toBeInTheDocument();
+      });
+    
+    
+    expect(mockWindowOpen).not.toHaveBeenCalled();
+});
+
   it('handles message validation error', async () => {
     render(<ContactForm />);
     // Wait for user data to load
