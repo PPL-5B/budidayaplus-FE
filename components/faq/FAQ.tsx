@@ -3,7 +3,6 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
 
-
 const FAQ = () => {
   const faqs = [
     {
@@ -20,7 +19,6 @@ const FAQ = () => {
     }
   ];
 
-
   return (
     <Card className="bg-white shadow-md rounded-lg p-6 mt-8">
       <h2 className="text-xl font-semibold mb-4">Pertanyaan Umum</h2>
@@ -35,6 +33,4 @@ const FAQ = () => {
   );
 };
 
-
 export default FAQ;
-
