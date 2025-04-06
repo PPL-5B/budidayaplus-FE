@@ -3,10 +3,9 @@
 import { FishSampling } from '@/types/fish-sampling';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Dumbbell, Ruler, Skull } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { Dumbbell, Ruler } from 'lucide-react';
+import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { getLatestFishDeath } from '@/lib/fish-sampling/addFishDeath';
 
 interface FishSamplingProps extends React.HTMLAttributes<HTMLDivElement> {
   fishSampling: FishSampling | undefined;
@@ -15,29 +14,6 @@ interface FishSamplingProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const FishSamplingList: React.FC<FishSamplingProps> = ({ fishSampling, pondId, cycleId, ...props }) => {
-  const [fishDeathCount, setFishDeathCount] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const fetchFishDeath = async () => {
-    try {
-      const data = await getLatestFishDeath(pondId, cycleId);
-      if (data && typeof data.fish_death_count === 'number') {
-        setFishDeathCount(data.fish_death_count);
-      } else {
-        setFishDeathCount(0);
-      }
-    } catch (error) {
-      console.error('Error fetching fish death data:', error);
-      setFishDeathCount(0);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFishDeath();
-  }, [pondId, cycleId]);
-
   return (
     <div {...props}>
       {fishSampling ? (
