@@ -3,9 +3,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AddFishDeath from '@/components/fish-sampling/AddFishDeath';
 import { addFishDeath } from '@/lib/fish-sampling/addFishDeath';
+import { getLatestFishDeath } from '@/lib/fish-sampling/addFishDeath';
 
 jest.mock('@/lib/fish-sampling/addFishDeath', () => ({
   addFishDeath: jest.fn(),
+  getLatestFishDeath: jest.fn(),
 }));
 
 global.alert = jest.fn();
@@ -136,5 +138,55 @@ describe('AddFishDeath Component', () => {
     await waitFor(() => {
       expect(submitButton).toHaveTextContent('Simpan');
     });
+  });
+
+  test('fallback to 0 when fetching latest fish death fails', async () => {
+    (getLatestFishDeath as jest.Mock).mockRejectedValue(new Error('API error'));
+  
+    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
+  
+    await waitFor(() => {
+      expect(screen.getByTestId('fish-death')).toHaveTextContent('0');
+    });
+  });
+
+  test('validates input: NaN value', async () => {
+    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
+  
+    fireEvent.click(screen.getByText(/Data Kematian Ikan/i));
+  
+    const input = screen.getByPlaceholderText(/Masukkan jumlah ikan mati/i);
+    fireEvent.change(input, { target: { value: 'abc' } });
+  
+    const submitButton = screen.getByRole('button', { name: /Simpan/i });
+    fireEvent.click(submitButton);
+  
+    await waitFor(() => {
+      expect(screen.getByText(/Jumlah kematian ikan harus lebih dari 0/i)).toBeInTheDocument();
+    });
+  });
+
+  test('opens input modal directly if no previous death data', async () => {
+    (getLatestFishDeath as jest.Mock).mockResolvedValue({ fish_death_count: 0 });
+  
+    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
+    await waitFor(() => expect(screen.getByTestId('fish-death')).toBeInTheDocument());
+  
+    fireEvent.click(screen.getByText(/Data Kematian Ikan/i));
+  
+    await waitFor(() => {
+      expect(screen.getByText(/Input Kematian Ikan/i)).toBeInTheDocument();
+    });
+  });
+
+  test('opens confirm modal if previous death data exists', async () => {
+    (getLatestFishDeath as jest.Mock).mockResolvedValue({ fish_death_count: 10 });
+  
+    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
+    await waitFor(() => expect(screen.getByTestId('fish-death')).toHaveTextContent('10'));
+  
+    fireEvent.click(screen.getByText(/Data Kematian Ikan/i));
+  
+    expect(screen.getByText(/Timpa Data Kematian Ikan/i)).toBeInTheDocument();
   });
 });

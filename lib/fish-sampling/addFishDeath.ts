@@ -8,7 +8,7 @@ export async function addFishDeath(pondId: string, cycleId: string, fishDeath: n
   const token = cookies().get('accessToken')?.value;
 
   if (!token) {
-    console.error("❌ Token tidak ditemukan!");
+    console.error("Token tidak ditemukan!");
     return { success: false, message: "Unauthorized: Token tidak ditemukan" };
   }
 
@@ -24,19 +24,19 @@ export async function addFishDeath(pondId: string, cycleId: string, fishDeath: n
       body: JSON.stringify({ fish_death_count: fishDeath }),
     });
   
-    const responseText = await response.text(); // Ambil respons sebagai teks
-    console.log("📩 Response:", responseText); // Log respons untuk debugging
+    const responseText = await response.text(); 
+    console.log("Response:", responseText);
   
     if (!response.ok) {
       try {
-        const errorData = JSON.parse(responseText); // Coba parse sebagai JSON
+        const errorData = JSON.parse(responseText); 
         throw new Error(errorData?.message || "Gagal mencatat data kematian ikan");
       } catch {
         throw new Error("Server mengembalikan response yang tidak valid");
       }
     }
   
-    const data = JSON.parse(responseText); // Parse respons sebagai JSON
+    const data = JSON.parse(responseText); 
     return { success: true, data };
   } catch (error: unknown) {
     let errorMessage = "Terjadi kesalahan tidak diketahui";
@@ -47,12 +47,11 @@ export async function addFishDeath(pondId: string, cycleId: string, fishDeath: n
   }
 }
 
-// Tambahkan fungsi getLatestFishDeath dan ekspor
 export async function getLatestFishDeath(pondId: string, cycleId: string) {
   const token = cookies().get('accessToken')?.value;
 
   if (!token) {
-    console.error("❌ Token tidak ditemukan!");
+    console.error("Token tidak ditemukan!");
     return { success: false, message: "Unauthorized: Token tidak ditemukan" };
   }
 
