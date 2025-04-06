@@ -5,6 +5,7 @@ import { fetchPond } from '@/lib/pond';
 import Image from 'next/image';
 import React from 'react'
 import { FishSamplingCard } from '@/components/fish-sampling';
+import FishDeathCard from '@/components/fish-death/FishDeathCard'
 import { getLatestCycle } from '@/lib/cycle';
 import { fetchPondQualityThreshold } from '@/lib/pond-quality';
 import { getProfile } from '@/lib/profile';
@@ -90,6 +91,9 @@ const PondDetailPage = async ({ params }: { params: { id: string } }) => {
         </div>
         <div className='flex flex-col mt-10'>
           <FishSamplingCard pondId={pond.pond_id} cycleId={cycle?.id} />
+        </div>
+        <div className='flex flex-col mt-10'>
+          <FishDeathCard pondId={pond.pond_id} cycleId={cycle?.id} />
         </div>
         <div className='flex flex-col mt-10'>
           <FoodSampling cycleId={cycle?.id} pondId={pond.pond_id} />
