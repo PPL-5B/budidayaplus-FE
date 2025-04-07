@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { History } from 'lucide-react'
 import { fetchLatestFishSampling } from '@/lib/fish-sampling'
-import AddFishDeath from '@/components/fish-sampling/AddFishDeath';
 
 interface FishSamplingCardProps extends React.HTMLAttributes<HTMLDivElement> {
   pondId: string
