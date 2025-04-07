@@ -9,7 +9,6 @@ interface ForumCardProps {
 
 const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
   const router = useRouter();
-  
   const handleClick = () => {
     router.push(`/forum/${forum.id}`);
   };
@@ -24,6 +23,10 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
     hour12: false
   });
   
+  const handleClick = () => {
+    router.push(`/forum/${forum.id}`);
+  };
+
   return (
     <div className="w-full border rounded-lg p-4 shadow-md bg-white hover:bg-gray-100 transition duration-200 flex flex-col gap-4">
       <h2 className="text-lg font-semibold">
