@@ -24,10 +24,10 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
       setLoading(true);
       await deleteForumById(forumId);
       onSuccess();
-      onClose();
     } catch (error) {
       console.error("Error:", error);
     } finally {
+      onClose(); // ✅ tetap tutup modal di akhir
       setLoading(false);
     }
   };

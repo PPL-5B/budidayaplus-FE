@@ -1,14 +1,13 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import DeleteForumContainer from "../DeleteForumContainer";
 import "@testing-library/jest-dom";
 
-// Mock fetch
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve({ message: "Forum deleted." }),
-  })
-) as jest.Mock;
+// ✅ Mock fungsi yang digunakan oleh komponen
+jest.mock("@/lib/forum/deleteForumById", () => ({
+  deleteForumById: jest.fn(),
+}));
+
+import { deleteForumById } from "@/lib/forum/deleteForumById";
+import DeleteForumContainer from "../DeleteForumContainer";
 
 describe("DeleteForumContainer", () => {
   const forumId = "123";
@@ -52,7 +51,9 @@ describe("DeleteForumContainer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("calls fetch, onSuccess, and onClose when delete confirmed", async () => {
+  it("calls deleteForumById, onSuccess, and onClose when delete confirmed", async () => {
+    (deleteForumById as jest.Mock).mockResolvedValueOnce({ message: "Deleted" });
+
     render(
       <DeleteForumContainer
         forumId={forumId}
@@ -66,13 +67,7 @@ describe("DeleteForumContainer", () => {
     fireEvent.click(screen.getByRole("button", { name: /hapus/i }));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(`/api/forum/delete/${forumId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      expect(deleteForumById).toHaveBeenCalledWith(forumId);
       expect(onSuccess).toHaveBeenCalled();
       expect(onClose).toHaveBeenCalled();
     });
@@ -91,5 +86,32 @@ describe("DeleteForumContainer", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /batal/i }));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it("handles error when deleteForumById throws", async () => {
+    (deleteForumById as jest.Mock).mockRejectedValueOnce(new Error("Delete failed"));
+
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    render(
+      <DeleteForumContainer
+        forumId={forumId}
+        forumTitle="Forum Uji"
+        isOpen={true}
+        onClose={onClose}
+        onSuccess={onSuccess}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /hapus/i }));
+
+    await waitFor(() => {
+      expect(deleteForumById).toHaveBeenCalledWith(forumId);
+      expect(console.error).toHaveBeenCalledWith("Error:", expect.any(Error));
+      expect(onSuccess).not.toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalled(); // tetap dipanggil meskipun gagal
+    });
+
+    consoleErrorSpy.mockRestore();
   });
 });

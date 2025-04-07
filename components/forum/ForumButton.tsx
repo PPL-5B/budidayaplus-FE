@@ -11,7 +11,7 @@ export default function ForumButton() {
 
   return (
     <button
-      onClick={() => router.push(`/forum/${user.phone}`)}
+      onClick={() => router.push(`/forum`)}
       className="px-4 py-2 mt-6 rounded-md bg-blue-600 text-white hover:bg-blue-700"
     >
       Ke Forum
