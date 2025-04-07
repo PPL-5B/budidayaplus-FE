@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import DeleteForumContainer from "@/components/forum/DeleteForumContainer";
+import DeleteForumContainer from "../DeleteForumContainer";
 import "@testing-library/jest-dom";
 
 // Mock fetch
