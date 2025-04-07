@@ -40,14 +40,14 @@ describe('ForumCard', () => {
     expect(screen.getByText('Dibuat oleh: John Doe')).toBeInTheDocument();
     
     // Instead of checking for exact date text, use a more flexible approach
-    const expectedDate = new Date('2025-04-07T12:00:00Z').toLocaleString('en-US', {
+    const expectedDate = new Date('2025-04-07T12:00:00Z').toLocaleString('id-ID', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-      hour12: false,
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      second: '2-digit',
+      hour12: false
     });
     
     expect(screen.getByText(`Tanggal: ${expectedDate}`)).toBeInTheDocument();
