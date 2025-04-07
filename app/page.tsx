@@ -1,4 +1,5 @@
 import { Cycle } from "@/components/cycle";
+import ForumButton from "@/components/forum/ForumButton";
 import TaskByDateList from "@/components/tasks/TaskByDateList";
 import { formatDate } from "date-fns";
 import { id } from "date-fns/locale";
@@ -29,6 +30,14 @@ export default function Home() {
       <div className="flex flex-col items-center w-full">
         <p className="mt-10 py-10 pb-5 w-[80%] text-2xl font-medium text-neutral-60">Tugas Hari Ini </p>
         <TaskByDateList />
+      </div>
+
+      <div className="flex flex-col items-center w-full">
+        <p className="mt-10 py-10 pb-5 w-[80%] text-2xl font-medium text-neutral-60">
+          Tugas Hari Ini
+        </p>
+        <TaskByDateList />
+        <ForumButton /> {/* tambahkan ini */}
       </div>
     </div>
   );
