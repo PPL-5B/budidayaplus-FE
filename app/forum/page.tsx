@@ -1,16 +1,43 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import ForumList from '@/components/forum/forumList';
 import AddForum from '@/components/forum/AddForum';
+import { Forum } from '@/types/forum';
 
 const ForumPage: React.FC = () => {
   const [refreshForums, setRefreshForums] = useState(0);
+  const [updatedForum, setUpdatedForum] = useState<Forum | null>(null);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Callback to refresh the forum list after a new forum is added.
   const handleForumAdded = () => {
     setRefreshForums((prev) => prev + 1);
   };
+
+  // Parse query param if ada forum yang diupdate
+  useEffect(() => {
+    const updated = searchParams.get('updated');
+    const id = searchParams.get('id');
+    const desc = searchParams.get('desc');
+
+    if (updated === 'true' && id && desc) {
+      setUpdatedForum({
+        id,
+        description: decodeURIComponent(desc),
+      } as Forum);
+
+      // Bersihkan query param agar tidak update terus
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete('updated');
+      newParams.delete('id');
+      newParams.delete('desc');
+      router.replace(`/forum?${newParams.toString()}`);
+    }
+  }, [searchParams, router]);
 
   return (
     <div className="h-screen overflow-y-auto p-8 pb-40">
@@ -20,7 +47,7 @@ const ForumPage: React.FC = () => {
         </h1>
         <AddForum onForumAdded={handleForumAdded} />
       </div>
-      <ForumList refresh={refreshForums} />
+      <ForumList refresh={refreshForums} updatedForum={updatedForum} />
     </div>
   );
 };
