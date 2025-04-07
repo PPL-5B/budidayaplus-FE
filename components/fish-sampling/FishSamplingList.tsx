@@ -3,18 +3,14 @@
 import { FishSampling } from '@/types/fish-sampling';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Dumbbell, Ruler, Skull } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { Dumbbell, Ruler } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { getLatestFishDeath } from '@/lib/fish-sampling/addFishDeath';
 
 interface FishSamplingProps extends React.HTMLAttributes<HTMLDivElement> {
   fishSampling: FishSampling | undefined;
-  pondId: string;
-  cycleId: string;
 }
 
-const FishSamplingList: React.FC<FishSamplingProps> = ({ fishSampling, pondId, cycleId, ...props }) => {
+const FishSamplingList: React.FC<FishSamplingProps> = ({ fishSampling, ...props }) => {
   return (
     <div {...props}>
       {fishSampling ? (

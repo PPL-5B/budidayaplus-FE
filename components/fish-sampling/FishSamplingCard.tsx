@@ -31,7 +31,7 @@ const FishSamplingCard: React.FC<FishSamplingCardProps> = async ({ pondId, cycle
           </>
         )}
         </div>
-      <FishSamplingList className='mt-5' fishSampling={fishSampling} pondId={''} cycleId={''} />
+      <FishSamplingList className='mt-5' fishSampling={fishSampling}/>
     </div>
   )
 }

@@ -7,16 +7,16 @@ import { Modal as DialogContent } from '@/components/ui/modal';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import ForumForm from '@/components/forum/ForumForm';
 
-interface AddForumProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AddForumProps {
   parentForumId?: string;
   onForumAdded?: () => void;
 }
 
-const AddForum: React.FC<AddForumProps> = ({ parentForumId, onForumAdded, ...props }) => {
+const AddForum: React.FC<AddForumProps> = ({ parentForumId, onForumAdded }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div {...props} data-testid="add-forum">
+    <div data-testid="add-forum">
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
           <Button className="flex text-sm" variant="outline" size="sm">
