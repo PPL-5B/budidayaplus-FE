@@ -8,83 +8,68 @@ jest.mock('@/lib/fish-death/addFishDeath', () => ({
   getLatestFishDeath: jest.fn(),
 }));
 
-const mockGetLatestFishDeath = getLatestFishDeath as jest.Mock;
+jest.mock('@/components/fish-death/FishDeathForm', () => () => (
+  <div data-testid="form-kematian">Form Kematian Ikan</div>
+));
 
-describe('AddFishDeath (mirip AddFishSampling)', () => {
+describe('AddFishDeath', () => {
   const pondId = 'pond-001';
   const cycleId = 'cycle-001';
 
   beforeEach(() => {
     jest.clearAllMocks();
-
-    // Mock reload
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { reload: jest.fn() },
-    });
   });
 
-  it('renders trigger when cycle exists and fishDeathCount = 0', async () => {
-    mockGetLatestFishDeath.mockResolvedValue({ fish_death_count: 0 });
+  it('selalu menampilkan tombol Sample', async () => {
+    (getLatestFishDeath as jest.Mock).mockResolvedValue(null);
 
     render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
-
-    const trigger = await screen.findByRole('button', { name: /Sample/i });
-    expect(trigger).toBeInTheDocument();
+    expect(await screen.findByText('Sample')).toBeInTheDocument();
   });
 
-  it('opens form modal directly when fishDeathCount = 0', async () => {
-    mockGetLatestFishDeath.mockResolvedValue({ fish_death_count: 0 });
+  it('membuka dialog konfirmasi jika data sebelumnya ada', async () => {
+    (getLatestFishDeath as jest.Mock).mockResolvedValue({ fish_death_count: 5 });
 
     render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
+    const sampleBtn = await screen.findByText('Sample');
+    fireEvent.click(sampleBtn);
 
-    const trigger = await screen.findByRole('button', { name: /Sample/i });
-    fireEvent.click(trigger);
+    expect(await screen.findByText(/Timpa Data Kematian Ikan/i)).toBeInTheDocument();
+  });
+
+  it('langsung membuka form jika belum ada data sebelumnya', async () => {
+    (getLatestFishDeath as jest.Mock).mockResolvedValue({ fish_death_count: 0 });
+
+    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
+    const sampleBtn = await screen.findByText('Sample');
+    fireEvent.click(sampleBtn);
+
+    expect(await screen.findByTestId('form-kematian')).toBeInTheDocument();
+  });
+
+  it('fallback ke 0 jika getLatestFishDeath gagal', async () => {
+    (getLatestFishDeath as jest.Mock).mockRejectedValue(new Error('Network error'));
+  
+    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
+    const sampleBtn = await screen.findByText('Sample');
+    fireEvent.click(sampleBtn);
+  
+    expect(await screen.findByTestId('form-kematian')).toBeInTheDocument();
+  });
+  
+
+  it('membuka form setelah klik konfirmasi', async () => {
+    (getLatestFishDeath as jest.Mock).mockResolvedValue({ fish_death_count: 10 });
+
+    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
+    const sampleBtn = await screen.findByText('Sample');
+    fireEvent.click(sampleBtn);
+
+    const konfirmasiBtn = await screen.findByText('Konfirmasi');
+    fireEvent.click(konfirmasiBtn);
 
     await waitFor(() => {
-      expect(screen.getByText(/Input Kematian Ikan/i)).toBeInTheDocument();
-    });
-  });
-
-  it('shows confirmation modal when fishDeathCount > 0', async () => {
-    mockGetLatestFishDeath.mockResolvedValue({ fish_death_count: 10 });
-
-    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
-
-    const trigger = await screen.findByRole('button', { name: /Sample/i });
-    fireEvent.click(trigger);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Timpa Data Kematian Ikan/i)).toBeInTheDocument();
-    });
-  });
-
-  it('opens form modal after confirmation', async () => {
-    mockGetLatestFishDeath.mockResolvedValue({ fish_death_count: 10 });
-
-    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
-
-    const trigger = await screen.findByRole('button', { name: /Sample/i });
-    fireEvent.click(trigger);
-
-    const confirmBtn = await screen.findByRole('button', { name: /Konfirmasi/i });
-    fireEvent.click(confirmBtn);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Input Kematian Ikan/i)).toBeInTheDocument();
-    });
-  });
-
-  it('fallbacks safely when getLatestFishDeath fails', async () => {
-    mockGetLatestFishDeath.mockRejectedValue(new Error('Network Error'));
-
-    render(<AddFishDeath pondId={pondId} cycleId={cycleId} />);
-
-    const trigger = await screen.findByRole('button', { name: /Sample/i });
-    fireEvent.click(trigger);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Input Kematian Ikan/i)).toBeInTheDocument();
+      expect(screen.getByTestId('form-kematian')).toBeInTheDocument();
     });
   });
 });
