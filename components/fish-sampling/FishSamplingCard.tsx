@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { History } from 'lucide-react'
 import { fetchLatestFishSampling } from '@/lib/fish-sampling'
-import AddFishDeath from '@/components/fish-sampling/AddFishDeath';
 
 interface FishSamplingCardProps extends React.HTMLAttributes<HTMLDivElement> {
   pondId: string
@@ -32,7 +31,7 @@ const FishSamplingCard: React.FC<FishSamplingCardProps> = async ({ pondId, cycle
           </>
         )}
         </div>
-      <FishSamplingList className='mt-5' fishSampling={fishSampling} pondId={''} cycleId={''} />
+      <FishSamplingList className='mt-5' fishSampling={fishSampling}/>
     </div>
   )
 }
