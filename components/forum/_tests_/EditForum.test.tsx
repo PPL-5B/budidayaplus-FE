@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-// import EditForumForm from '@/components/forum/EditForum';
+import EditForumForm from '@/components/forum/EditForum';
 import '@testing-library/jest-dom';
 import { updateForum } from '@/lib/forum/updateForum';
 import { useRouter } from 'next/navigation';
