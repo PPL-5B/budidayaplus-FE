@@ -1,33 +1,29 @@
-'use client';
+"use client";
 
-import ForumListDummy from "@/components/forum/ForumListDummy";
-import { useUser } from "@/hooks/useUser";
-import { useEffect } from "react";
+import React, { useState } from 'react';
+import ForumList from '@/components/forum/forumList';
+import AddForum from '@/components/forum/AddForum';
 
-export default function ForumPage() {
-  const user = useUser();
+const ForumPage: React.FC = () => {
+  const [refreshForums, setRefreshForums] = useState(0);
 
-  useEffect(() => {
-    if (user) {
-      console.log("Nomor telepon user:", user.phone_number);
-      // fetch forum berdasarkan nomor atau id user
-    }
-  }, [user]);
-
-  if (!user) return <p>Loading...</p>;
+  // Callback to refresh the forum list after a new forum is added.
+  const handleForumAdded = () => {
+    setRefreshForums((prev) => prev + 1);
+  };
 
   return (
-    <>
-      <div>
-        <h1>Forum Saya</h1>
-        <p>Selamat datang, {user.first_name}!</p>
-        {/* render forum di sini */}
+    <div className="h-screen overflow-y-auto p-8 pb-40">
+      <div className="flex items-center justify-between mb-5 mt-5">
+        <h1 className="text-3xl leading-7 font-semibold text-[#2154C5]">
+          Daftar Forum
+        </h1>
+        <AddForum onForumAdded={handleForumAdded} />
       </div>
-
-      <div className="p-6">
-        <h1 className="text-2xl font-bold">Forum Dummy</h1>
-        <ForumListDummy />
-      </div>
-    </>
+      <ForumList refresh={refreshForums} />
+    </div>
   );
-}
+};
+
+export default ForumPage;
+
