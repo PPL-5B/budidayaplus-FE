@@ -43,7 +43,7 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
 
   const onSubmit = async (data: FishSamplingInputForm) => {
     try {
-      let newErrors: string[] = [];
+      const newErrors: string[] = [];
 
       if (data.fish_weight <= 0 || data.fish_length <= 0) {
         newErrors.push("Berat dan panjang ikan harus lebih dari 0, harap pastikan data benar.");
@@ -124,7 +124,11 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
           />
         </div>
 
-        <Button className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 col-span-2" type="submit" disabled={isSubmitting}>
+        <Button
+          className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 col-span-2"
+          type="submit"
+          disabled={isSubmitting}
+        >
           Simpan
         </Button>
       </form>
