@@ -23,7 +23,7 @@ export async function addFishDeath(pondId: string, cycleId: string, fishDeath: n
       },
       body: JSON.stringify({ fish_death_count: fishDeath }),
     });
-  
+
     const responseText = await response.text(); 
     console.log("Response:", responseText);
   
@@ -36,7 +36,7 @@ export async function addFishDeath(pondId: string, cycleId: string, fishDeath: n
       }
     }
   
-    const data = JSON.parse(responseText); 
+    const data = JSON.parse(responseText);
     return { success: true, data };
   } catch (error: unknown) {
     let errorMessage = "Terjadi kesalahan tidak diketahui";
@@ -46,6 +46,7 @@ export async function addFishDeath(pondId: string, cycleId: string, fishDeath: n
     return { success: false, message: errorMessage };
   }
 }
+
 
 export async function getLatestFishDeath(pondId: string, cycleId: string) {
   const token = cookies().get('accessToken')?.value;
