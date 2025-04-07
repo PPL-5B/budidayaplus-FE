@@ -37,9 +37,20 @@ const AddFishDeathForm: React.FC<AddFishDeathFormProps> = ({ pondId, cycleId, se
       reset();
       setIsModalOpen(false);
       window.location.reload();
-    } catch (error: any) {
-      const message = error?.response?.data?.detail || "Terjadi kesalahan saat menyimpan data.";
-      setWarningMessage(message);
+    } catch (error) {
+      if (error instanceof Error) {
+        const serverError = error as {
+          response?: {
+            data?: {
+              detail?: string;
+            };
+          };
+        };
+        const message = serverError?.response?.data?.detail ?? "Terjadi kesalahan saat menyimpan data.";
+        setWarningMessage(message);
+      } else {
+        setWarningMessage("Terjadi kesalahan yang tidak diketahui.");
+      }
     }
   };
 
