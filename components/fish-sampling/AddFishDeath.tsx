@@ -22,15 +22,18 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fishDeathCount, setFishDeathCount] = useState<number | null>(null);
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState(true);
 
   useEffect(() => {
     const fetchLatestFishDeath = async () => {
       try {
         const latestData = await getLatestFishDeath(pondId, cycleId);
-        setFishDeathCount(latestData.fish_death_count);
+        setFishDeathCount(latestData.fish_death_count || 0);
       } catch (error) {
         console.error('Gagal mengambil data kematian ikan:', error);
         setFishDeathCount(0);
+      } finally {
+        setIsLoadingInitialData(false);
       }
     };
 
@@ -52,10 +55,9 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
         const latestData = await getLatestFishDeath(pondId, cycleId);
         setFishDeathCount(latestData.fish_death_count);
         onFishDeathUpdate?.(latestData.fish_death_count);
-
         setFishDeath('');
         setModalOpen(false);
-        setModalStep('confirm'); // reset
+        setModalStep('confirm');
       } else {
         throw new Error(result?.message ?? 'Terjadi kesalahan saat mengirim data.');
       }
@@ -76,21 +78,30 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
   };
 
   return (
-    <div>
+    <div data-testid="add-fish-death-component">
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm" onClick={handleOpen}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleOpen}
+            data-testid="open-modal-button"
+          >
             Data Kematian Ikan <IoIosAdd size={20} className="ml-1" />
           </Button>
         </DialogTrigger>
 
         {modalStep === 'confirm' && (
-          <DialogContent title="Timpa Data Kematian Ikan">
+          <DialogContent 
+            title="Timpa Data Kematian Ikan"
+            data-testid="confirm-modal"
+          >
             <p>Apakah Anda yakin ingin menimpa data kematian ikan sebelumnya?</p>
             <DialogFooter>
               <Button
                 className="bg-[#ff8585] hover:bg-[#ff8585] text-white rounded-xl"
                 onClick={() => setModalStep('input')}
+                data-testid="confirm-button"
               >
                 Konfirmasi
               </Button>
@@ -99,7 +110,10 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
         )}
 
         {modalStep === 'input' && (
-          <DialogContent title="Input Kematian Ikan">
+          <DialogContent 
+            title="Input Kematian Ikan"
+            data-testid="input-modal"
+          >
             <div className="space-y-4">
               <Input
                 type="number"
@@ -107,9 +121,19 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
                 onChange={(e) => setFishDeath(e.target.value === '' ? '' : Number(e.target.value))}
                 min={1}
                 placeholder="Masukkan jumlah ikan mati"
+                data-testid="death-count-input"
               />
-              {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
-              <Button onClick={handleSubmit} disabled={loading} className="bg-blue-500 hover:bg-blue-600 text-white">
+              {errorMessage && (
+                <p className="text-red-500 text-sm" data-testid="error-message">
+                  {errorMessage}
+                </p>
+              )}
+              <Button 
+                onClick={handleSubmit} 
+                disabled={loading}
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+                data-testid="submit-button"
+              >
                 {loading ? 'Menyimpan...' : 'Simpan'}
               </Button>
             </div>
@@ -117,18 +141,24 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
         )}
       </Dialog>
 
-      {fishDeathCount === null && (
-        <p className="text-sm text-gray-500 italic mt-2">Memuat data kematian ikan...</p>
-      )}
-
-      <div className="flex flex-col mt-4">
-        <div className="flex gap-2">
-          <Skull size={18} /> Kematian Ikan
-        </div>
-        <p className="text-xl font-semibold text-neutral-600" data-testid="fish-death">
-          {fishDeathCount ?? '0'}
+      {isLoadingInitialData ? (
+        <p className="text-sm text-gray-500 italic mt-2" data-testid="loading-text">
+          Memuat data kematian ikan...
         </p>
-      </div>
+      ) : (
+        <div className="flex flex-col mt-4" data-testid="death-count-display">
+          <div className="flex gap-2">
+            <Skull size={18} data-testid="skull-icon" /> 
+            <span>Kematian Ikan</span>
+          </div>
+          <p 
+            className="text-xl font-semibold text-neutral-600" 
+            data-testid="death-count-value"
+          >
+            {fishDeathCount}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
