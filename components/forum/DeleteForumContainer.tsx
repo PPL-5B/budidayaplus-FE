@@ -17,7 +17,7 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); 
 
   const handleDelete = async () => {
     try {
@@ -27,8 +27,8 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
     } catch (error) {
       console.error("Error:", error);
     } finally {
-      onClose(); // ✅ tetap tutup modal di akhir
       setLoading(false);
+      onClose();
     }
   };
 
@@ -39,6 +39,7 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
       forumTitle={forumTitle}
       onDelete={handleDelete}
       onClose={onClose}
+      loading={loading} // ✅ Opsional: bisa kamu pakai untuk disable tombol
     />
   );
 };

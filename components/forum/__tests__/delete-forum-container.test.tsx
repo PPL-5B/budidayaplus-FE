@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-// ✅ Mock fungsi yang digunakan oleh komponen
 jest.mock("@/lib/forum/deleteForumById", () => ({
   deleteForumById: jest.fn(),
 }));
