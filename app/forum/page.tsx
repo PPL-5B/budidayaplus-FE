@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import ForumList from '@/components/forum/forumList';
+import ForumList from '@/components/forum/ForumList';
 import AddForum from '@/components/forum/AddForum';
 
 const ForumPage: React.FC = () => {
