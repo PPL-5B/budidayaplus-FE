@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import DeleteForumModal from "@/components/forum/DeleteForumModal";
 import "@testing-library/jest-dom";
 
+
 describe("DeleteForumModal", () => {
   const onClose = jest.fn();
   const onDelete = jest.fn();
@@ -52,4 +53,20 @@ describe("DeleteForumModal", () => {
     fireEvent.click(screen.getByRole("button", { name: /batal/i }));
     expect(onClose).toHaveBeenCalled();
   });
+
+  it("disables delete button and shows loading text when loading is true", () => {
+    render(
+      <DeleteForumModal
+        forumTitle={forumTitle}
+        onClose={onClose}
+        onDelete={onDelete}
+        loading={true}
+      />
+    );
+  
+    const deleteButton = screen.getByRole("button", { name: /menghapus/i });
+    expect(deleteButton).toBeDisabled();
+    expect(deleteButton).toHaveTextContent("Menghapus...");
+  });
+  
 });
