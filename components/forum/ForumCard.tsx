@@ -9,7 +9,20 @@ interface ForumCardProps {
 
 const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
   const router = useRouter();
-
+  const handleClick = () => {
+    router.push(`/forum/${forum.id}`);
+  };
+  
+  const formattedDate = new Date(forum.timestamp).toLocaleString('id-ID', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  
   const handleClick = () => {
     router.push(`/forum/${forum.id}`);
   };
@@ -20,10 +33,9 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
         Dibuat oleh: {forum.user.first_name + ' ' + forum.user.last_name}
       </h2>
       <h3 className="text-gray-600">
-        Tanggal: {new Date(forum.timestamp).toLocaleString()}
+        Tanggal: {formattedDate}
       </h3>
       <p className="text-gray-600">{forum.description}</p>
-
       <div className="flex justify-end items-center gap-2">
         <button className="text-sm text-blue-500 font-medium cursor-pointer hover:underline bg-transparent border-none p-0" onClick={handleClick}>
           Lihat detail forum
