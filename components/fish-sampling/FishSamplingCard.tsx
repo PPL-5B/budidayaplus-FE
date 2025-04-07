@@ -29,13 +29,10 @@ const FishSamplingCard: React.FC<FishSamplingCardProps> = async ({ pondId, cycle
                 </Link>
               </Button>
             </div>
-
-            {/* Tombol Kematian Ikan berada di bawah */}
-            <AddFishDeath pondId={pondId} cycleId={cycleId} />
           </>
         )}
         </div>
-      <FishSamplingList className='mt-5' fishSampling={fishSampling} />
+      <FishSamplingList className='mt-5' fishSampling={fishSampling} pondId={''} cycleId={''} />
     </div>
   )
 }

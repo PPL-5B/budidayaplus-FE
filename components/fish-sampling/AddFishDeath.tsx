@@ -5,7 +5,7 @@ import { addFishDeath, getLatestFishDeath } from '@/lib/fish-sampling/addFishDea
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Modal as DialogContent } from '@/components/ui/modal';
-import { Dialog, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { IoIosAdd } from 'react-icons/io';
 import { Skull } from 'lucide-react';
 
@@ -16,29 +16,30 @@ interface AddFishDeathProps {
 }
 
 const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeathUpdate }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalStep, setModalStep] = useState<'confirm' | 'input'>('confirm');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [fishDeath, setFishDeath] = useState<number | ''>('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [fishDeathCount, setFishDeathCount] = useState<number | null>(null);
-  const [isLoadingInitialData, setIsLoadingInitialData] = useState(true);
+  const [fishDeathCount, setFishDeathCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchLatestFishDeath = async () => {
       try {
         const latestData = await getLatestFishDeath(pondId, cycleId);
-        setFishDeathCount(latestData.fish_death_count || 0);
+        setFishDeathCount(latestData.fish_death_count);
       } catch (error) {
-        console.error('Gagal mengambil data kematian ikan:', error);
-        setFishDeathCount(0);
-      } finally {
-        setIsLoadingInitialData(false);
+        console.error('❌ Gagal mengambil data kematian ikan:', error);
       }
     };
 
     fetchLatestFishDeath();
   }, [pondId, cycleId]);
+
+  const handleConfirm = () => {
+    setIsConfirmOpen(false);
+    setIsModalOpen(true);
+  };
 
   const handleSubmit = async () => {
     if (fishDeath === '' || fishDeath <= 0 || isNaN(fishDeath)) {
@@ -51,114 +52,81 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeat
 
     try {
       const result = await addFishDeath(pondId, cycleId, fishDeath);
-      if (result?.success) {
+      if (result && result.success) {
+        console.log("✅ Data berhasil dikirim!");
+
         const latestData = await getLatestFishDeath(pondId, cycleId);
         setFishDeathCount(latestData.fish_death_count);
         onFishDeathUpdate?.(latestData.fish_death_count);
+
         setFishDeath('');
-        setModalOpen(false);
-        setModalStep('confirm');
+        setIsModalOpen(false);
       } else {
         throw new Error(result?.message ?? 'Terjadi kesalahan saat mengirim data.');
       }
     } catch (error: any) {
+      console.error("❌ Gagal mengirim data:", error.message);
       setErrorMessage(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOpen = () => {
-    if (fishDeathCount && fishDeathCount > 0) {
-      setModalStep('confirm');
-    } else {
-      setModalStep('input');
-    }
-    setModalOpen(true);
-  };
-
   return (
-    <div data-testid="add-fish-death-component">
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogTrigger asChild>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleOpen}
-            data-testid="open-modal-button"
-          >
-            Data Kematian Ikan <IoIosAdd size={20} className="ml-1" />
-          </Button>
-        </DialogTrigger>
-
-        {modalStep === 'confirm' && (
-          <DialogContent 
-            title="Timpa Data Kematian Ikan"
-            data-testid="confirm-modal"
-          >
-            <p>Apakah Anda yakin ingin menimpa data kematian ikan sebelumnya?</p>
-            <DialogFooter>
-              <Button
-                className="bg-[#ff8585] hover:bg-[#ff8585] text-white rounded-xl"
-                onClick={() => setModalStep('input')}
-                data-testid="confirm-button"
-              >
+    <div>
+      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        {fishDeathCount > 0 && (
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm">
+              Data Kematian Ikan <IoIosAdd size={20} className="ml-1" />
+            </Button>
+          </DialogTrigger>
+        )}
+        <DialogContent title="Timpa Data Kematian Ikan">
+          <p>Apakah Anda yakin ingin menimpa data kematian ikan sebelumnya?</p>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button className="bg-[#ff8585] hover:bg-[#ff8585] text-white rounded-xl" onClick={handleConfirm}>
                 Konfirmasi
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        )}
-
-        {modalStep === 'input' && (
-          <DialogContent 
-            title="Input Kematian Ikan"
-            data-testid="input-modal"
-          >
-            <div className="space-y-4">
-              <Input
-                type="number"
-                value={fishDeath}
-                onChange={(e) => setFishDeath(e.target.value === '' ? '' : Number(e.target.value))}
-                min={1}
-                placeholder="Masukkan jumlah ikan mati"
-                data-testid="death-count-input"
-              />
-              {errorMessage && (
-                <p className="text-red-500 text-sm" data-testid="error-message">
-                  {errorMessage}
-                </p>
-              )}
-              <Button 
-                onClick={handleSubmit} 
-                disabled={loading}
-                className="bg-blue-500 hover:bg-blue-600 text-white"
-                data-testid="submit-button"
-              >
-                {loading ? 'Menyimpan...' : 'Simpan'}
-              </Button>
-            </div>
-          </DialogContent>
-        )}
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
 
-      {isLoadingInitialData ? (
-        <p className="text-sm text-gray-500 italic mt-2" data-testid="loading-text">
-          Memuat data kematian ikan...
-        </p>
-      ) : (
-        <div className="flex flex-col mt-4" data-testid="death-count-display">
-          <div className="flex gap-2">
-            <Skull size={18} data-testid="skull-icon" /> 
-            <span>Kematian Ikan</span>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        {fishDeathCount === 0 && (
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm">
+              Data Kematian Ikan <IoIosAdd size={20} className="ml-1" />
+            </Button>
+          </DialogTrigger>
+        )}
+        <DialogContent title="Input Kematian Ikan">
+          <div className="space-y-4">
+            <Input
+              type="number"
+              value={fishDeath}
+              onChange={(e) => setFishDeath(e.target.value === '' ? '' : Number(e.target.value))}
+              min={1}
+              placeholder="Masukkan jumlah ikan mati"
+            />
+            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+            <Button onClick={handleSubmit} disabled={loading} className="bg-blue-500 hover:bg-blue-600 text-white">
+              {loading ? 'Menyimpan...' : 'Simpan'}
+            </Button>
           </div>
-          <p 
-            className="text-xl font-semibold text-neutral-600" 
-            data-testid="death-count-value"
-          >
-            {fishDeathCount}
-          </p>
+        </DialogContent>
+      </Dialog>
+
+      <div className="flex flex-col mt-4">
+        <div className="flex gap-2">
+          <Skull size={18} /> Kematian Ikan
         </div>
-      )}
+        <p className="text-xl font-semibold text-neutral-600" data-testid="fish-death">
+          {loading ? 'Loading...' : fishDeathCount}
+        </p>
+      </div>
     </div>
   );
 };
