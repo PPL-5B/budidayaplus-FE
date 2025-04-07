@@ -36,12 +36,12 @@ export default function EditForumForm({ forumId }: EditForumFormProps) {
     formData.append('description', desc);
     setLoading(true);
 
-    const res = await updateForum(forumId, formData); // pakai server action
+    const res = await updateForum(forumId, formData); 
     setLoading(false);
 
     if (res.success) {
       alert('Forum berhasil diupdate');
-      router.push('/forum?updated=true'); // trigger refresh
+      router.push('/forum?updated=true'); 
     } else {
       alert(res.message ?? 'Gagal update forum');
     }

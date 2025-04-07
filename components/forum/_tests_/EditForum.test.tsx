@@ -19,7 +19,7 @@ describe('EditForumForm', () => {
 
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-    (global.fetch as jest.Mock) = jest.fn(); // mock fetch
+    (global.fetch as jest.Mock) = jest.fn(); 
   });
 
   it('menampilkan data deskripsi dari fetch', async () => {
