@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DeleteForumModal from "./DeleteForumModal";
+import { deleteForumById } from "@/lib/forum/deleteForumById";
 
 interface DeleteForumContainerProps {
   forumId: string;
@@ -21,20 +22,9 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
   const handleDelete = async () => {
     try {
       setLoading(true);
-
-      const response = await fetch(`/api/forum/delete/${forumId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        onSuccess();
-        onClose();
-      } else {
-        console.error("Gagal menghapus forum");
-      }
+      await deleteForumById(forumId);
+      onSuccess();
+      onClose();
     } catch (error) {
       console.error("Error:", error);
     } finally {
