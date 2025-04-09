@@ -29,6 +29,7 @@ const LoginPage = () => {
     setError(null);
     const response = await handleLoginFormSubmit(data);
     if (response.ok) {
+      console.log('response ok')
       reset();
       setIsLoggedIn(true); // Set login status to true
       return;
@@ -39,7 +40,9 @@ const LoginPage = () => {
   // useEffect to handle navigation after login on the client-side
   useEffect(() => {
     if (isLoggedIn) {
+      console.log('isloggedin sebelum push')
       router.push("/"); // Navigate after login
+      console.log('isloggedin setelah push')
     }
   }, [isLoggedIn, router]);
 
