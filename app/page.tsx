@@ -1,8 +1,10 @@
-import { Cycle } from "@/components/cycle";
+import React from "react";
+import Cycle from "@/components/cycle/Cycle"; // The file above
 import TaskByDateList from "@/components/tasks/TaskByDateList";
 import { formatDate } from "date-fns";
 import { id } from "date-fns/locale";
 import Image from "next/image";
+import ForumButton from "@/components/forum/ForumButton";
 
 export default function Home() {
   return (
@@ -12,7 +14,13 @@ export default function Home() {
           <p>Welcome to</p>
           <p className="text-[#2154C5] font-normal">BudidayaPlus</p>
         </div>
-        <Image className="w-32 h-32" src='/BudidayaPlus.svg' width={500} height={500} alt='BudidayaPlus Logo' />
+        <Image
+          className="w-32 h-32"
+          src="/BudidayaPlus.svg"
+          width={500}
+          height={500}
+          alt="BudidayaPlus Logo"
+        />
       </div>
 
       <div className="flex gap-2 items-center justify-center w-full">
@@ -24,10 +32,13 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Renders your Cycle component with both buttons */}
       <Cycle />
 
       <div className="flex flex-col items-center w-full">
-        <p className="mt-10 py-10 pb-5 w-[80%] text-2xl font-medium text-neutral-60">Tugas Hari Ini </p>
+        <p className="mt-10 py-10 pb-5 w-[80%] text-2xl font-medium text-neutral-60">
+          Tugas Hari Ini
+        </p>
         <TaskByDateList />
       </div>
     </div>
