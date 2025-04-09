@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,9 @@ import { handleLoginFormSubmit } from "@/lib/auth/login/actions";
 import Link from "next/link";
 
 const LoginPage = () => {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
 
   const {
     register,
@@ -23,17 +26,22 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginForm) => {
-    setError(null)
-    const response = await handleLoginFormSubmit(data)
+    setError(null);
+    const response = await handleLoginFormSubmit(data);
     if (response.ok) {
-      reset()
-      console.log("sebelum push ke /")
-      window.location.href = "/"
-      console.log("abis push ke /")
+      reset();
+      setIsLoggedIn(true); // Set login status to true
+      return;
     }
-    console.log("masuk ke error")
-    setError(response.message)
-  }
+    setError(response.message);
+  };
+
+  // useEffect to handle navigation after login on the client-side
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/"); // Navigate after login
+    }
+  }, [isLoggedIn, router]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
