@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,6 @@ import { handleLoginFormSubmit } from "@/lib/auth/login/actions";
 import Link from "next/link";
 
 const LoginPage = () => {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -30,9 +28,8 @@ const LoginPage = () => {
     if (response.ok) {
       reset()
       console.log("sebelum push ke /")
-      router.replace("/")
+      window.location.href = "/"
       console.log("abis push ke /")
-      return
     }
     console.log("masuk ke error")
     setError(response.message)
