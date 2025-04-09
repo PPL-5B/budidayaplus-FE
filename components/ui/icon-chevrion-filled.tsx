@@ -1,5 +1,3 @@
-// components/icons/IconChevronFilled.tsx
-
 import React from "react";
 
 interface IconChevronFilledProps {
@@ -9,7 +7,7 @@ interface IconChevronFilledProps {
 
 const IconChevronFilled: React.FC<IconChevronFilledProps> = ({
   className,
-  fill = "#EAF0FF", // default to light white-ish fill
+  fill = "#EAF0FF", 
 }) => (
   <svg
     className={className}

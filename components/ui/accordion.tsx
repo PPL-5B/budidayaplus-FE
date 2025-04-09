@@ -1,4 +1,3 @@
-// components/Accordion.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import IconChevronFilled from "@/components/ui/icon-chevrion-filled";
@@ -44,4 +43,3 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ title, children }) => {
 };
 
 export { Accordion, AccordionItem };
-
