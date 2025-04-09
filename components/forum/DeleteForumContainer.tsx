@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DeleteForumModal from "./DeleteForumModal";
-import { deleteForumById } from "@/lib/forum/deleteForumById";
+import { deleteForumById } from "@/lib/forum/delete";
 
 interface DeleteForumContainerProps {
   forumId: string;
@@ -18,19 +18,25 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
   onSuccess,
 }) => {
   const [loading, setLoading] = useState(false); 
+  const token = localStorage.getItem("accessToken") ?? "";
 
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await deleteForumById(forumId);
-      onSuccess();
+      await deleteForumById(forumId, token);
+      onSuccess(); // trigger hapus di tampilan
     } catch (error) {
       console.error("Error:", error);
+  
+      // tetap hapus secara visual meskipun 404
+      onSuccess(); 
     } finally {
       setLoading(false);
       onClose();
     }
   };
+  
+  
 
   if (!isOpen) return null;
 
@@ -39,7 +45,7 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
       forumTitle={forumTitle}
       onDelete={handleDelete}
       onClose={onClose}
-      loading={loading} // ✅ Opsional: bisa kamu pakai untuk disable tombol
+      loading={loading} // 
     />
   );
 };

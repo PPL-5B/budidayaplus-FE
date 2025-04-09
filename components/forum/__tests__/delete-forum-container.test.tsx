@@ -5,7 +5,7 @@ jest.mock("@/lib/forum/deleteForumById", () => ({
   deleteForumById: jest.fn(),
 }));
 
-import { deleteForumById } from "@/lib/forum/deleteForumById";
+import { deleteForumById } from "@/lib/forum/delete";
 import DeleteForumContainer from "../DeleteForumContainer";
 
 describe("DeleteForumContainer", () => {
