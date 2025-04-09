@@ -20,7 +20,7 @@ const DeleteForumModal: React.FC<DeleteForumModalProps> = ({
       <div className="bg-white p-6 rounded-xl shadow-md w-96">
         <h2 className="text-xl font-semibold mb-4">Hapus Forum</h2>
         <p className="mb-6">
-          Apakah kamu yakin ingin menghapus forum '{forumTitle}'?
+          Apakah kamu yakin ingin menghapus forum &apos;{forumTitle}&apos;?
         </p>
         <div className="flex justify-end gap-3">
           <CancelButton onClick={onClose}>Batal</CancelButton>
