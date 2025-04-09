@@ -41,6 +41,7 @@ const LoginPage = () => {
   useEffect(() => {
     if (isLoggedIn) {
       console.log('isloggedin sebelum push')
+      router.refresh();
       router.push("/"); // Navigate after login
       console.log('isloggedin setelah push')
     }
