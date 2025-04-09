@@ -10,7 +10,7 @@ const FAQ = () => {
       answer: 'BudidayaPlus adalah aplikasi pendamping digital untuk pembudidaya ikan lele. \n\nMisi kami adalah membantu pembudidaya meningkatkan hasil panen dan keuntungan melalui pengelolaan berbasis data yang mudah dipahami. \n\nAplikasi ini dikembangkan oleh tim PT Dimensi Kreasi Nusantara.'
     },
     {
-      question: 'Apa saja Fitur Utama BudidayaPlus?',
+      question: 'Apa fitur BudidayaPlus?',
       answer: '1. Pantau kondisi kolam dengan mudah\n2. Lacak pertumbuhan ikan\n3. Kelola pemberian pakan dengan tepat\n4. Catat dan evaluasi hasil panen'
     },
     {
