@@ -1,6 +1,7 @@
+// components/Accordion.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react"; // You can use any icon library
+import IconChevronFilled from "@/components/ui/icon-chevrion-filled";
 
 interface AccordionProps {
   children: React.ReactNode;
@@ -25,9 +26,9 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ title, children }) => {
         className="flex items-center justify-between w-full px-6 py-5 text-white font-bold text-lg"
       >
         <span>{title}</span>
-        <ChevronDown
+        <IconChevronFilled
           className={cn(
-            "h-5 w-5 transition-transform duration-300",
+            "w-10 h-10 transition-transform duration-300",
             isOpen && "rotate-180"
           )}
         />
@@ -43,3 +44,4 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ title, children }) => {
 };
 
 export { Accordion, AccordionItem };
+
