@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
 import { ChevronRight } from 'lucide-react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface ForumCardProps {
   forum: Forum;
@@ -12,11 +12,19 @@ interface ForumCardProps {
 const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempDesc, setTempDesc] = useState(forum.description);
-  const [desc, setDesc] = useState(forum.description); 
+  const [desc, setDesc] = useState(forum.description);
+  const router = useRouter();
 
   const handleSave = () => {
-    setDesc(tempDesc);     
-    setIsEditing(false);   
+    setDesc(tempDesc);
+    setIsEditing(false);
+  };
+
+  const handleViewDetails = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedForum', JSON.stringify(forum));
+      router.push(`/forum/${forum.id}`);
+    }
   };
 
   return (
@@ -45,7 +53,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
             </button>
             <button
               onClick={() => {
-                setTempDesc(desc); // Reset
+                setTempDesc(desc);
                 setIsEditing(false);
               }}
               className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400"
@@ -64,13 +72,13 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
             >
               Edit deskripsi
             </button>
-            <Link
-              href={`/forum/${forum.id}`}
+            <button
+              onClick={handleViewDetails}
               className="flex items-center text-sm text-blue-500 font-medium hover:underline"
             >
               Lihat detail forum
               <ChevronRight className="w-5 h-5 ml-1 text-[#ff8585]" />
-            </Link>
+            </button>
           </div>
         </>
       )}
