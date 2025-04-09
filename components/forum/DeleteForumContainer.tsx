@@ -18,12 +18,12 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
   onSuccess,
 }) => {
   const [loading, setLoading] = useState(false); 
-  const token = localStorage.getItem("accessToken") ?? "";
+  const _ = localStorage.getItem("accessToken") ?? "";
 
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await deleteForumById(forumId, token);
+      await deleteForumById(forumId);
       onSuccess(); // trigger hapus di tampilan
     } catch (error) {
       console.error("Error:", error);
