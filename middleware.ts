@@ -43,6 +43,8 @@ const refreshAccessToken = async (refreshToken?: string) => {
 export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get("accessToken")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
+  console.log("Access Token:", accessToken);
+  console.log("Refresh Token:", refreshToken);
 
   let isValid = await validateAccessToken(accessToken);
 
