@@ -1,13 +1,13 @@
 import * as React from "react";
+import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react"; // You can use any icon library
 
 interface AccordionProps {
   children: React.ReactNode;
-  type?: "single" | "multiple";
-  collapsible?: boolean;
 }
 
 const Accordion: React.FC<AccordionProps> = ({ children }) => {
-  return <div className="space-y-2">{children}</div>;
+  return <div className="space-y-4">{children}</div>;
 };
 
 interface AccordionItemProps {
@@ -19,14 +19,25 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ title, children }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <div className="border border-gray-300 rounded-md">
+    <div className="rounded-xl overflow-hidden bg-[#2254C5] transition-all">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full text-left font-semibold p-4 bg-gray-100"
+        className="flex items-center justify-between w-full px-6 py-5 text-white font-bold text-lg"
       >
-        {title}
+        <span>{title}</span>
+        <ChevronDown
+          className={cn(
+            "h-5 w-5 transition-transform duration-300",
+            isOpen && "rotate-180"
+          )}
+        />
       </button>
-      {isOpen && <div className="p-4 text-gray-600">{children}</div>}
+
+      {isOpen && (
+        <div className="bg-[#EAF0FF] px-6 py-4 text-[#4D4C4C] font-semibold text-base leading-relaxed">
+          {children}
+        </div>
+      )}
     </div>
   );
 };
