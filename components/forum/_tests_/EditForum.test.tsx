@@ -123,4 +123,31 @@ describe('EditForumForm', () => {
 
     resolveUpdate({ success: true });
   });
+
+  it('menangani fetch response dengan res.ok === false', async () => {
+    window.alert = jest.fn();
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({}),
+    });
+
+    render(<EditForumForm forumId={forumId} />);
+
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith('Gagal mengambil data forum');
+    });
+  });
+
+  it('fallback ke deskripsi kosong jika data.description tidak ada', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}), // <-- description undefined
+    });
+
+    render(<EditForumForm forumId={forumId} />);
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/edit deskripsi/i)).toHaveValue('');
+    });
+  });
 });
