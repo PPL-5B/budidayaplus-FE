@@ -11,10 +11,9 @@ import FishDeathForm from './FishDeathForm';
 interface AddFishDeathProps {
   pondId: string;
   cycleId: string;
-  onFishDeathUpdate?: (count: number) => void;
 }
 
-const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId, onFishDeathUpdate }) => {
+const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [fishDeathCount, setFishDeathCount] = useState<number | null>(null);

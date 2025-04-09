@@ -17,20 +17,20 @@ const FishDeathList: React.FC<FishDeathListProps> = ({ pondId, cycleId, ...props
   const [fishDeath, setFishDeath] = useState<FishDeath | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchDeathData = async () => {
-    try {
-      const data = await getLatestFishDeath(pondId, cycleId);
-      if (data && data.fish_death_count !== undefined) {
-        setFishDeath(data);
-      }
-    } catch (error) {
-      console.error('❌ Gagal mengambil data kematian ikan:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchDeathData = async () => {
+      try {
+        const data = await getLatestFishDeath(pondId, cycleId);
+        if (data && data.fish_death_count !== undefined) {
+          setFishDeath(data);
+        }
+      } catch (error) {
+        console.error('❌ Gagal mengambil data kematian ikan:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchDeathData();
   }, [pondId, cycleId]);
 

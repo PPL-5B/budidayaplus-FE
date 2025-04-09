@@ -7,9 +7,10 @@ import ForumCard from './ForumCard';
 
 interface ForumListProps {
   refresh?: number;
+  updatedForum?: Forum | null;
 }
 
-const ForumList: React.FC<ForumListProps> = ({ refresh = 0 }) => {
+const ForumList: React.FC<ForumListProps> = ({ refresh = 0, updatedForum }) => {
   const [forums, setForums] = useState<Forum[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,7 @@ const ForumList: React.FC<ForumListProps> = ({ refresh = 0 }) => {
         const mainForums = data.filter((forum) => forum.parent_id === null);
         setForums(mainForums);
       } catch {
-        setError('Gagal memuat forum');
+        setError('Gagal memuat forumm');
       } finally {
         setLoading(false);
       }
@@ -30,6 +31,19 @@ const ForumList: React.FC<ForumListProps> = ({ refresh = 0 }) => {
 
     fetchForums();
   }, [refresh]);
+
+  // Update lokal jika ada forum yang diupdate
+  useEffect(() => {
+    if (updatedForum) {
+      setForums((prev) =>
+        prev.map((f) =>
+          f.id === updatedForum.id
+            ? { ...f, description: updatedForum.description }
+            : f
+        )
+      );
+    }
+  }, [updatedForum]);
 
   if (loading) return <p>Memuat Forum ...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
