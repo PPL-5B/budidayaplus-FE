@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Cycle from "@/components/cycle/Cycle"; // The file above
 import TaskByDateList from "@/components/tasks/TaskByDateList";
