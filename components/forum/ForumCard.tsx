@@ -4,19 +4,22 @@ import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import DeleteForumContainer from './DeleteForumContainer';
 
 interface ForumCardProps {
   forum: Forum;
+  onDeleteSuccess?: (id: string) => void;
 }
 
-const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
+const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempDesc, setTempDesc] = useState(forum.description);
-  const [desc, setDesc] = useState(forum.description); // versi yang akan ditampilkan
+  const [desc, setDesc] = useState(forum.description);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const handleSave = () => {
-    setDesc(tempDesc);     // Simpan perubahan ke tampilan utama
-    setIsEditing(false);   // Tutup editor
+    setDesc(tempDesc);
+    setIsEditing(false);
   };
 
   return (
@@ -45,7 +48,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
             </button>
             <button
               onClick={() => {
-                setTempDesc(desc); // Reset
+                setTempDesc(desc);
                 setIsEditing(false);
               }}
               className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400"
@@ -58,12 +61,20 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
         <>
           <p className="text-gray-600">{desc}</p>
           <div className="flex justify-between items-center">
-            <button
-              onClick={() => setIsEditing(true)}
-              className="text-sm text-blue-500 font-medium hover:underline"
-            >
-              Edit deskripsi
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="text-sm text-blue-500 font-medium hover:underline"
+              >
+                Edit deskripsi
+              </button>
+              <button
+                onClick={() => setIsDeleteOpen(true)}
+                className="text-sm text-red-500 font-medium hover:underline"
+              >
+                Hapus forum
+              </button>
+            </div>
             <Link
               href={`/forum/${forum.id}`}
               className="flex items-center text-sm text-blue-500 font-medium hover:underline"
@@ -74,6 +85,16 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
           </div>
         </>
       )}
+
+      <DeleteForumContainer
+        forumId={forum.id}
+        forumTitle={desc}
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onSuccess={() => {
+          onDeleteSuccess?.(forum.id);
+        }}
+      />
     </div>
   );
 };

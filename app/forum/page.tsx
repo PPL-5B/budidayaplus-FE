@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import ForumList from '@/components/forum/ForumList';
 import AddForum from '@/components/forum/AddForum';
 import { Forum } from '@/types/forum';
+import ForumList from '@/components/forum/forumList';
 
 const ForumPage: React.FC = () => {
   const [refreshForums, setRefreshForums] = useState(0);

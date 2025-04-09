@@ -4,6 +4,7 @@ import TaskByDateList from "@/components/tasks/TaskByDateList";
 import { formatDate } from "date-fns";
 import { id } from "date-fns/locale";
 import Image from "next/image";
+import ForumButton from "@/components/forum/ForumButton";
 
 export default function Home() {
   return (
