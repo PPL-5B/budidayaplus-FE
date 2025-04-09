@@ -29,9 +29,12 @@ const LoginPage = () => {
     const response = await handleLoginFormSubmit(data)
     if (response.ok) {
       reset()
+      console.log("sebelum push ke /")
       router.push("/")
+      console.log("abis push ke /")
       return
     }
+    console.log("masuk ke error")
     setError(response.message)
   }
 
