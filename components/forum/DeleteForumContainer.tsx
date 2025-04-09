@@ -18,7 +18,6 @@ const DeleteForumContainer: React.FC<DeleteForumContainerProps> = ({
   onSuccess,
 }) => {
   const [loading, setLoading] = useState(false); 
-  const _ = localStorage.getItem("accessToken") ?? "";
 
   const handleDelete = async () => {
     try {
