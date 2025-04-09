@@ -12,11 +12,11 @@ interface ForumCardProps {
 const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempDesc, setTempDesc] = useState(forum.description);
-  const [desc, setDesc] = useState(forum.description); // versi yang akan ditampilkan
+  const [desc, setDesc] = useState(forum.description); 
 
   const handleSave = () => {
-    setDesc(tempDesc);     // Simpan perubahan ke tampilan utama
-    setIsEditing(false);   // Tutup editor
+    setDesc(tempDesc);     
+    setIsEditing(false);   
   };
 
   return (
