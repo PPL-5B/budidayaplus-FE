@@ -30,7 +30,7 @@ const LoginPage = () => {
     if (response.ok) {
       reset()
       console.log("sebelum push ke /")
-      router.push("/")
+      router.replace("/")
       console.log("abis push ke /")
       return
     }
