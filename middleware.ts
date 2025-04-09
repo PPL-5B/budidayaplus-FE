@@ -46,6 +46,10 @@ export async function middleware(req: NextRequest) {
   console.log("Access Token:", accessToken);
   console.log("Refresh Token:", refreshToken);
 
+  if (!accessToken) {
+      return NextResponse.redirect(new URL("/auth/login", req.url))
+  }
+
   return NextResponse.next();
 }
 
