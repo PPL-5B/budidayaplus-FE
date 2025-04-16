@@ -3,8 +3,10 @@ import Link from "next/link";
 import DetailArtikel from "@/components/artikel/DetailArtikel";
 
 interface DetailArtikelPageProps {
-  params: { id: string };
-}
+    readonly params: {
+      readonly id: string;
+    };
+  }
 
 const articles = [
     {
