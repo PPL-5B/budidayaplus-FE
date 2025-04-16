@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import ForumList from '../ForumList';
+import ForumList from '@/components/forum/MyForumList';
 import { getListForum } from '@/lib/forum/getListForum';
 import { Forum } from '@/types/forum';
 import '@testing-library/jest-dom';
@@ -74,7 +74,7 @@ describe('ForumList', () => {
     render(<ForumList />);
 
     await waitFor(() => {
-      expect(screen.getByText('Gagal memuat forum')).toBeInTheDocument();
+      expect(screen.getByText('Gagal memuat forumm')).toBeInTheDocument();
     });
   });
 

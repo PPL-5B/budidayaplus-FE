@@ -2,15 +2,17 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import SeePage from '@/components/forum/SeePage';
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
-import { useRouter } from 'next/navigation';
 
-// Optional: Mock Next.js router (tidak wajib, karena `Link` langsung pakai href)
-jest.mock('next/link', () => {
-  return ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <a href={href} data-testid="link">{children}</a>
-  );
-});
+// Mock Link
+const MockLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <a href={href} data-testid="link">{children}</a>
+);
+MockLink.displayName = 'MockLink';
+
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: MockLink,
+}));
 
 describe('SeePage', () => {
   it('renders button with correct text and styling', () => {

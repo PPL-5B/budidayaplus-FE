@@ -3,16 +3,19 @@
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
 import { ChevronRight } from 'lucide-react';
+import DeleteForumContainer from './DeleteForumContainer';
 import { useRouter } from 'next/navigation';
 
 interface ForumCardProps {
   forum: Forum;
+  onDeleteSuccess?: (id: string) => void;
 }
 
-const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
+const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempDesc, setTempDesc] = useState(forum.description);
   const [desc, setDesc] = useState(forum.description);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const router = useRouter();
 
   const handleSave = () => {
@@ -66,12 +69,21 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
         <>
           <p className="text-gray-600">{desc}</p>
           <div className="flex justify-between items-center">
-            <button
-              onClick={() => setIsEditing(true)}
-              className="text-sm text-blue-500 font-medium hover:underline"
-            >
-              Edit deskripsi
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="text-sm text-blue-500 font-medium hover:underline"
+              >
+                Edit deskripsi
+              </button>
+              
+              <button
+                onClick={() => setIsDeleteOpen(true)}
+                className="text-sm text-red-500 font-medium hover:underline"
+              >
+                Hapus forum
+              </button>
+            </div>
             <button
               onClick={handleViewDetails}
               className="flex items-center text-sm text-blue-500 font-medium hover:underline"
@@ -82,6 +94,16 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum }) => {
           </div>
         </>
       )}
+
+      <DeleteForumContainer
+        forumId={forum.id}
+        forumTitle={desc}
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onSuccess={() => {
+          onDeleteSuccess?.(forum.id);
+        }}
+      />
     </div>
   );
 };

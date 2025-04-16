@@ -19,7 +19,7 @@ describe('EditForumForm', () => {
 
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-    (global.fetch as jest.Mock) = jest.fn(); 
+    (global.fetch as jest.Mock) = jest.fn();
   });
 
   it('menampilkan data deskripsi dari fetch', async () => {
@@ -108,7 +108,7 @@ describe('EditForumForm', () => {
       json: async () => ({ description: 'init' }),
     });
 
-    let resolveUpdate: any;
+    let resolveUpdate: (value: { success: boolean }) => void = () => {};
     (updateForum as jest.Mock).mockImplementation(() => {
       return new Promise((resolve) => {
         resolveUpdate = resolve;

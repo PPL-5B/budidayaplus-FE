@@ -29,7 +29,7 @@ describe('ForumForm', () => {
 
   it('shows validation error when submitted with empty description', async () => {
     render(<ForumForm setIsModalOpen={mockSetIsModalOpen} />);
-    
+
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {

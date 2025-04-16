@@ -76,43 +76,43 @@ describe('ForumCard', () => {
 
   it('should allow editing description and save it', () => {
     render(<ForumCard forum={mockForum} />);
-  
+
     // Klik tombol edit
     fireEvent.click(screen.getByText('Edit deskripsi'));
-  
+
     // Pastikan textarea muncul
     const textarea = screen.getByRole('textbox');
     expect(textarea).toBeInTheDocument();
-  
+
     // Ubah deskripsi
     fireEvent.change(textarea, { target: { value: 'Updated description' } });
-  
+
     // Klik tombol simpan
     fireEvent.click(screen.getByText('Simpan'));
-  
+
     // Pastikan deskripsi baru muncul
     expect(screen.getByText('Updated description')).toBeInTheDocument();
-  
+
     // Pastikan tombol "Edit deskripsi" muncul lagi (berarti form edit hilang)
     expect(screen.getByText('Edit deskripsi')).toBeInTheDocument();
   });
-  
+
   it('should discard changes when cancel is clicked', () => {
     render(<ForumCard forum={mockForum} />);
-  
+
     // Klik tombol edit
     fireEvent.click(screen.getByText('Edit deskripsi'));
-  
+
     // Ubah deskripsi
     const textarea = screen.getByRole('textbox');
     fireEvent.change(textarea, { target: { value: 'Ini tidak akan disimpan' } });
-  
+
     // Klik tombol batal
     fireEvent.click(screen.getByText('Batal'));
-  
+
     // Pastikan deskripsi kembali ke yang awal
     expect(screen.getByText(mockForum.description)).toBeInTheDocument();
-  
+
     // Pastikan textarea tidak muncul lagi
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
   });  
