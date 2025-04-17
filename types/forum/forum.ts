@@ -7,5 +7,7 @@ export type Forum = {
     timestamp: Date;
     parent_id: string | null;
     replies: Forum[];
+    upvotes: number;
+    downvotes: number;
 };
 

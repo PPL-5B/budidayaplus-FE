@@ -1,109 +1,128 @@
-'use client';
-
 import React, { useState } from 'react';
+import { useVote } from '@/hooks/useVote';
 import { Forum } from '@/types/forum';
-import { ChevronRight } from 'lucide-react';
-import DeleteForumContainer from './DeleteForumContainer';
-import { useRouter } from 'next/navigation';
 
-interface ForumCardProps {
+type ForumCardProps = {
   forum: Forum;
-  onDeleteSuccess?: (id: string) => void;
-}
+  onDeleteSuccess: (forumId: string) => void;
+  onVoteSuccess: (forum: Forum) => void;
+};
 
-const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
+const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuccess }) => {
+  const {
+    upvotes,
+    downvotes,
+    userVote,
+    isLoading,
+    handleUpvote,
+    handleDownvote,
+    handleCancelVote
+  } = useVote(forum);
+
   const [isEditing, setIsEditing] = useState(false);
-  const [tempDesc, setTempDesc] = useState(forum.description);
-  const [desc, setDesc] = useState(forum.description);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const router = useRouter();
+  const [editedDescription, setEditedDescription] = useState(forum.description);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleSave = () => {
-    setDesc(tempDesc);
+  const handleSaveDescription = () => {
     setIsEditing(false);
+    const updatedForum = { ...forum, description: editedDescription };
+    onVoteSuccess(updatedForum);
   };
 
-  const handleViewDetails = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('selectedForum', JSON.stringify(forum));
-      router.push(`/forum/${forum.id}`);
+  const handleDeleteForum = () => {
+    setIsDeleting(false);
+    onDeleteSuccess(forum.id);
+  };
+
+  const handleUpvoteClick = async () => {
+    try {
+      if (userVote === 'upvote') {
+        await handleCancelVote();
+      } else {
+        await handleUpvote();
+        onVoteSuccess({ ...forum, upvotes, downvotes });
+      }
+    } catch (err) {
+      console.error('Error voting:', err);
     }
   };
 
+  const handleDownvoteClick = async () => {
+    try {
+      if (userVote === 'downvote') {
+        await handleCancelVote();
+      } else {
+        await handleDownvote();
+        onVoteSuccess({ ...forum, upvotes, downvotes });
+      }
+    } catch (err) {
+      console.error('Error voting:', err);
+    }
+  };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
   return (
-    <div className="w-full border rounded-lg p-4 shadow-md bg-white hover:bg-gray-100 transition duration-200 flex flex-col gap-4">
-      <h2 className="text-lg font-semibold">
-        Dibuat oleh: {forum.user.first_name + ' ' + forum.user.last_name}
-      </h2>
-      <h3 className="text-gray-600">
-        Tanggal: {new Date(forum.timestamp).toLocaleString()}
-      </h3>
+    <div className="border p-4 rounded-lg shadow-md mb-4">
+      <p className="font-semibold">Dibuat oleh: {forum.user.first_name} {forum.user.last_name}</p>
 
       {isEditing ? (
-        <>
+        <div>
           <textarea
-            className="w-full border p-2 rounded"
-            rows={4}
-            value={tempDesc}
-            onChange={(e) => setTempDesc(e.target.value)}
+            className="w-full border rounded p-2 mt-2"
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            role="textbox"
           />
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={handleSave}
-              className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-            >
+          <div className="mt-2 flex gap-2">
+            <button onClick={handleSaveDescription} className="bg-blue-500 text-white px-3 py-1 rounded">
               Simpan
             </button>
-            <button
-              onClick={() => {
-                setTempDesc(desc);
-                setIsEditing(false);
-              }}
-              className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400"
-            >
+            <button onClick={() => setIsEditing(false)} className="bg-gray-300 px-3 py-1 rounded">
               Batal
             </button>
           </div>
-        </>
+        </div>
       ) : (
-        <>
-          <p className="text-gray-600">{desc}</p>
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="text-sm text-blue-500 font-medium hover:underline"
-              >
-                Edit deskripsi
-              </button>
-              
-              <button
-                onClick={() => setIsDeleteOpen(true)}
-                className="text-sm text-red-500 font-medium hover:underline"
-              >
-                Hapus forum
-              </button>
-            </div>
-            <button
-              onClick={handleViewDetails}
-              className="flex items-center text-sm text-blue-500 font-medium hover:underline"
-            >
-              Lihat detail forum
-              <ChevronRight className="w-5 h-5 ml-1 text-[#ff8585]" />
-            </button>
-          </div>
-        </>
+        <p className="mt-2">{forum.description}</p>
       )}
 
-      <DeleteForumContainer
-        forumId={forum.id}
-        forumTitle={desc}
-        isOpen={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-        onSuccess={() => {
-          onDeleteSuccess?.(forum.id);
-        }}
-      />
+      <div className="mt-4 flex gap-4 items-center">
+        <button onClick={handleUpvoteClick} className="text-green-600">
+          {upvotes}
+        </button>
+        <button onClick={handleDownvoteClick} className="text-red-600">
+          {downvotes}
+        </button>
+        <button onClick={() => setIsEditing(true)} className="ml-auto text-blue-500 underline">
+          Edit deskripsi
+        </button>
+      </div>
+
+      <div className="mt-2">
+        <button onClick={() => alert('Navigating to detail')} className="text-sm text-blue-600 underline">
+          Lihat detail forum
+        </button>
+      </div>
+
+      <div className="mt-2">
+        <button onClick={() => setIsDeleting(true)} className="text-sm text-red-500 underline">
+          Hapus forum
+        </button>
+        {isDeleting && (
+          <div className="mt-2">
+            <p>Yakin ingin menghapus?</p>
+            <button onClick={handleDeleteForum} className="text-white bg-red-500 px-2 py-1 rounded mr-2">
+              Hapus
+            </button>
+            <button onClick={() => setIsDeleting(false)} className="text-gray-600 underline">
+              Batal
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
