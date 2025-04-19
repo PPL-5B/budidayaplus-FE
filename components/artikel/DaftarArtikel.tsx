@@ -1,6 +1,4 @@
-// components/artikel/DaftarArtikel.tsx
 import CardArticle from "../ui/card-article";
-
 
 const articles = [
   {
@@ -28,7 +26,6 @@ const articles = [
     categories: ["Teknik Budidaya"],
   },
 ];
-
 
 export default function DaftarArtikel() {
   return (

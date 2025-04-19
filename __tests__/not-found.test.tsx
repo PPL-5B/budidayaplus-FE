@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import NotFoundPage from "@/app/not-found";
 import '@testing-library/jest-dom';
 
-// Mock next/image to simulate edge cases
 jest.mock("next/image", () => ({
   __esModule: true,
   default: (props: any) => {
@@ -19,7 +18,6 @@ jest.mock("next/image", () => ({
 
 describe("NotFoundPage (with edge cases)", () => {
   it("renders with missing image src (edge case)", () => {
-    // Simulasi manual: Kita pakai src kosong
     render(<NotFoundPage />);
     const image = screen.getByTestId("mocked-image");
     expect(image).toBeInTheDocument();
@@ -34,7 +32,6 @@ describe("NotFoundPage", () => {
     expect(screen.getByText(/tidak tersedia atau sudah dipindahkan/i)).toBeInTheDocument();
   });
 
-  // Negative case: Make sure incorrect text is not rendered
   it("does not show unrelated text (negative case)", () => {
     render(<NotFoundPage />);
     expect(screen.queryByText("Halaman Berhasil!")).not.toBeInTheDocument();

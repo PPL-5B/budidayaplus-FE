@@ -1,8 +1,5 @@
 import Image from "next/image";
 
-
-
-
 export default function NotFoundPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center bg-gray-50 text-[#4D4C4C]">
@@ -14,16 +11,10 @@ export default function NotFoundPage() {
         className="mb-6"
       />
 
-
-
-
       <h1 className="text-xl font-semibold mb-2">Halaman Tidak Ditemukan!</h1>
       <p className="mb-6 max-w-md">
         Mohon maaf, halaman yang Anda cari tidak tersedia atau sudah dipindahkan.
       </p>
-
-
-
 
       <a
         href="/"
@@ -34,6 +25,3 @@ export default function NotFoundPage() {
     </div>
   );
 }
-
-
-
