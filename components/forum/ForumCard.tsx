@@ -1,9 +1,14 @@
+// components/forum/ForumCard.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
-import { useRouter } from 'next/navigation';
+import { ChevronRight } from 'lucide-react';
 import DeleteForumContainer from './DeleteForumContainer';
+import { useRouter } from 'next/navigation';
+import ForumCardHeader from './ForumCardHeader';
+import { goToForumDetail } from '@/lib/forum/forumNavigation';
+import ForumCardFooter from './ForumCardFooter';
 
 interface ForumCardProps {
   forum: Forum;
@@ -23,25 +28,14 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
   };
 
   const handleViewDetails = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('selectedForum', JSON.stringify(forum));
-      router.push(`/forum/${forum.id}`);
-    }
+    goToForumDetail(forum);
+    router.push(`/forum/${forum.id}`);
   };
 
   return (
     <div className="relative w-full max-w-[338px] h-[120px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
-      {/* Judul */}
-      <h2 className="text-[12px] font-bold text-black mb-1 line-clamp-1">
-        Dibuat oleh: {forum.user.first_name + ' ' + forum.user.last_name}
-      </h2>
+      <ForumCardHeader timestamp={forum.timestamp} description={desc} />
 
-      {/* Tanggal */}
-      <h3 className="text-gray-600 text-[10px] mb-1">
-        {new Date(forum.timestamp).toLocaleString()}
-      </h3>
-
-      {/* Deskripsi atau Textarea */}
       {isEditing ? (
         <>
           <textarea
@@ -72,40 +66,14 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
         <p className="text-[12px] text-[#646464] line-clamp-2 mb-2">{desc}</p>
       )}
 
-      {/* Footer: Lihat Unggahan */}
-      <div className="absolute bottom-2 left-3 flex items-center gap-2">
-        <button
-          className="px-2 py-[2px] bg-[#2254C5] rounded-full text-white text-[8px] font-medium hover:brightness-110 transition"
-          onClick={handleViewDetails}
-        >
-          Lihat Unggahan
-        </button>
-      </div>
+      <ForumCardFooter
+        userInitial={forum.user.first_name.charAt(0)}
+        onViewDetails={handleViewDetails}
+        onEdit={() => setIsEditing(true)}
+        onDelete={() => setIsDeleteOpen(true)}
+        isEditing={isEditing}
+      />
 
-      {/* Edit & Hapus */}
-      {!isEditing && (
-        <div className="absolute bottom-2 right-3 flex gap-2">
-          <button
-            onClick={() => setIsEditing(true)}
-            className="text-[10px] text-blue-500 hover:underline"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => setIsDeleteOpen(true)}
-            className="text-[10px] text-red-500 hover:underline"
-          >
-            Hapus
-          </button>
-        </div>
-      )}
-
-      {/* Avatar */}
-      <div className="absolute top-2 right-3 w-10 h-10 rounded-full bg-[#2254C5] flex items-center justify-center text-white text-[12px] font-bold">
-        {forum.user.first_name.charAt(0)}
-      </div>
-
-      {/* Delete Modal */}
       <DeleteForumContainer
         forumId={forum.id}
         forumTitle={desc}
