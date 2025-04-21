@@ -19,7 +19,7 @@ describe('EditForumForm', () => {
 
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-    (global.fetch as jest.Mock) = jest.fn(); 
+    (global.fetch as jest.Mock) = jest.fn();
   });
 
   it('menampilkan data deskripsi dari fetch', async () => {
@@ -108,7 +108,7 @@ describe('EditForumForm', () => {
       json: async () => ({ description: 'init' }),
     });
 
-    let resolveUpdate: any;
+    let resolveUpdate: (value: { success: boolean }) => void = () => {};
     (updateForum as jest.Mock).mockImplementation(() => {
       return new Promise((resolve) => {
         resolveUpdate = resolve;
@@ -122,5 +122,32 @@ describe('EditForumForm', () => {
     expect(button).toHaveTextContent('Menyimpan...');
 
     resolveUpdate({ success: true });
+  });
+
+  it('menangani fetch response dengan res.ok === false', async () => {
+    window.alert = jest.fn();
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({}),
+    });
+
+    render(<EditForumForm forumId={forumId} />);
+
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith('Gagal mengambil data forum');
+    });
+  });
+
+  it('fallback ke deskripsi kosong jika data.description tidak ada', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}), // <-- description undefined
+    });
+
+    render(<EditForumForm forumId={forumId} />);
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/edit deskripsi/i)).toHaveValue('');
+    });
   });
 });

@@ -23,7 +23,7 @@ useEffect(() => {
       const mainForums = data.filter((forum) => forum.parent_id === null);
       setForums(mainForums);
     } catch {
-      setError('Gagal memuat forum');
+      setError('Gagal memuat forumm');
     } finally {
       setLoading(false);
     }

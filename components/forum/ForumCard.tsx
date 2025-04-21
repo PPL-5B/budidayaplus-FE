@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
 import { ChevronRight } from 'lucide-react';
-import Link from 'next/link';
 import DeleteForumContainer from './DeleteForumContainer';
+import { useRouter } from 'next/navigation';
 
 interface ForumCardProps {
   forum: Forum;
@@ -16,10 +16,18 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
   const [tempDesc, setTempDesc] = useState(forum.description);
   const [desc, setDesc] = useState(forum.description);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const router = useRouter();
 
   const handleSave = () => {
     setDesc(tempDesc);
     setIsEditing(false);
+  };
+
+  const handleViewDetails = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedForum', JSON.stringify(forum));
+      router.push(`/forum/${forum.id}`);
+    }
   };
 
   return (
@@ -68,6 +76,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
               >
                 Edit deskripsi
               </button>
+              
               <button
                 onClick={() => setIsDeleteOpen(true)}
                 className="text-sm text-red-500 font-medium hover:underline"
@@ -75,13 +84,13 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
                 Hapus forum
               </button>
             </div>
-            <Link
-              href={`/forum/${forum.id}`}
+            <button
+              onClick={handleViewDetails}
               className="flex items-center text-sm text-blue-500 font-medium hover:underline"
             >
               Lihat detail forum
               <ChevronRight className="w-5 h-5 ml-1 text-[#ff8585]" />
-            </Link>
+            </button>
           </div>
         </>
       )}

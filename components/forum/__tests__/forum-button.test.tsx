@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import ForumButton from "../ForumButton";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/hooks/useUser";
 
 // Mock useUser dan useRouter
 jest.mock("next/navigation", () => ({
@@ -12,13 +13,17 @@ jest.mock("@/hooks/useUser", () => ({
 }));
 
 describe("ForumButton", () => {
+  const useRouterMock = useRouter as jest.Mock;
+  const useUserMock = useUser as jest.Mock;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("navigates to /forum when user exists", () => {
     const pushMock = jest.fn();
-    const useRouterMock = useRouter as jest.Mock;
-    const { useUser } = require("@/hooks/useUser");
-
     useRouterMock.mockReturnValue({ push: pushMock });
-    useUser.mockReturnValue({ phone_number: "08123456789" }); // bebas, cuma buat lulus if
+    useUserMock.mockReturnValue({ phone_number: "08123456789" });
 
     render(<ForumButton />);
     const button = screen.getByRole("button", { name: /ke forum/i });
@@ -29,8 +34,7 @@ describe("ForumButton", () => {
   });
 
   it("does not render button when user is null", () => {
-    const { useUser } = require("@/hooks/useUser");
-    useUser.mockReturnValue(null);
+    useUserMock.mockReturnValue(null);
 
     render(<ForumButton />);
     const button = screen.queryByRole("button", { name: /ke forum/i });
