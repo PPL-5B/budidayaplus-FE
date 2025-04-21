@@ -4,6 +4,7 @@ import TaskByDateList from "@/components/tasks/TaskByDateList";
 import { formatDate } from "date-fns";
 import { id } from "date-fns/locale";
 import Image from "next/image";
+import AboutUS from "./about-us/page";
 
 export default function Home() {
   return (
@@ -39,6 +40,13 @@ export default function Home() {
           Tugas Hari Ini
         </p>
         <TaskByDateList />
+      </div>
+
+      <div className="flex flex-col items-center w-full mt-10">
+        <p className="mt-10 py-10 pb-5 w-[80%] text-2xl font-medium text-neutral-60">
+          About Us  
+        </p>
+        <AboutUS />
       </div>
     </div>
   );
