@@ -15,40 +15,39 @@ const ForumList: React.FC<ForumListProps> = ({ refresh = 0, updatedForum }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-useEffect(() => {
-  const fetchForums = async () => {
-    try {
-      setLoading(true);
-      const data = await getListForum();
-      const mainForums = data.filter((forum) => forum.parent_id === null);
-      setForums(mainForums);
-    } catch {
-      setError('Gagal memuat forumm');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchForums = async () => {
+      try {
+        setLoading(true);
+        const data = await getListForum();
+        const mainForums = data.filter((forum) => forum.parent_id === null);
+        setForums(mainForums);
+      } catch {
+        setError('Gagal memuat forum');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchForums();
-}, [refresh]); // ✅ cuma akan jalan saat refreshForums berubah
+    fetchForums();
+  }, [refresh]);
 
   // Update lokal jika ada forum yang diupdate
   useEffect(() => {
     if (updatedForum) {
       setForums((prev) =>
         prev.map((f) =>
-          f.id === updatedForum.id
-            ? { ...f, description: updatedForum.description }
-            : f
+          f.id === updatedForum.id ? { ...f, description: updatedForum.description } : f
         )
       );
     }
   }, [updatedForum]);
 
   // Handler untuk menghapus forum dari list
-  const handleDeleteSuccess = (deletedId: string) => {
-    setForums((prev) => prev.filter((forum) => forum.id !== deletedId));
-  };
+  const handleDeleteSuccess = (deletedId: string) => { setForums((prev) => prev.filter((forum) => forum.id !== deletedId));};
+
+  // Handler untuk memperbarui forum setelah vote
+  const handleVoteSuccess = (updatedForum: Forum) => { setForums((prev) => prev.map((forum) =>forum.id === updatedForum.id ? updatedForum : forum));};
 
   if (loading) return <p>Memuat Forum ...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -57,7 +56,12 @@ useEffect(() => {
     <div className="space-y-4">
       {forums.length > 0 ? (
         forums.map((forum) => (
-          <ForumCard key={forum.id} forum={forum} onDeleteSuccess={handleDeleteSuccess} />
+          <ForumCard
+            key={forum.id}
+            forum={forum}
+            onDeleteSuccess={handleDeleteSuccess}
+            onVoteSuccess={handleVoteSuccess} // Callback untuk update vote
+          />
         ))
       ) : (
         <p className="text-gray-500">Tidak ada forum yang tersedia.</p>
