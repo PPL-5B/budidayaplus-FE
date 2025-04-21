@@ -50,6 +50,30 @@ const ForumPage: React.FC = () => {
       </div>
       <AddForum onForumAdded={handleForumAdded} />
     </div>
+
+      {/* 🔍 Search Box */}
+    <div className="mb-5">
+      <div className="flex items-center w-[255px] h-[38px] rounded-full bg-white px-4 shadow-sm">
+        <svg
+          className="w-[16px] h-[16px] text-[#979797]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 3.5a7.5 7.5 0 0013.65 13.65z"
+          />
+        </svg>
+        <input
+          type="text"
+          placeholder="Cari Topik..."
+          className="ml-3 w-full outline-none text-[#979797] placeholder:text-[#979797] text-[16px] capitalize font-normal bg-transparent"
+        />
+      </div>
+    </div>
   
     {/*Forum list di luar search box */}
     <ForumList refresh={refreshForums} updatedForum={updatedForum} />
