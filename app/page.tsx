@@ -4,7 +4,6 @@ import TaskByDateList from "@/components/tasks/TaskByDateList";
 import { formatDate } from "date-fns";
 import { id } from "date-fns/locale";
 import Image from "next/image";
-import AboutUS from "./about-us/page";
 
 export default function Home() {
   return (
@@ -41,12 +40,7 @@ export default function Home() {
         </p>
         <TaskByDateList />
       </div>
-      {/*
-      <div className="flex flex-col items-center w-full">
-         <AboutUS/>
-      </div> 
-      */}
-      {/* Tentang Kami Section */}
+  
       <div className="w-full flex justify-center mt-28">
   <details className="w-full md:w-[60%] rounded-md bg-neutral-100 text-center group">
     <summary className="px-4 py-3 text-lg text-black font-medium cursor-pointer list-none group-open:mb-4">
