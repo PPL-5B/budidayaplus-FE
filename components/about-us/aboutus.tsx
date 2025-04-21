@@ -13,7 +13,7 @@ const AboutUs = () => {
 
   return (
     <Card className="bg-white shadow-md rounded-lg p-6 mt-8">
-      <h2 className="text-xl font-semibold mb-4">Tentang BudidayaPlus</h2>
+    {/* <h2 className="text-xl font-semibold mb-4">Tentang BudidayaPlus</h2> */}
       <Accordion>
         {boutUS.map((boutUS, index) => (
           <AccordionItem key={index} title={boutUS.title}>

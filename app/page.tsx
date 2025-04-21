@@ -41,13 +41,13 @@ export default function Home() {
         </p>
         <TaskByDateList />
       </div>
-
-      <div className="flex flex-col items-center w-full mt-10">
+      
+      <div className="flex flex-col items-center w-full">
         <p className="mt-10 py-10 pb-5 w-[80%] text-2xl font-medium text-neutral-60">
-          About Us  
+          <AboutUS/>
         </p>
-        <AboutUS />
-      </div>
-    </div>
+
+      </div> 
+    </div> 
   );
 }
