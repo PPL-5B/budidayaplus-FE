@@ -20,7 +20,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
     <>
       <div className="absolute bottom-2 left-3 flex items-center gap-2">
         <button
-          className="px-2 py-[2px] bg-[#2254C5] rounded-full text-white text-[8px] font-medium hover:brightness-110 transition"
+          className="px-2 py-[2px] bg-[#2254C5] rounded-full text-white text-[10px] font-medium hover:brightness-110 transition"
           onClick={onViewDetails}
         >
           Lihat Unggahan
@@ -31,13 +31,13 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
         <div className="absolute bottom-2 right-3 flex gap-2">
           <button
             onClick={onEdit}
-            className="text-[10px] text-blue-500 hover:underline"
+            className="text-[12px] text-blue-500 hover:underline"
           >
             Edit
           </button>
           <button
             onClick={onDelete}
-            className="text-[10px] text-red-500 hover:underline"
+            className="text-[12px] text-red-500 hover:underline"
           >
             Hapus
           </button>

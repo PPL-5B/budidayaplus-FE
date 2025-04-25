@@ -3,7 +3,6 @@
 
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
-import { ChevronRight } from 'lucide-react';
 import DeleteForumContainer from './DeleteForumContainer';
 import { useRouter } from 'next/navigation';
 import ForumCardHeader from './ForumCardHeader';
@@ -33,7 +32,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
   };
 
   return (
-    <div className="relative w-full max-w-[338px] h-[120px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
+    <div className="relative w-full max-w-[340px] h-[150px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
       <ForumCardHeader timestamp={forum.timestamp} description={desc} />
 
       {isEditing ? (
