@@ -4,13 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { getListForum } from '@/lib/forum/getListForum';
 import { Forum } from '@/types/forum';
 import ForumCard from './ForumCard';
+import {filterForums}  from '@/components/forum/SearchForum';
 
 interface ForumListProps {
   refresh?: number;
   updatedForum?: Forum | null;
+  searchQuery?: string;
 }
 
-const ForumList: React.FC<ForumListProps> = ({ refresh = 0, updatedForum }) => {
+const ForumList: React.FC<ForumListProps> = ({ refresh = 0, updatedForum, searchQuery = '' }) => {
   const [forums, setForums] = useState<Forum[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,14 +55,16 @@ useEffect(() => {
   if (loading) return <p>Memuat Forum ...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
+  const filteredForums = filterForums(forums, searchQuery);
+
   return (
     <div className="space-y-4">
-      {forums.length > 0 ? (
-        forums.map((forum) => (
+      {filteredForums.length > 0 ? (
+        filteredForums.map((forum) => (
           <ForumCard key={forum.id} forum={forum} onDeleteSuccess={handleDeleteSuccess} />
         ))
       ) : (
-        <p className="text-gray-500">Tidak ada forum yang tersedia.</p>
+        <p className="text-gray-500">Forum tidak ditemukan.</p>
       )}
     </div>
   );
