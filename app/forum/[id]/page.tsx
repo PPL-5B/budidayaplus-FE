@@ -34,7 +34,11 @@ const ForumDetailPage = () => {
     return <div className="p-4">Memuat data forum...</div>;
   }
 
-  return <DetailForum forum={forum} />;
+  return (
+    <div className="min-h-screen bg-[#EAF0FF] py-6">
+      <DetailForum forum={forum} />
+    </div>
+  );
 };
 
 export default ForumDetailPage;

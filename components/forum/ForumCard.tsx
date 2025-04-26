@@ -7,7 +7,7 @@ import { ChevronRight } from 'lucide-react';
 import DeleteForumContainer from './DeleteForumContainer';
 import { useRouter } from 'next/navigation';
 import ForumCardHeader from './ForumCardHeader';
-import { goToForumDetail } from '@/lib/forum/forumNavigation';
+// import { goToForumDetail } from '@/lib/forum/forumNavigation';
 import ForumCardFooter from './ForumCardFooter';
 
 interface ForumCardProps {
@@ -27,10 +27,18 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
     setIsEditing(false);
   };
 
+  // const handleViewDetails = () => {
+  //   goToForumDetail(forum);
+  //   router.push(`/forum/${forum.id}`);
+  // };
+
   const handleViewDetails = () => {
-    goToForumDetail(forum);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedForum', JSON.stringify(forum));
+    }
     router.push(`/forum/${forum.id}`);
   };
+  
 
   return (
     <div className="relative w-full max-w-[338px] h-[120px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
