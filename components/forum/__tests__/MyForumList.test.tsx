@@ -88,4 +88,55 @@ describe('ForumList', () => {
     });
   });
 
+  it('filters forums based on searchQuery', async () => {
+    const mockForums: Forum[] = [
+      {
+        id: '1',
+        user: { first_name: 'John', last_name: 'Doe', id: 0, phone_number: '08123456789' },
+        description: 'Belajar React',
+        timestamp: new Date(),
+        parent_id: null,
+        replies: [],
+      },
+      {
+        id: '2',
+        user: { first_name: 'Jane', last_name: 'Doe', id: 0, phone_number: '08123456780' },
+        description: 'Diskusi JavaScript',
+        timestamp: new Date(),
+        parent_id: null,
+        replies: [],
+      },
+    ];
+  
+    mockGetListForum.mockResolvedValueOnce(mockForums);
+  
+    render(<ForumList searchQuery="React" />);
+  
+    await waitFor(() => {
+      expect(screen.getByText('Belajar React')).toBeInTheDocument();
+      expect(screen.queryByText('Diskusi JavaScript')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows not found message when no forum matches the search query', async () => {
+    const mockForums: Forum[] = [
+      {
+        id: '1',
+        user: { first_name: 'John', last_name: 'Doe', id: 0, phone_number: '08123456789' },
+        description: 'Forum Belajar',
+        timestamp: new Date(),
+        parent_id: null,
+        replies: [],
+      },
+    ];
+  
+    mockGetListForum.mockResolvedValueOnce(mockForums);
+  
+    render(<ForumList searchQuery="Non Matching Keyword" />);
+  
+    await waitFor(() => {
+      expect(screen.getByText('Forum tidak ditemukan.')).toBeInTheDocument();
+    });
+  });
+
 });
