@@ -84,7 +84,7 @@ const ForumDetailPage = () => {
           {replies.length === 0 ? (
             <p className="text-gray-500">No replies yet.</p>
           ) : (
-            <ul className="space-y-6">
+            <ul className="space-y-6 pb-28"> {/* Tambahkan padding bottom besar di sini */}
               {replies.map((reply) => (
                 <li
                   key={reply.id}
