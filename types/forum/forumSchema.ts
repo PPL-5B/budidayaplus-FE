@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
 export const ForumSchema = z.object({
-  description: z.string().min(1, 'Description is required'),
-  // parent_id is optional; if not provided, the post is a top-level forum post.
-  parent_id: z.string().nullable().optional(),
+  title: z.string().optional(), 
+  description: z.string().min(1, 'Description is required'), 
+  tag: z.enum(["ikan", "kolam", "siklus", "budidayaplus"]), 
+  parent_id: z.string().uuid().nullable().optional(), 
 });
 
 export type ForumInput = z.infer<typeof ForumSchema>;
