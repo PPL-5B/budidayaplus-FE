@@ -41,18 +41,18 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
   
 
   return (
-    <div className="relative w-full max-w-[338px] h-[120px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
+    <div className="relative w-full max-w-[338px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
       <ForumCardHeader timestamp={forum.timestamp} description={desc} />
-
+  
       {isEditing ? (
         <>
           <textarea
-            className="w-full border p-2 rounded text-[12px]"
+            className="w-full border p-2 rounded text-[12px] mt-2"
             rows={2}
             value={tempDesc}
             onChange={(e) => setTempDesc(e.target.value)}
           />
-          <div className="flex justify-end gap-2 mt-1">
+          <div className="flex justify-end gap-2 mt-2">
             <button
               onClick={handleSave}
               className="px-3 py-1 bg-green-600 text-white rounded text-[10px] hover:bg-green-700"
@@ -71,9 +71,9 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
           </div>
         </>
       ) : (
-        <p className="text-[12px] text-[#646464] line-clamp-2 mb-2">{desc}</p>
+        <p className="text-[12px] text-[#646464] line-clamp-2 mt-2">{desc}</p>
       )}
-
+  
       <ForumCardFooter
         userInitial={forum.user.first_name.charAt(0)}
         onViewDetails={handleViewDetails}
@@ -81,7 +81,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
         onDelete={() => setIsDeleteOpen(true)}
         isEditing={isEditing}
       />
-
+  
       <DeleteForumContainer
         forumId={forum.id}
         forumTitle={desc}
@@ -92,7 +92,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
         }}
       />
     </div>
-  );
+  );  
 };
 
 export default ForumCard;
