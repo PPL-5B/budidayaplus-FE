@@ -52,9 +52,8 @@ const UpdateProfileForm: React.FC<UpdateProfileFormProps> = ({ profile, setIsMod
   }
 
   return (
-    <div {...props} className="flex flex-col gap-6"> {/* HAPUS w-full */}
+    <div {...props} className="flex flex-col gap-6"> 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full">
-{/* Field Nama Depan */}
         <div className="flex flex-col gap-1">
           <Label htmlFor="firstName" className="flex items-center gap-2 text-[#2254C5]">
             <User className="h-4 w-4" /> Nama Depan
@@ -67,7 +66,6 @@ const UpdateProfileForm: React.FC<UpdateProfileFormProps> = ({ profile, setIsMod
           {errors.first_name && <p className="text-red-500 text-sm">{errors.first_name.message}</p>}
         </div>
 
-        {/* Field Nama Belakang */}
         <div className="flex flex-col gap-1">
           <Label htmlFor="lastName" className="flex items-center gap-2 text-[#2254C5]">
             <User className="h-4 w-4" /> Nama Belakang
@@ -80,7 +78,6 @@ const UpdateProfileForm: React.FC<UpdateProfileFormProps> = ({ profile, setIsMod
           {errors.last_name && <p className="text-red-500 text-sm">{errors.last_name.message}</p>}
         </div>
 
-        {/* Button Submit */}
         <NewButton type="submit" disabled={isSubmitting} className="mt-2">
           Submit
         </NewButton>

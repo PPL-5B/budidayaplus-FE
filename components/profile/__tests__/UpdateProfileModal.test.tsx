@@ -4,7 +4,6 @@ import '@testing-library/jest-dom';
 import UpdateProfileModal from '@/components/profile/UpdateProfileModal';
 import { Profile } from '@/types/profile';
 
-// Mock the dependencies
 jest.mock('@/components/ui/dialog', () => ({
   Dialog: ({ children, open, onOpenChange }) => (
     <div data-testid="dialog" data-open={open} onClick={() => onOpenChange(!open)}>
@@ -53,7 +52,6 @@ describe('UpdateProfileModal', () => {
     }
   };
 
-  // Positive test cases
   describe('Positive Tests', () => {
     it('renders the modal with children as trigger', () => {
       render(
@@ -101,16 +99,13 @@ describe('UpdateProfileModal', () => {
         </UpdateProfileModal>
       );
 
-      // Open modal
       const triggerButton = screen.getByTestId('trigger-button');
       fireEvent.click(triggerButton);
       expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'true');
 
-      // Click back button
       const backButton = screen.getByRole('button', { name: '' });
       fireEvent.click(backButton);
 
-      // Modal should be closed
       await waitFor(() => {
         expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'false');
       });
@@ -123,23 +118,19 @@ describe('UpdateProfileModal', () => {
         </UpdateProfileModal>
       );
 
-      // Open modal
       const triggerButton = screen.getByTestId('trigger-button');
       fireEvent.click(triggerButton);
       expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'true');
 
-      // Submit the form (mock submit button)
       const submitButton = screen.getByTestId('mock-submit');
       fireEvent.click(submitButton);
 
-      // Modal should be closed
       await waitFor(() => {
         expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'false');
       });
     });
   });
 
-  // Edge cases
   describe('Edge Cases', () => {
 
     it('renders with additional HTML attributes passed to the wrapper div', () => {
@@ -158,7 +149,6 @@ describe('UpdateProfileModal', () => {
     });
   });
 
-  // Negative test cases
   describe('Negative Tests', () => {
 
     it('handles rapid opening and closing of modal', async () => {
@@ -170,19 +160,15 @@ describe('UpdateProfileModal', () => {
 
       const triggerButton = screen.getByTestId('trigger-button');
       
-      // Rapidly click to open and close
-      fireEvent.click(triggerButton); // Open
-      fireEvent.click(screen.getByTestId('dialog')); // Close
-      fireEvent.click(triggerButton); // Open again
+      fireEvent.click(triggerButton); 
+      fireEvent.click(screen.getByTestId('dialog')); 
+      fireEvent.click(triggerButton); 
       
-      // Should end up open
       expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'true');
       expect(screen.getByText('Ubah Profil')).toBeInTheDocument();
     });
-
   });
 
-  // Test for specific UI elements
   describe('UI Elements', () => {
     it('renders the correct title in the modal header', () => {
       render(

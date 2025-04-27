@@ -3,7 +3,6 @@ import UpdateProfileForm from '@/components/profile/UpdateProfileForm';
 import type { Profile } from '@/types/profile';
 import userEvent from '@testing-library/user-event';
 
-// Mock dependencies
 const toastMock = jest.fn();
 jest.mock('@/hooks/use-toast', () => ({
   useToast: () => ({ toast: toastMock }),
@@ -56,8 +55,6 @@ describe('UpdateProfileForm', () => {
     });
   });
 
-  
-
   it('handles failed updateProfile gracefully with error toast', async () => {
     updateProfileMock.mockResolvedValue(false);
 
@@ -86,7 +83,6 @@ describe('UpdateProfileForm', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    // while waiting for the promise, button should be disabled
     expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
 
     resolveSubmit(true);

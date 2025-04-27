@@ -23,9 +23,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ profile, childr
         </DialogTrigger>
 
         <DialogContentNoX>
-          {/* Wrapper flex relative */}
           <div className="relative flex items-center justify-center w-full mb-4">
-            {/* Chevron absolute kiri */}
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute left-0 text-[#2254C5]"
@@ -33,13 +31,11 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({ profile, childr
               <IconChevronFilled className="h-6 w-6 rotate-[90deg]" fill="#2254C5" />
             </button>
 
-            {/* Title center */}
             <h2 className="text-[#2254C5] text-lg font-bold text-center">
               Ubah Profil
             </h2>
           </div>
 
-          {/* Form */}
           <UpdateProfileForm profile={profile} setIsModalOpen={setIsModalOpen} />
         </DialogContentNoX>
       </Dialog>
