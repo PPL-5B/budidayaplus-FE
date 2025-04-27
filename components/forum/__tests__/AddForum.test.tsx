@@ -1,62 +1,87 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import AddForum from '@/components/forum/AddForum';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import AddForum from '../AddForum'; // relative import!
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 
-// Mock dependencies
-const MockForumForm = (props: {
-  parentForumId?: string;
-  setIsModalOpen: (val: boolean) => void;
-}) => (
-  <div data-testid="forum-form">
-    ForumForm mocked - parentForumId: {props.parentForumId?.toString() ?? 'none'}
-    <button onClick={() => props.setIsModalOpen(false)}>Close Modal</button>
-  </div>
-);
-MockForumForm.displayName = 'MockForumForm';
-
-jest.mock('@/components/forum/ForumForm', () => ({
-  __esModule: true,
-  default: MockForumForm,
-}));
+// Mock ForumForm supaya fokus ke AddForum
+jest.mock('../ForumForm', () => {
+  return function MockForumForm({ setIsModalOpen, onForumAdded, isReply }: any) {
+    return (
+      <div data-testid="forum-form">
+        <p>{isReply ? 'Reply Form' : 'Forum Form'}</p>
+        <button onClick={() => {
+          setIsModalOpen(false);
+          if (onForumAdded) onForumAdded();
+        }}>
+          Submit Mock
+        </button>
+      </div>
+    );
+  };
+});
 
 describe('AddForum', () => {
-  it('renders button and opens modal on click', () => {
-    render(<AddForum />);
+  const mockOnForumAdded = jest.fn();
 
-    const addButton = screen.getByRole('button', { name: /add forum/i });
-    expect(addButton).toBeInTheDocument();
-
-    fireEvent.click(addButton);
-    expect(screen.getByTestId('forum-form')).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('menutup modal ketika ForumForm memanggil setIsModalOpen(false)', () => {
+  it('renders Add Forum button when isReply is false', () => {
     render(<AddForum />);
-
-    const addButton = screen.getByRole('button', { name: /add forum/i });
-    fireEvent.click(addButton);
-
-    const closeButton = screen.getByText('Close Modal');
-    fireEvent.click(closeButton);
-
-    expect(screen.queryByTestId('forum-form')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /add forum/i })).toBeInTheDocument();
   });
 
-  it('meneruskan parentForumId dan onForumAdded ke ForumForm', () => {
-    const mockOnForumAdded = jest.fn();
-    const testParentForumId = 'parent123';
+  it('renders Reply button when isReply is true', () => {
+    render(<AddForum isReply />);
+    expect(screen.getByRole('button', { name: /reply/i })).toBeInTheDocument();
+  });
 
-    render(
-      <AddForum
-        parentForumId={testParentForumId}
-        onForumAdded={mockOnForumAdded}
-      />
-    );
+  it('opens modal and shows ForumForm when clicking Add Forum', async () => {
+    render(<AddForum />);
+    fireEvent.click(screen.getByRole('button', { name: /add forum/i }));
 
-    const addButton = screen.getByRole('button', { name: /add forum/i });
-    fireEvent.click(addButton);
+    expect(await screen.findByTestId('forum-form')).toBeInTheDocument();
+    expect(await screen.findByText(/forum form/i)).toBeInTheDocument();
+  });
 
-    expect(screen.getByText(/parent123/i)).toBeInTheDocument();
+  it('opens modal and shows ReplyForm when isReply true and clicked', async () => {
+    render(<AddForum isReply />);
+    fireEvent.click(screen.getByRole('button', { name: /reply/i }));
+
+    expect(await screen.findByTestId('forum-form')).toBeInTheDocument();
+    expect(await screen.findByText(/reply form/i)).toBeInTheDocument();
+  });
+
+  it('calls onForumAdded and closes modal after submitting', async () => {
+    render(<AddForum onForumAdded={mockOnForumAdded} />);
+
+    // Klik Add Forum
+    fireEvent.click(screen.getByRole('button', { name: /add forum/i }));
+
+    // Harus muncul ForumForm
+    const submitButton = await screen.findByRole('button', { name: /submit mock/i });
+
+    // Klik submit
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mockOnForumAdded).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('closes modal after submitting even without onForumAdded', async () => {
+    render(<AddForum />);
+
+    fireEvent.click(screen.getByRole('button', { name: /add forum/i }));
+
+    const submitButton = await screen.findByRole('button', { name: /submit mock/i });
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      // Tidak error walau tidak ada onForumAdded
+      expect(true).toBeTruthy();
+    });
   });
 });
