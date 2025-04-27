@@ -10,9 +10,10 @@ import ForumForm from '@/components/forum/ForumForm';
 interface AddForumProps {
   parentForumId?: string;
   onForumAdded?: () => void;
+  isReply?: boolean;
 }
 
-const AddForum: React.FC<AddForumProps> = ({ parentForumId, onForumAdded }) => {
+const AddForum: React.FC<AddForumProps> = ({ parentForumId, onForumAdded, isReply = false }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -21,14 +22,15 @@ const AddForum: React.FC<AddForumProps> = ({ parentForumId, onForumAdded }) => {
         <DialogTrigger asChild>
           <Button className="flex text-sm" variant="outline" size="sm">
             <IoIosAdd size={20} className="mr-1" />
-            Add Forum
+            {isReply ? 'Reply' : 'Add Forum'}
           </Button>
         </DialogTrigger>
-        <DialogContent title="Create Forum">
+        <DialogContent title={isReply ? 'Reply to Forum' : 'Create Forum'}>
           <ForumForm
             setIsModalOpen={setIsModalOpen}
             parentForumId={parentForumId}
             onForumAdded={onForumAdded}
+            isReply={isReply}
           />
         </DialogContent>
       </Dialog>
