@@ -26,7 +26,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
           Lihat Unggahan
         </button>
         {!isEditing && (
-          <>
+          <div className="absolute bottom-3 right-3 flex gap-2">
             <button
               onClick={onEdit}
               className="text-xs font-medium text-blue-500 hover:underline"
@@ -39,7 +39,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
             >
               Hapus
             </button>
-          </>
+          </div>
         )}
       </div>
 

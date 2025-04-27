@@ -55,7 +55,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
           <div className="flex justify-end gap-2 mt-2">
             <button
               onClick={handleSave}
-              className="px-3 py-1 bg-green-600 text-white rounded text-[10px] hover:bg-green-700"
+              className="px-3 py-1 bg-blue-600 text-white rounded text-[10px] hover:bg-green-700"
             >
               Simpan
             </button>
