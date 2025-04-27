@@ -6,6 +6,7 @@ import AddForum from '@/components/forum/AddForum';
 import { Forum } from '@/types/forum';
 import ForumList from '@/components/forum/MyForumList';
 import Frame from '@/src/assets/Frame.svg';
+import { ChevronLeft } from 'lucide-react';
 
 
 const ForumPage: React.FC = () => {
@@ -41,6 +42,15 @@ const ForumPage: React.FC = () => {
 
   return (
   <div className="h-screen overflow-y-auto p-8 pb-40 bg-[#EAF0FF]">
+
+    <button
+          onClick={() => router.push('/')}
+          className="flex items-center text-sm text-blue-600 hover:underline mb-3"
+        >
+          <ChevronLeft size={16} className="mr-1" />
+          Kembali
+    </button>
+
     <div className="flex items-center justify-between mb-5 mt-5">
       {/* Kiri: Ikon + Teks */}
       <div className="flex items-center gap-2">
@@ -49,12 +59,12 @@ const ForumPage: React.FC = () => {
           Daftar Forum
         </h1>
       </div>
-      <AddForum onForumAdded={handleForumAdded} />
+      <AddForum onForumAdded={handleForumAdded}/>
     </div>
 
       {/* 🔍 Search Box */}
       <div className="mb-5">
-        <div className="flex items-center w-[255px] h-[38px] rounded-full bg-white px-4 shadow-sm">
+        <div className="flex items-center w-[300px] h-[38px] rounded-full bg-white px-4 shadow-sm">
           <svg
             className="w-[16px] h-[16px] text-[#979797]"
             fill="none"
