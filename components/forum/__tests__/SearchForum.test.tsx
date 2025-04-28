@@ -1,94 +1,102 @@
-import { filterForums } from '@/components/forum/SearchForum'; 
+import { filterForums } from '@/components/forum/SearchForum';
 import { Forum } from '@/types/forum';
 
 describe('filterForums', () => {
   const sampleForums: Forum[] = [
     {
       id: '1',
-      user: { id: 1, first_name: 'lorem', last_name: 'ipsum', phone_number: '08123456789' },
-      description: 'This is the first forum description',
+      user: {
+        id: 1,
+        first_name: 'lorem',
+        last_name: 'ipsum',
+        phone_number: '08123456789',
+      },
+      title: 'React Tips and Tricks',
+      description: 'Description 1',
       timestamp: new Date('2025-04-26T12:00:00Z'),
       parent_id: null,
       replies: [],
       tag: 'ikan',
-      upvotes: 0,
-      downvotes: 0,
+      upvotes: 10,
+      downvotes: 2,
     },
     {
       id: '2',
-      user: { id: 2, first_name: 'lorem', last_name: 'ipsum', phone_number: '08123456789' },
-      description: 'This forum talks about something else',
+      user: {
+        id: 2,
+        first_name: 'lorem',
+        last_name: 'ipsum',
+        phone_number: '08123456789',
+      },
+      title: 'Next.js vs Remix',
+      description: 'Description 2',
       timestamp: new Date('2025-04-26T12:10:00Z'),
       parent_id: null,
       replies: [],
-      tag: 'kolam',
-      upvotes: 0,
-      downvotes: 0,
+      tag: 'ikan',
+      upvotes: 5,
+      downvotes: 1,
     },
     {
       id: '3',
-      user: { id: 3, first_name: 'lorem', last_name: 'ipsum', phone_number: '08123456789' },
-      description: 'Forum discussing description filter functionality',
+      user: {
+        id: 3,
+        first_name: 'lorem',
+        last_name: 'ipsum',
+        phone_number: '08123456789',
+      },
+      title: 'Understanding TypeScript',
+      description: 'Description 3',
       timestamp: new Date('2025-04-26T12:20:00Z'),
       parent_id: null,
       replies: [],
       tag: 'ikan',
-      upvotes: 0,
+      upvotes: 8,
       downvotes: 0,
     },
   ];
 
-  it('returns all forums when query and selectedTag are empty', () => {
-    const filteredForums = filterForums(sampleForums, '', '');
-
-    expect(filteredForums.length).toBe(3);
+  it('should return all forums when query and selectedTag are empty', () => {
+    const result = filterForums(sampleForums, '', '');
+    expect(result).toEqual(sampleForums);
   });
 
-  it('filters forums based on description', () => {
-    const filteredForums = filterForums(sampleForums, 'description filter', '');
-
-    expect(filteredForums.length).toBe(1);
-    expect(filteredForums[0].id).toBe('3');
+  it('should filter forums based on title only', () => {
+    const result = filterForums(sampleForums, 'react', '');
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe('1');
   });
 
-  it('returns empty array when no forum matches the query', () => {
-    const filteredForums = filterForums(sampleForums, 'non-existent query', '');
-
-    expect(filteredForums.length).toBe(0);
+  it('should filter forums based on selectedTag only', () => {
+    const result = filterForums(sampleForums, '', 'Next.js');
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe('2');
   });
 
-  it('returns correct forum when query matches part of description', () => {
-    const filteredForums = filterForums(sampleForums, 'talks about', '');
-
-    expect(filteredForums.length).toBe(1);
-    expect(filteredForums[0].id).toBe('2');
+  it('should filter forums based on both title and selectedTag', () => {
+    const result = filterForums(sampleForums, 'type', 'TypeScript');
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe('3');
   });
 
-  it('is case insensitive when filtering description', () => {
-    const filteredForums = filterForums(sampleForums, 'THIS IS THE FIRST FORUM DESCRIPTION', '');
-
-    expect(filteredForums.length).toBe(1);
-    expect(filteredForums[0].id).toBe('1');
+  it('should return empty array if no forums match query', () => {
+    const result = filterForums(sampleForums, 'vue', '');
+    expect(result.length).toBe(0);
   });
 
-  it('filters forums by selectedTag only if provided (no query)', () => {
-    const filteredForums = filterForums(sampleForums, '', 'ikan');
-
-    expect(filteredForums.length).toBe(2);
-    expect(filteredForums.map(f => f.id)).toContain('1');
-    expect(filteredForums.map(f => f.id)).toContain('3');
+  it('should return empty array if no forums match selectedTag', () => {
+    const result = filterForums(sampleForums, '', 'Vue');
+    expect(result.length).toBe(0);
   });
 
-  it('filters forums by both description and selectedTag together', () => {
-    const filteredForums = filterForums(sampleForums, 'forum', 'kolam');
-
-    expect(filteredForums.length).toBe(1);
-    expect(filteredForums[0].id).toBe('2');
+  it('should return empty array if no forums match both query and selectedTag', () => {
+    const result = filterForums(sampleForums, 'vue', 'React');
+    expect(result.length).toBe(0);
   });
 
-  it('returns empty if tag does not match even if description matches', () => {
-    const filteredForums = filterForums(sampleForums, 'forum', 'nonexistenttag');
-
-    expect(filteredForums.length).toBe(0);
+  it('should perform case insensitive search on title', () => {
+    const result = filterForums(sampleForums, 'UNDERSTANDING TYPESCRIPT', '');
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe('3');
   });
 });
