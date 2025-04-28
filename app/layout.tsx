@@ -24,9 +24,9 @@ export default function RootLayout({
         <div className="mx-auto max-w-[390px] min-h-screen bg-white relative">
           
           {/* Scrollable content area with padding for navbar */}
-          <main className="pb-16 min-h-[calc(100vh-4rem)] overflow-y-auto">
-            {children}
-          </main>
+          <main className="pb-20 min-h-[calc(100vh-5rem)] overflow-y-auto">
+  {children}
+</main>
 
           <NavbarWrapper />
           
