@@ -3,11 +3,9 @@
 
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
-import { ChevronRight } from 'lucide-react';
 import DeleteForumContainer from './DeleteForumContainer';
 import { useRouter } from 'next/navigation';
 import ForumCardHeader from './ForumCardHeader';
-// import { goToForumDetail } from '@/lib/forum/forumNavigation';
 import ForumCardFooter from './ForumCardFooter';
 
 interface ForumCardProps {
@@ -26,11 +24,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
     setDesc(tempDesc);
     setIsEditing(false);
   };
-
-  // const handleViewDetails = () => {
-  //   goToForumDetail(forum);
-  //   router.push(`/forum/${forum.id}`);
-  // };
 
   const handleViewDetails = () => {
     if (typeof window !== 'undefined') {

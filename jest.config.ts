@@ -25,7 +25,6 @@ const config: Config = {
     "!components/ui/**/*",
     "!components/sidebar/*",
     "!components/tasks/*",
-    "!components/profile/*",
     
     // Exclude specific directories
     "!**/node_modules/**",
