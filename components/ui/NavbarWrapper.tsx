@@ -20,7 +20,7 @@ export default function NavbarWrapper() {
   }
 
   return (
-    <div className="fixed bottom-0 w-full max-w-[390px] h-16 bg-[#2154C5] z-50">
+    <div className="fixed bottom-0 w-full max-w-[390px] mx-auto left-0 right-0 h-20 bg-[#EAF0FF] z-50 border-t border-gray-200">
       <Navbar />
     </div>
   );
