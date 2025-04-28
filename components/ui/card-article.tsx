@@ -7,7 +7,7 @@ interface CardArticleProps {
   date: string;
   synopsis: string;
   categories: string[];
-  references?: string[]; // Optional references
+  references?: string[]; 
 }
 
 const categoryColorMap: Record<string, string> = {
