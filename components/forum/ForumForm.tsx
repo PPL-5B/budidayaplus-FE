@@ -8,7 +8,7 @@ import { createForum } from '@/lib/forum/createForum';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import clsx from 'clsx'; // Untuk conditional classnames
+import { Tag, MessageCircle, Pencil } from 'lucide-react'; 
 
 interface ForumFormProps {
   setIsModalOpen: (isOpen: boolean) => void;
@@ -28,8 +28,6 @@ const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, on
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<ForumInput>({
     resolver: zodResolver(ForumSchema),
@@ -40,8 +38,6 @@ const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, on
       parent_id: parentForumId ?? null,
     },
   });
-
-  const selectedTag = watch('tag');
 
   const onSubmit = async (data: ForumInput) => {
     try {
@@ -56,71 +52,96 @@ const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, on
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      
-      {/* Title - hanya muncul kalau bukan reply */}
-      {!isReply && (
-        <div>
-          <label htmlFor="title" className="block mb-1 font-semibold">Title</label>
-          <Input
-            id="title"
-            {...register('title')}
-            placeholder="Enter forum title..."
+    <div className="bg-[#EAF0FF] rounded-md p-6 w-full max-w-sm mx-auto relative">
+      <div className="flex justify-center mb-6">
+        <h2 className="text-black font-semibold text-[20px] text-center break-words font-inter">
+          Membuat Forum
+        </h2>
+      </div>
+
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Title */}
+        {!isReply && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Pencil size={20} color="#2254C5" fill="#2254C5" />
+              <label htmlFor="title" className="text-[#2254C5] font-medium text-sm">Judul</label>
+            </div>
+            <Input
+              id="title"
+              {...register('title')}
+              placeholder="Masukkan judul forum..."
+              className="rounded-[15px] bg-white h-10"
+            />
+            {errors.title && (
+              <p className="text-red-500 text-sm">{errors.title.message}</p>
+            )}
+          </div>
+        )}
+
+        {/* Description */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <MessageCircle size={20} color="#2254C5" fill="#2254C5" />
+            <label htmlFor="description" className="text-[#2254C5] font-medium text-sm">Deskripsi</label>
+          </div>
+          <Textarea
+            id="description"
+            {...register('description')}
+            placeholder="Masukkan deskripsi forum..."
+            required
+            className="rounded-[15px] bg-white h-20"
           />
-          {errors.title && (
-            <p className="text-red-500 text-sm">{errors.title.message}</p>
+          {errors.description && (
+            <p className="text-red-500 text-sm">{errors.description.message}</p>
           )}
         </div>
-      )}
 
-      {/* Description - selalu muncul */}
-      <div>
-        <label htmlFor="description" className="block mb-1 font-semibold">Description</label>
-        <Textarea
-          id="description"
-          {...register('description')}
-          placeholder="Enter forum description..."
-          required
-        />
-        {errors.description && (
-          <p className="text-red-500 text-sm">{errors.description.message}</p>
-        )}
-      </div>
+        {/* Tag */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Tag size={20} color="#2254C5" fill="#2254C5" />
+            <label htmlFor="tag" className="text-[#2254C5] font-medium text-sm">Tag</label>
+          </div>
 
-      {/* Tag - selalu muncul */}
-      <div>
-        <label htmlFor="tag" className="block mb-1 font-semibold">Tag</label>
-        <div className="flex flex-wrap gap-2">
-          {TAG_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => setValue('tag', option.value)}
-              className={clsx(
-                "px-4 py-2 rounded-md border text-sm font-medium",
-                selectedTag === option.value
-                  ? "bg-blue-500 text-white border-blue-500"
-                  : "bg-white text-black border-gray-300 hover:border-blue-400"
-              )}
+          {/* Custom select */}
+          <div className="relative">
+            <select
+              id="tag"
+              {...register('tag')}
+              className="appearance-none rounded-[15px] bg-white w-full h-10 px-3 pr-10 text-sm text-gray-700 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
-              {option.label}
-            </button>
-          ))}
-        </div>
-        {errors.tag && (
-          <p className="text-red-500 text-sm">{errors.tag.message}</p>
-        )}
-      </div>
+              {TAG_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
 
-      {/* Submit Button */}
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-      >
-        {isSubmitting ? 'Submitting...' : 'Submit'}
-      </Button>
-    </form>
+            {/* Custom blue arrow */}
+            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+              <svg
+                className="w-3 h-3 fill-[#2254C5]"
+                viewBox="0 0 10 6"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M0 0L5 6L10 0H0Z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-[#2254C5] hover:bg-[#1e46a1] text-white font-bold text-sm rounded-md h-11 shadow-inner"
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit'}
+        </Button>
+      </form>
+    </div>
   );
 };
 
