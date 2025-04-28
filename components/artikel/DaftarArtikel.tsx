@@ -3,7 +3,7 @@ import CardArticle from "../ui/card-article";
 const articles = [
   {
     id: "1",
-    title: "Judul Artikel #1: Bagaimana Saya Memperoleh Ratusan Juta Rupiah per bulan dari Budidaya Ikan Lele",
+    title: "Bagaimana Saya Memperoleh Ratusan Juta Rupiah per bulan dari Budidaya Ikan Lele",
     author: "Novrizal A",
     date: "14 April 2025",
     synopsis: "Seorang petambak lele berusia 26 tahun berhasil mendapatkan penghasilan ratusan juta rupiah per bulan dari usaha budidaya ikan lele dengan panen 12 ton per bulan.",
@@ -11,7 +11,7 @@ const articles = [
   },
   {
     id: "2",
-    title: "Judul Artikel #2: Cara Membuat Pakan Ikan Lele dengan Kualitas Tinggi",
+    title: "Cara Membuat Pakan Ikan Lele dengan Kualitas Tinggi",
     author: "Hana",
     date: "15 April 2025",
     synopsis: "Untuk mempercepat pertumbuhan ikan lele, penting memahami kebutuhan nutrisi pada pakan lele berdasarkan tahap pertumbuhan. Bagaimanakah cara membuat pakan ikan lele yang berkualitas tinggi?",
@@ -19,7 +19,7 @@ const articles = [
   },
   {
     id: "3",
-    title: "Judul Artikel #3: Panduan Singkat Budidaya Ikan Lele untuk Pemula",
+    title: "Panduan Singkat Budidaya Ikan Lele untuk Pemula",
     author: "Novrizal A",
     date: "16 April 2025",
     synopsis: "Budidaya ikan lele memiliki potensi pasar yang menjanjikan dengan produksi mencapai 1,06 juta ton senilai Rp18,93 triliun pada 2022. Bagaimanakah cara membudidayakan ikan lele untuk pemula untuk meraup untung yang maksimal?",
