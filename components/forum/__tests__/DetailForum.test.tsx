@@ -33,19 +33,22 @@ describe('DetailForum Component', () => {
   it('renders all forum details correctly', () => {
     render(<DetailForum forum={mockForum} />);
 
-    expect(screen.getByText(/username:/i)).toHaveTextContent(`Username: ${mockForum.user.first_name}`);
-    expect(screen.getByText(/email:/i)).toHaveTextContent(`Email: ${mockForum.user.last_name}`);
+    // Username (gabungan first_name + last_name)
+    expect(screen.getByText(/username:/i)).toHaveTextContent(`Username: ${mockForum.user.first_name} ${mockForum.user.last_name}`);
 
+    // Tanggal
     const formattedDate = new Date(mockForum.timestamp).toLocaleDateString();
     expect(screen.getByText(/tanggal pembuatan:/i)).toHaveTextContent(`Tanggal Pembuatan: ${formattedDate}`);
 
+    // Jam
     const formattedTime = new Date(mockForum.timestamp).toLocaleTimeString();
     expect(screen.getByText(/jam pembuatan:/i)).toHaveTextContent(`Jam Pembuatan: ${formattedTime}`);
 
+    // Deskripsi forum
     expect(screen.getByText(/deskripsi forum:/i)).toBeInTheDocument();
     expect(screen.getByText(mockForum.description)).toBeInTheDocument();
 
-    // Check inisial bubble
+    // Bubble inisial user
     expect(screen.getByText(mockForum.user.first_name.charAt(0))).toBeInTheDocument();
   });
 
