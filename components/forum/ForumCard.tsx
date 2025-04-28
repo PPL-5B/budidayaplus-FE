@@ -2,55 +2,98 @@
 
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
-import { ChevronRight } from 'lucide-react';
 import DeleteForumContainer from './DeleteForumContainer';
 import { useRouter } from 'next/navigation';
+import ForumCardHeader from './ForumCardHeader';
+import ForumCardFooter from './ForumCardFooter';
+import { useVote } from '@/hooks/useVote';
 
 interface ForumCardProps {
   forum: Forum;
   onDeleteSuccess?: (id: string) => void;
+  onVoteSuccess?: (updatedForum: Forum) => void;
 }
 
-const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
+const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuccess }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempDesc, setTempDesc] = useState(forum.description);
   const [desc, setDesc] = useState(forum.description);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const router = useRouter();
 
+  const {
+    upvotes,
+    downvotes,
+    userVote,
+    isLoading,
+    isInitialized,
+    handleUpvote,
+    handleDownvote,
+    handleCancelVote,
+  } = useVote(forum.id);
+
   const handleSave = () => {
     setDesc(tempDesc);
     setIsEditing(false);
+    onVoteSuccess?.({
+      ...forum,
+      description: tempDesc,
+    });
   };
 
   const handleViewDetails = () => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('selectedForum', JSON.stringify(forum));
-      router.push(`/forum/${forum.id}`);
     }
+    router.push(`/forum/${forum.id}`);
   };
 
+  const handleVote = async (voteType: 'upvote' | 'downvote') => {
+  try {
+    if (voteType === 'upvote') {
+      if (userVote === 'upvote') {
+        await handleCancelVote();
+      } else {
+        await handleUpvote();
+      }
+    } else if (voteType === 'downvote') {
+      if (userVote === 'downvote') {
+        await handleCancelVote();
+      } else {
+        await handleDownvote();
+      }
+    }
+
+    onVoteSuccess?.({
+      ...forum,
+      upvotes,
+      downvotes,
+    });
+  } catch (error) {
+    console.error('Error voting:', error);
+  }
+};
+
+  if (!isInitialized) {
+    return <div className="w-full border rounded-lg p-4 shadow-md bg-white">Loading...</div>;
+  }
+
   return (
-    <div className="w-full border rounded-lg p-4 shadow-md bg-white hover:bg-gray-100 transition duration-200 flex flex-col gap-4">
-      <h2 className="text-lg font-semibold">
-        Dibuat oleh: {forum.user.first_name + ' ' + forum.user.last_name}
-      </h2>
-      <h3 className="text-gray-600">
-        Tanggal: {new Date(forum.timestamp).toLocaleString()}
-      </h3>
+    <div className="relative w-full max-w-[338px] h-[150px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
+      <ForumCardHeader title={forum.title} timestamp={forum.timestamp} />
 
       {isEditing ? (
         <>
           <textarea
-            className="w-full border p-2 rounded"
-            rows={4}
+            className="w-full border p-2 rounded text-[12px]"
+            rows={2}
             value={tempDesc}
             onChange={(e) => setTempDesc(e.target.value)}
           />
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 mt-1">
             <button
               onClick={handleSave}
-              className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+              className="px-3 py-1 bg-green-600 text-white rounded text-[10px] hover:bg-green-700"
             >
               Simpan
             </button>
@@ -59,41 +102,29 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
                 setTempDesc(desc);
                 setIsEditing(false);
               }}
-              className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400"
+              className="px-3 py-1 bg-gray-300 text-black rounded text-[10px] hover:bg-gray-400"
             >
               Batal
             </button>
           </div>
         </>
       ) : (
-        <>
-          <p className="text-gray-600">{desc}</p>
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="text-sm text-blue-500 font-medium hover:underline"
-              >
-                Edit deskripsi
-              </button>
-              
-              <button
-                onClick={() => setIsDeleteOpen(true)}
-                className="text-sm text-red-500 font-medium hover:underline"
-              >
-                Hapus forum
-              </button>
-            </div>
-            <button
-              onClick={handleViewDetails}
-              className="flex items-center text-sm text-blue-500 font-medium hover:underline"
-            >
-              Lihat detail forum
-              <ChevronRight className="w-5 h-5 ml-1 text-[#ff8585]" />
-            </button>
-          </div>
-        </>
+        <p className="text-[12px] text-[#646464] line-clamp-2 mb-2">{desc}</p>
       )}
+
+      <ForumCardFooter
+        userInitial={forum.user.first_name.charAt(0)}
+        onViewDetails={handleViewDetails}
+        onEdit={() => setIsEditing(true)}
+        onDelete={() => setIsDeleteOpen(true)}
+        isEditing={isEditing}
+        tag={forum.tag}
+        upvotes={upvotes}
+        downvotes={downvotes}
+        userVote={userVote === 'upvote' || userVote === 'downvote' ? userVote : null}
+        handleVote={handleVote}
+        isLoading={isLoading}
+      />
 
       <DeleteForumContainer
         forumId={forum.id}

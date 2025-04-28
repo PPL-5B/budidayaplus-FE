@@ -17,8 +17,8 @@ export async function deleteForumById(forumId: string) {
 
   if (!res.ok) {
     const error = await res.json();
-    throw new Error(error?.error || "Gagal menghapus forum");
+    throw new Error(error?.error ?? "Gagal menghapus forum");
   }
-
+  
   return res.json();
 }
