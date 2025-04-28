@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation';
 
 interface ForumDetailProps {
   forum: {
-    id: number;
+    id: string;
     description: string;
     timestamp: string;
     user: {
       first_name: string;
       last_name: string;
-      email: string;
+      phone_number: string;
     };
   };
 }
