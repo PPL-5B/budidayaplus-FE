@@ -1,6 +1,5 @@
 'use server'
 
-import { ForumInput } from '@/types/forum';
 import { cookies } from "next/headers";
 import { getForumById } from '@/lib/forum/getForumById';
 
