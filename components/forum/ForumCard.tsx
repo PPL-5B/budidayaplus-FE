@@ -3,7 +3,6 @@
 
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
-import { ChevronRight } from 'lucide-react';
 import DeleteForumContainer from './DeleteForumContainer';
 import { useRouter } from 'next/navigation';
 import ForumCardHeader from './ForumCardHeader';
