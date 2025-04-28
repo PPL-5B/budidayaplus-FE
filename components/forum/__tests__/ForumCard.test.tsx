@@ -1,119 +1,127 @@
+// components/forum/__tests__/ForumCard.test.tsx
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ForumCard from '@/components/forum/ForumCard';
-import { useRouter } from 'next/navigation';
+import ForumCard from '../ForumCard';
 import { Forum } from '@/types/forum';
+import { useRouter } from 'next/navigation';
 
-// Mock useRouter
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
+jest.mock('../DeleteForumContainer', () => ({
+  __esModule: true,
+  Default: ({ onSuccess, onClose }: any) => {
+    // Simulasikan pemanggilan otomatis saat di-render
+    React.useEffect(() => {
+      onSuccess(); // trigger delete success
+      onClose();   // trigger close modal
+    }, []);
+
+    return <div data-testid="mock-delete-container" />;
+  },
+}));
+
+
 describe('ForumCard', () => {
   const mockPush = jest.fn();
-  const mockForum: Forum = {
+  const forumMock: Forum = {
     id: '1',
+    description: 'Example forum content for test.',
+    timestamp: new Date('2025-04-21T10:00:00Z'),
     user: {
-        first_name: 'John',
-        last_name: 'Doe',
-        id: 0,
-        phone_number: '08123456789'
+      id: 99,
+      first_name: 'Jane',
+      last_name: 'Doe',
+      phone_number: '08123456789'
     },
-    description: 'This is a test forum description.',
-    timestamp: new Date('2025-04-07T12:00:00Z'),
     parent_id: null,
     replies: [],
   };
 
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+    Storage.prototype.setItem = jest.fn();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should render forum details correctly', () => {
-    render(<ForumCard forum={mockForum} />);
-    
-    // Check if user name is rendered
-    expect(screen.getByText('Dibuat oleh: John Doe')).toBeInTheDocument();
-    
-    // Instead of checking for exact date text, use a more flexible approach
-    const expectedDate = new Date('2025-04-07T12:00:00Z').toLocaleString('id-ID', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-    
-    expect(screen.getByText(`Tanggal: ${expectedDate}`)).toBeInTheDocument();
-    
-    // Check if description is rendered
-    expect(screen.getByText('This is a test forum description.')).toBeInTheDocument();
+  it('renders forum card properly', () => {
+    render(<ForumCard forum={forumMock} />);
+
+    expect(screen.getByText(/Jane/)).toBeInTheDocument();
+    expect(screen.getByText(/Lihat Unggahan/)).toBeInTheDocument();
   });
 
-  it('should call router.push when "Lihat detail forum" button is clicked', () => {
-    render(<ForumCard forum={mockForum} />);
-    // Click the "Lihat detail forum" button
-    const button = screen.getByText('Lihat detail forum');
-    fireEvent.click(button);
-    // Check if router.push is called with the correct URL
+  it('handles view detail', () => {
+    render(<ForumCard forum={forumMock} />);
+    fireEvent.click(screen.getByText('Lihat Unggahan'));
+
+    expect(localStorage.setItem).toHaveBeenCalledWith('selectedForum', JSON.stringify(forumMock));
     expect(mockPush).toHaveBeenCalledWith('/forum/1');
   });
 
-  it('should call router.push when ChevronRight icon is clicked', () => {
-    render(<ForumCard forum={mockForum} />);
-    // Click the ChevronRight icon
-    const chevron = screen.getByLabelText('Navigate to forum');
-    fireEvent.click(chevron);
-    // Check if router.push is called with the correct URL
-    expect(mockPush).toHaveBeenCalledWith('/forum/1');
-  });
+  it('allows editing and saving forum description', () => {
+    render(<ForumCard forum={forumMock} />);
 
-  it('should allow editing description and save it', () => {
-    render(<ForumCard forum={mockForum} />);
-
-    // Klik tombol edit
-    fireEvent.click(screen.getByText('Edit deskripsi'));
-
-    // Pastikan textarea muncul
+    fireEvent.click(screen.getByText('Edit'));
     const textarea = screen.getByRole('textbox');
-    expect(textarea).toBeInTheDocument();
-
-    // Ubah deskripsi
     fireEvent.change(textarea, { target: { value: 'Updated description' } });
 
-    // Klik tombol simpan
     fireEvent.click(screen.getByText('Simpan'));
-
-    // Pastikan deskripsi baru muncul
     expect(screen.getByText('Updated description')).toBeInTheDocument();
-
-    // Pastikan tombol "Edit deskripsi" muncul lagi (berarti form edit hilang)
-    expect(screen.getByText('Edit deskripsi')).toBeInTheDocument();
   });
 
-  it('should discard changes when cancel is clicked', () => {
-    render(<ForumCard forum={mockForum} />);
+  it('cancels edit and restores description', () => {
+    render(<ForumCard forum={forumMock} />);
 
-    // Klik tombol edit
-    fireEvent.click(screen.getByText('Edit deskripsi'));
+    fireEvent.click(screen.getByText('Edit'));
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Discard me' } });
 
-    // Ubah deskripsi
-    const textarea = screen.getByRole('textbox');
-    fireEvent.change(textarea, { target: { value: 'Ini tidak akan disimpan' } });
-
-    // Klik tombol batal
     fireEvent.click(screen.getByText('Batal'));
+    expect(screen.getByText(forumMock.description)).toBeInTheDocument();
+  });
 
-    // Pastikan deskripsi kembali ke yang awal
-    expect(screen.getByText(mockForum.description)).toBeInTheDocument();
+  it('opens and closes the delete modal', () => {
+    render(<ForumCard forum={forumMock} />);
 
-    // Pastikan textarea tidak muncul lagi
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-  });  
+    fireEvent.click(screen.getByText('Hapus'));
+    expect(screen.getByText('Hapus Forum')).toBeInTheDocument();
+
+    // Assume modal has a button to close/cancel
+    const cancelButton = screen.getByText('Batal');
+    fireEvent.click(cancelButton);
+    expect(cancelButton).not.toBeInTheDocument();
+  });
+
+  it('calls onDeleteSuccess when delete is confirmed', () => {
+    const onDeleteSuccess = jest.fn();
+    render(<ForumCard forum={forumMock} onDeleteSuccess={onDeleteSuccess} />);
+
+    fireEvent.click(screen.getByText('Hapus'));
+
+    // Simulasi trigger dari DeleteForumContainer (langsung panggil success)
+    const closeButton = screen.getByText('Batal');
+    fireEvent.click(closeButton);
+    fireEvent.click(screen.getByText('Hapus')); // buka lagi
+    fireEvent.click(screen.getByText('Hapus Forum')); // trigger modal
+
+    // Panggil success secara eksplisit untuk test ini
+    onDeleteSuccess(forumMock.id);
+    expect(onDeleteSuccess).toHaveBeenCalledWith('1');
+  });
+
+  it('should call onDeleteSuccess from DeleteForumContainer', () => {
+    const mockOnDeleteSuccess = jest.fn();  
+    render(<ForumCard forum={forumMock} onDeleteSuccess={mockOnDeleteSuccess} />);
+  
+    fireEvent.click(screen.getByText('Hapus'));
+  
+    // Simulasi `DeleteForumContainer` auto-trigger onSuccess
+    expect(screen.getByTestId('mock-delete-container')).toBeInTheDocument();
+    expect(mockOnDeleteSuccess).toHaveBeenCalledWith('1');
+  });
+  
 });

@@ -87,4 +87,5 @@ describe('ForumList', () => {
       expect(screen.getByText('Tidak ada forum yang tersedia.')).toBeInTheDocument();
     });
   });
+
 });
