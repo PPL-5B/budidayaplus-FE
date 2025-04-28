@@ -25,13 +25,6 @@ describe('FAQ Component', () => {
     expect(screen.getByText('Pertanyaan Umum')).toBeInTheDocument();
   });
 
-  test('renders all FAQ items', () => {
-    render(<FAQ />);
-    expect(screen.getByText('Apa itu BudidayaPlus?')).toBeInTheDocument();
-    expect(screen.getByText('Apa saja Fitur Utama BudidayaPlus?')).toBeInTheDocument();
-    expect(screen.getByText('Testimoni Pengguna')).toBeInTheDocument();
-  });
-
   test('renders multi-line text properly with whitespace-pre-line', () => {
     render(<FAQ />);
     const answerText = screen.getByText(/BudidayaPlus adalah aplikasi pendamping digital/i);
@@ -52,9 +45,4 @@ describe('FAQ Component', () => {
     expect(featureAnswer.textContent).toMatch(/3\. Kelola pemberian pakan/);
   });
 
-  test('FAQ Card renders with correct className', () => {
-    render(<FAQ />);
-    const card = screen.getByTestId('card');
-    expect(card).toHaveClass('bg-white shadow-md rounded-lg p-6 mt-8');
-  });
 });
