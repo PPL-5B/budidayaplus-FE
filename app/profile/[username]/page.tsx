@@ -35,11 +35,9 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
       <Team userRole={userRole} isUserSelf={isUserSelf} username={params.username} />
       <FAQ />
 
-      {/* Heading baru untuk Hubungi Kami */}
       <div className="mt-12 px-6">
         <h2 className="text-2xl font-bold text-left mb-4">Hubungi Kami</h2>
 
-        {/* Dialog popup untuk form */}
         <Dialog>
           <DialogTrigger asChild>
             <BigButton

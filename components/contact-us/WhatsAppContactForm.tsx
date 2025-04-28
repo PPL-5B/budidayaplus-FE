@@ -72,7 +72,6 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
 
   return (
     <div className="flex flex-col items-center justify-center py-0 bg-[#EAF0FF] rounded-xl p-2 w-full max-w-md mx-auto">
-      {/* Header */}
       <div className="relative flex items-center justify-center w-full mb-2">
         <button
           type="button"
@@ -93,9 +92,7 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
         </h2>
       </div>
 
-      {/* Form */}
       <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit(onSubmit)}>
-        {/* Nama Lengkap */}
         <div className="flex flex-col gap-0.5 w-full">
           <Label htmlFor="name" className="flex items-center gap-2 text-[#2254C5]">
             <IoPerson className="h-4 w-4" />
@@ -110,7 +107,6 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
           />
         </div>
 
-        {/* Nomor Ponsel */}
         <div className="flex flex-col gap-0.5 w-full">
           <Label htmlFor="phone_number" className="flex items-center gap-2 text-[#2254C5]">
             <IoCall className="h-4 w-4" />
@@ -125,7 +121,6 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
           />
         </div>
 
-        {/* Pesan */}
         <div className="flex flex-col gap-0.5 w-full">
           <Label htmlFor="message" className="flex items-center gap-2 text-[#2254C5]">
             <IoChatbubble className="h-4 w-4" />
@@ -143,14 +138,12 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
           )}
         </div>
 
-        {/* Error Message */}
         {errorMessage && (
           <div className="text-red-500 text-xs" data-testid="error-message">
             {errorMessage}
           </div>
         )}
 
-        {/* Submit Button */}
         <NewButton
           type="submit"
           disabled={isSubmitting}

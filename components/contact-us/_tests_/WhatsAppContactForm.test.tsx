@@ -4,19 +4,16 @@ import '@testing-library/jest-dom';
 import ContactForm from '@/components/contact-us/WhatsAppContactForm';
 import { getUser } from '@/lib/auth';
 
-// Mock the auth module
 jest.mock('@/lib/auth', () => ({
   getUser: jest.fn()
 }));
 
-// Mock window.open
 const mockWindowOpen = jest.fn();
 Object.defineProperty(window, 'open', {
   value: mockWindowOpen,
   writable: true
 });
 
-// Mock window.location.href
 delete (window as any).location;
 (window as any).location = { href: '' };
 
@@ -77,27 +74,24 @@ describe('ContactForm', () => {
   it('ensures the form doesn’t submit if the message is empty', async () => {
     render(<ContactForm setIsSubmitted={mockSetIsSubmitted} />);
     fireEvent.change(screen.getByPlaceholderText('Tulis pesan Anda di sini'), {
-      target: { value: '' }, // Empty message for testing
+      target: { value: '' },
     });
 
     fireEvent.submit(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => {
-      expect(mockWindowOpen).not.toHaveBeenCalled(); // Ensure window.open isn't called
+      expect(mockWindowOpen).not.toHaveBeenCalled(); 
     });
   });
 
   it('handles errors during form submission', async () => {
-    // Restore user data
     (getUser as jest.Mock).mockResolvedValue(mockUser);
     
-    // Mock window.open to throw an error
     const originalWindowOpen = window.open;
     window.open = jest.fn().mockImplementation(() => {
       throw new Error('Failed to open window');
     });
     
-    // Mock console.error
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     
     render(<ContactForm setIsSubmitted={mockSetIsSubmitted} />);
@@ -106,15 +100,12 @@ describe('ContactForm', () => {
       expect(screen.getByDisplayValue(`${mockUser.first_name} ${mockUser.last_name}`)).toBeInTheDocument();
     });
     
-    // Fill out the form
     fireEvent.change(screen.getByPlaceholderText('Tulis pesan Anda di sini'), {
       target: { value: 'Test message' },
     });
     
-    // Submit the form
     fireEvent.submit(screen.getByRole('button', { name: 'Submit' }));
     
-    // Check error message and console.error call
     await waitFor(() => {
       expect(screen.getByTestId('error-message')).toHaveTextContent('Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.');
       expect(consoleSpy).toHaveBeenCalledWith('Gagal mengirim pesan:', expect.any(Error));
@@ -126,7 +117,6 @@ describe('ContactForm', () => {
   });
 
   it('redirects to profile page when back button is clicked and setIsModalOpen is not provided', async () => {
-    // Setup user data
     (getUser as jest.Mock).mockResolvedValue(mockUser);
     
     render(<ContactForm />);
@@ -135,11 +125,9 @@ describe('ContactForm', () => {
       expect(screen.getByDisplayValue(`${mockUser.first_name} ${mockUser.last_name}`)).toBeInTheDocument();
     });
     
-    // Find and click the back button
-    const backButton = screen.getByRole('button', { name: '' }); // The back button doesn't have text
+    const backButton = screen.getByRole('button', { name: '' }); 
     fireEvent.click(backButton);
     
-    // Check that window.location.href was set correctly
     await waitFor(() => {
       expect(window.location.href).toBe(`/profile/${mockUser.phone_number}`);
     });
@@ -178,11 +166,9 @@ describe('ContactForm', () => {
       expect(screen.getByDisplayValue(`${mockUser.first_name} ${mockUser.last_name}`)).toBeInTheDocument();
     });
     
-    // Find and click the back button
-    const backButton = screen.getByRole('button', { name: '' }); // The back button doesn't have text
+    const backButton = screen.getByRole('button', { name: '' }); 
     fireEvent.click(backButton);
     
-    // Check that window.location.href was set correctly
     await waitFor(() => {
       expect(window.location.href).toBe(`/profile/${mockUser.phone_number}`);
     });
@@ -195,43 +181,37 @@ describe('ContactForm', () => {
       expect(screen.getByDisplayValue(`${mockUser.first_name} ${mockUser.last_name}`)).toBeInTheDocument();
     });
 
-    // Find and click the back button
     const backButton = screen.getByRole('button', { name: '' });
     fireEvent.click(backButton);
 
-    // Check that the modal is closed
     await waitFor(() => {
       expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
     });
 
-    // Check that window.location.href is set to profile page
     expect(window.location.href).toBe(`/profile/${mockUser.phone_number}`);
   });
 
   it('ensures the form doesn’t submit if the message is empty', async () => {
     render(<ContactForm setIsSubmitted={mockSetIsSubmitted} />);
     fireEvent.change(screen.getByPlaceholderText('Tulis pesan Anda di sini'), {
-      target: { value: '' }, // Empty message for testing
+      target: { value: '' }, 
     });
 
     fireEvent.submit(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => {
-      expect(mockWindowOpen).not.toHaveBeenCalled(); // Ensure window.open isn't called
+      expect(mockWindowOpen).not.toHaveBeenCalled(); 
     });
   });
 
   it('handles errors during form submission', async () => {
-    // Restore user data
     (getUser as jest.Mock).mockResolvedValue(mockUser);
     
-    // Mock window.open to throw an error
     const originalWindowOpen = window.open;
     window.open = jest.fn().mockImplementation(() => {
       throw new Error('Failed to open window');
     });
     
-    // Mock console.error
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     
     render(<ContactForm setIsSubmitted={mockSetIsSubmitted} />);
@@ -240,24 +220,19 @@ describe('ContactForm', () => {
       expect(screen.getByDisplayValue(`${mockUser.first_name} ${mockUser.last_name}`)).toBeInTheDocument();
     });
     
-    // Fill out the form
     fireEvent.change(screen.getByPlaceholderText('Tulis pesan Anda di sini'), {
       target: { value: 'Test message' },
     });
     
-    // Submit the form
     fireEvent.submit(screen.getByRole('button', { name: 'Submit' }));
     
-    // Check error message and console.error call
     await waitFor(() => {
       expect(screen.getByTestId('error-message')).toHaveTextContent('Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.');
       expect(consoleSpy).toHaveBeenCalledWith('Gagal mengirim pesan:', expect.any(Error));
     });
     
-    // Restore mocks
     window.open = originalWindowOpen;
     consoleSpy.mockRestore();
   });
 
- 
 });
