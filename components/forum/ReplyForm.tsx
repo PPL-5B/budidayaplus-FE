@@ -49,8 +49,9 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ setIsModalOpen, parentForumId, on
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label className="block mb-1">Description</label>
+        <label htmlFor="description" className="block mb-1">Description</label>
         <Textarea
+          id="description"
           {...register('description')}
           placeholder="Enter your reply..."
         />
