@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { GoogleAnalytics } from '@next/third-parties/google';
-import Navbar from "@/components/ui/navbar";
+import NavbarWrapper from "@/components/ui/NavbarWrapper"; 
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,10 +28,7 @@ export default function RootLayout({
             {children}
           </main>
 
-          {/* Fixed navbar container */}
-          <div className="fixed bottom-0 w-full max-w-[390px] h-16 bg-[#2154C5] z-50">
-            <Navbar />
-          </div>
+          <NavbarWrapper />
           
           <Toaster />
         </div>
