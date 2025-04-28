@@ -1,22 +1,31 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import AddForum from '../AddForum'; // relative import!
+import AddForum from '../AddForum';
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 
-// Mock ForumForm supaya fokus ke AddForum
+// Buat tipe props secara eksplisit untuk MockForumForm
+interface MockForumFormProps {
+  setIsModalOpen: (isOpen: boolean) => void;
+  onForumAdded?: () => void;
+  isReply?: boolean;
+}
+
+// Mock ForumForm supaya fokus ke AddForum behavior
 jest.mock('../ForumForm', () => {
-  return function MockForumForm({ setIsModalOpen, onForumAdded, isReply }: any) {
-    return (
+  return {
+    __esModule: true,
+    default: ({ setIsModalOpen, onForumAdded, isReply }: MockForumFormProps) => (
       <div data-testid="forum-form">
         <p>{isReply ? 'Reply Form' : 'Forum Form'}</p>
-        <button onClick={() => {
-          setIsModalOpen(false);
-          if (onForumAdded) onForumAdded();
-        }}>
+        <button
+          onClick={() => {
+            setIsModalOpen(false);
+            if (onForumAdded) onForumAdded();
+          }}
+        >
           Submit Mock
         </button>
       </div>
-    );
+    ),
   };
 });
 
@@ -37,7 +46,7 @@ describe('AddForum', () => {
     expect(screen.getByRole('button', { name: /reply/i })).toBeInTheDocument();
   });
 
-  it('opens modal and shows ForumForm when clicking Add Forum', async () => {
+  it('opens modal and shows ForumForm when clicking Add Forum button', async () => {
     render(<AddForum />);
     fireEvent.click(screen.getByRole('button', { name: /add forum/i }));
 
@@ -55,14 +64,10 @@ describe('AddForum', () => {
 
   it('calls onForumAdded and closes modal after submitting', async () => {
     render(<AddForum onForumAdded={mockOnForumAdded} />);
-
-    // Klik Add Forum
+    
     fireEvent.click(screen.getByRole('button', { name: /add forum/i }));
 
-    // Harus muncul ForumForm
     const submitButton = await screen.findByRole('button', { name: /submit mock/i });
-
-    // Klik submit
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -76,12 +81,10 @@ describe('AddForum', () => {
     fireEvent.click(screen.getByRole('button', { name: /add forum/i }));
 
     const submitButton = await screen.findByRole('button', { name: /submit mock/i });
-
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      // Tidak error walau tidak ada onForumAdded
-      expect(true).toBeTruthy();
+      expect(true).toBeTruthy(); 
     });
   });
 });
