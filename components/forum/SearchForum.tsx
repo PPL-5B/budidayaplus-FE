@@ -1,11 +1,13 @@
 import { Forum } from '@/types/forum';
 
-export function filterForums(forums: Forum[], query: string): Forum[] {
-  if (!query) return forums;
-
+export function filterForums(forums: Forum[], query: string, selectedTag: string): Forum[] {
   const lowerQuery = query.toLowerCase();
-  return forums.filter(
-    (forum) =>
-      forum.description?.toLowerCase().includes(lowerQuery)
-  );
+
+  return forums
+    .filter((forum) =>
+      forum.title?.toLowerCase().includes(lowerQuery)
+    )
+    .filter((forum) =>
+      selectedTag ? forum.tag === selectedTag : true
+    );
 }
