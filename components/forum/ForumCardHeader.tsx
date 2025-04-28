@@ -1,18 +1,17 @@
-// components/forum/ForumCardHeader.tsx
 import React from 'react';
 
 interface ForumCardHeaderProps {
-  description: string;
+  title?: string;
   timestamp: Date;
 }
 
-const ForumCardHeader: React.FC<ForumCardHeaderProps> = ({ description, timestamp }) => {
+const ForumCardHeader: React.FC<ForumCardHeaderProps> = ({ title, timestamp }) => {
   return (
     <>
-      <h2 className="text-[12px] font-bold text-black mb-1 line-clamp-1">
-        {description.length > 60 ? description.slice(0, 60) + '...' : description}
-      </h2>
-      <h3 className="text-gray-600">
+      <h1 className="text-[14px] font-bold text-black mb-1 line-clamp-1">
+        {title ?? '(No Title)'}
+      </h1>
+      <h3 className="text-gray-600 text-[10px]">
         Tanggal: {new Date(timestamp).toLocaleString()}
       </h3>
     </>
