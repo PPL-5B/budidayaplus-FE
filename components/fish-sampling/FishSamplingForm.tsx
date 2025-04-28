@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { addFishSampling } from '@/lib/fish-sampling';
 import { Label } from '@/components/ui/label';
+import FishSamplingWarningPopup from './FishSamplingWarningPopUp';
 
 interface FishSamplingFormProps {
   setIsModalOpen: (open: boolean) => void;
@@ -19,8 +20,10 @@ interface FishSamplingInputForm {
 }
 
 const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, setIsModalOpen }) => {
-  const [error, setError] = useState<string | null>(null);
-  const [warning, setWarning] = useState<string | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [showDetail, setShowDetail] = useState(false);
+  const [fishWeight, setFishWeight] = useState<number | null>(null);
+  const [fishLength, setFishLength] = useState<number | null>(null);
 
   const {
     register,
@@ -29,88 +32,69 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
     reset,
   } = useForm<FishSamplingInputForm>();
 
+  const handleInputChange = (field: "fish_weight" | "fish_length", value: string) => {
+    const numericValue = parseFloat(value);
+    if (field === "fish_weight") {
+      setFishWeight(numericValue);
+    } else {
+      setFishLength(numericValue);
+    }
+  };
+
   const onSubmit = async (data: FishSamplingInputForm) => {
     try {
-      setError(null);
-      setWarning(null);
-  
-      // Validasi manual sebelum mengirim request
+      const newErrors: string[] = [];
+
       if (data.fish_weight <= 0 || data.fish_length <= 0) {
-        setError("Berat dan panjang ikan harus lebih dari 0, harap pastikan data benar.");
-        return;
+        newErrors.push("Berat dan panjang ikan harus lebih dari 0, harap pastikan data benar.");
       }
       if (data.fish_weight > 10 && data.fish_length > 100) {
-        setError("Berat dan panjang ikan terlalu besar, harap pastikan data benar.");
+        newErrors.push("Berat dan panjang ikan terlalu besar, harap pastikan data benar.");
+      } else {
+        if (data.fish_weight > 10) {
+          newErrors.push("Berat ikan lebih dari 10 kg, harap pastikan data benar.");
+        }
+        if (data.fish_length > 100) {
+          newErrors.push("Panjang ikan lebih dari 100 cm, harap pastikan data benar.");
+        }
+      }
+
+      if (newErrors.length > 0) {
+        setErrors(newErrors);
         return;
       }
-      if (data.fish_weight > 10) {
-        setError("Berat ikan lebih dari 10 kg, harap pastikan data benar.");
-        return;
-      }
-      if (data.fish_length > 100) {
-        setError("Panjang ikan lebih dari 100 cm, harap pastikan data benar.");
-        return;
-      }
-  
-      // Konversi manual ke FormData
+
       const formData = new FormData();
       formData.append("fish_weight", data.fish_weight.toString());
       formData.append("fish_length", data.fish_length.toString());
-  
+
       const res = await addFishSampling(pondId, cycleId, formData);
-  
+
       if (!res.success) {
-        setError(res.message ?? "Gagal menyimpan sample ikan");
+        setErrors([`Gagal menyimpan sample ikan: ${res.message ?? ""}`]);
         return;
       }
-  
-      if (res.warning) {
-        setWarning(res.warning);
-      } else {
-        reset();
-        setIsModalOpen(false);
-        window.location.reload();
-      }
+
+      reset();
+      setIsModalOpen(false);
+      window.location.reload();
+
     } catch (error) {
-      setError("Gagal menyimpan sample ikan");
+      setErrors(["Gagal menyimpan sample ikan"]);
     }
   };
 
   return (
     <div>
-      {/* Pop-up Modal untuk Error */}
-      {error && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-red-600 text-2xl">❌</span>
-              <h2 className="text-lg font-semibold text-red-600 leading-tight">Kesalahan Input</h2>
-            </div>
-            <p className="mt-2">{error}</p>
-            <Button className="mt-4 bg-red-500 hover:bg-red-700 px-4 py-2" onClick={() => setError(null)}>
-              Perbaiki Input
-            </Button>
-          </div>
-        </div>
+      {errors.length > 0 && (
+        <FishSamplingWarningPopup
+          onClose={() => setErrors([])}
+          onShowDetail={() => setShowDetail(!showDetail)}
+          showDetail={showDetail}
+          errorMessages={errors}
+        />
       )}
 
-      {/* Pop-up Modal untuk Warning */}
-      {warning && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-yellow-600 text-2xl">⚠️</span>
-              <h2 className="text-lg font-semibold text-yellow-600 leading-tight">Peringatan</h2>
-            </div>
-            <p className="mt-2">{warning}</p>
-            <Button className="mt-4 bg-yellow-500 hover:bg-yellow-700 px-4 py-2" onClick={() => setWarning(null)}>
-              Oke, Saya Mengerti
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Form Input */}
       <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
         <div>
           <Label className="text-sm" htmlFor="fish_weight">Berat Ikan (kg)</Label>
@@ -119,6 +103,10 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
             type="number"
             placeholder="Berat Ikan (kg)"
             step={0.01}
+            className={`border border-gray-300 p-2 rounded ${
+              fishWeight !== null && fishWeight >= 10 ? "text-red-500 border-red-500" : ""
+            }`}
+            onChange={(e) => handleInputChange("fish_weight", e.target.value)}
           />
         </div>
 
@@ -129,10 +117,18 @@ const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, se
             type="number"
             placeholder="Panjang Ikan (cm)"
             step={0.01}
+            className={`border border-gray-300 p-2 rounded ${
+              fishLength !== null && fishLength >= 100 ? "text-red-500 border-red-500" : ""
+            }`}
+            onChange={(e) => handleInputChange("fish_length", e.target.value)}
           />
         </div>
 
-        <Button className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 col-span-2" type="submit" disabled={isSubmitting}>
+        <Button
+          className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 col-span-2"
+          type="submit"
+          disabled={isSubmitting}
+        >
           Simpan
         </Button>
       </form>

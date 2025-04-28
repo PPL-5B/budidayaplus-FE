@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,7 @@ import Link from "next/link";
 const LoginPage = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
 
   const {
     register,
@@ -25,15 +26,26 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginForm) => {
-    setError(null)
-    const response = await handleLoginFormSubmit(data)
+    setError(null);
+    const response = await handleLoginFormSubmit(data);
     if (response.ok) {
-      reset()
-      router.push("/")
-      return
+      console.log('response ok')
+      reset();
+      setIsLoggedIn(true); // Set login status to true
+      return;
     }
-    setError(response.message)
-  }
+    setError(response.message);
+  };
+
+  // useEffect to handle navigation after login on the client-side
+  useEffect(() => {
+    if (isLoggedIn) {
+      console.log('isloggedin sebelum push')
+      router.refresh();
+      router.push("/"); // Navigate after login
+      console.log('isloggedin setelah push')
+    }
+  }, [isLoggedIn, router]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
