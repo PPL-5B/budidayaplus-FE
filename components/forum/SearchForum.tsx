@@ -5,7 +5,7 @@ export function filterForums(forums: Forum[], query: string, selectedTag: string
 
   return forums
     .filter((forum) =>
-      forum.description?.toLowerCase().includes(lowerQuery)
+      forum.title?.toLowerCase().includes(lowerQuery)
     )
     .filter((forum) =>
       selectedTag ? forum.tag === selectedTag : true
