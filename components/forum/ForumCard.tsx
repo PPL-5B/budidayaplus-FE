@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import ForumCardHeader from './ForumCardHeader';
 import ForumCardFooter from './ForumCardFooter';
 import { useVote } from '@/hooks/useVote';
+import { useUser } from '@/hooks/useUser';
+import { ForumNavigation } from '@/lib/forum/forumNavigation';
 
 interface ForumCardProps {
   forum: Forum;
@@ -41,10 +43,14 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
     });
   };
 
+  const user = useUser();
+
+
+  // Tentukan apakah user adalah pemilik forum
+  const isOwner = !!(user && forum.user.id === user.id) ;
+
   const handleViewDetails = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('selectedForum', JSON.stringify(forum));
-    }
+    ForumNavigation();
     router.push(`/forum/${forum.id}`);
   };
 
@@ -113,8 +119,8 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
       )}
 
       <ForumCardFooter
-        userInitial={forum.user.first_name.charAt(0)}
         onViewDetails={handleViewDetails}
+        userInitial={forum.user.first_name.charAt(0)}
         onEdit={() => setIsEditing(true)}
         onDelete={() => setIsDeleteOpen(true)}
         isEditing={isEditing}
@@ -124,7 +130,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         userVote={userVote === 'upvote' || userVote === 'downvote' ? userVote : null}
         handleVote={handleVote}
         isLoading={isLoading}
-      />
+        isOwner={isOwner}  />
 
       <DeleteForumContainer
         forumId={forum.id}

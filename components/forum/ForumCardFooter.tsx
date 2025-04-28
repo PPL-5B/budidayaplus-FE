@@ -15,6 +15,7 @@ interface ForumCardFooterProps {
   userVote: 'upvote' | 'downvote' | null;
   handleVote: (type: 'upvote' | 'downvote') => void;
   isLoading: boolean;
+  isOwner: boolean;
 }
 
 const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
@@ -28,6 +29,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
   downvotes,
   userVote,
   handleVote,
+  isOwner,
   isLoading,
 }) => {
   return (
@@ -89,7 +91,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
       </div>
 
       {/* RIGHT SIDE: Edit + Hapus */}
-      {!isEditing && (
+      {!isEditing && isOwner && (
         <div className="absolute bottom-2 right-3 flex gap-2">
           <button
             onClick={onEdit}
