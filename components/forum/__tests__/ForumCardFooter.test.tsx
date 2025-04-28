@@ -23,7 +23,7 @@ describe('ForumCardFooter', () => {
         onDelete={onDelete}
         isEditing={false}
         userInitial="J"
-              />
+        isOwner={false}      />
     );
 
 
@@ -40,7 +40,7 @@ describe('ForumCardFooter', () => {
         onDelete={onDelete}
         isEditing={false}
         userInitial="J"
-            />
+        isOwner={false}      />
     );
 
 
@@ -57,8 +57,8 @@ describe('ForumCardFooter', () => {
         onDelete={onDelete}
         isEditing={false}
         userInitial="A"
-        />
-      );
+        isOwner={false}      />
+    );
 
 
     expect(screen.getByText('Edit')).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe('ForumCardFooter', () => {
         onDelete={onDelete}
         isEditing={true}
         userInitial="A"
-              />
+        isOwner={false}      />
     );
 
 
