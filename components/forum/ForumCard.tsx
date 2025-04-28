@@ -134,7 +134,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
 
       <DeleteForumContainer
         forumId={forum.id}
-        forumTitle={desc}
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onSuccess={() => {
