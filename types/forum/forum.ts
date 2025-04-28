@@ -1,11 +1,12 @@
 import User from "@/types/auth/user";
+import { ForumTag } from "./forumSchema";
 
 export type Forum = {
     id: string;
     user: User;
-    title?: string;
+    title: string;
     description: string;
-    tag: "ikan" | "kolam" | "siklus" | "budidayaplus";
+    tag: ForumTag;
     timestamp: Date;
     parent_id: string | null;
     replies: Forum[]; 

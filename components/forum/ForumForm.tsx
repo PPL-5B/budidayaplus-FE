@@ -6,18 +6,31 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ForumSchema, ForumInput } from '@/types/forum/forumSchema';
 import { createForum } from '@/lib/forum/createForum';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import clsx from 'clsx'; // Untuk conditional classnames
 
 interface ForumFormProps {
   setIsModalOpen: (isOpen: boolean) => void;
   parentForumId?: string;
   onForumAdded?: () => void;
+  isReply?: boolean;
 }
 
-const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, onForumAdded }) => {
+const TAG_OPTIONS = [
+  { value: 'ikan', label: 'Ikan' },
+  { value: 'kolam', label: 'Kolam' },
+  { value: 'siklus', label: 'Siklus' },
+  { value: 'budidayaplus', label: 'BudidayaPlus' },
+] as const;
+
+const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, onForumAdded, isReply = false }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
   } = useForm<ForumInput>({
     resolver: zodResolver(ForumSchema),
     defaultValues: {
@@ -27,6 +40,8 @@ const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, on
       parent_id: parentForumId ?? null,
     },
   });
+
+  const selectedTag = watch('tag');
 
   const onSubmit = async (data: ForumInput) => {
     try {
@@ -42,27 +57,28 @@ const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, on
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* Title */}
-      <div>
-        <label htmlFor="title" className="block mb-1 font-semibold">Title</label>
-        <input
-          id="title"
-          {...register('title')}
-          className="w-full border rounded p-2"
-          placeholder="Enter forum title..."
-        />
-        {errors.title && (
-          <p className="text-red-500 text-sm">{errors.title.message}</p>
-        )}
-      </div>
+      
+      {/* Title - hanya muncul kalau bukan reply */}
+      {!isReply && (
+        <div>
+          <label htmlFor="title" className="block mb-1 font-semibold">Title</label>
+          <Input
+            id="title"
+            {...register('title')}
+            placeholder="Enter forum title..."
+          />
+          {errors.title && (
+            <p className="text-red-500 text-sm">{errors.title.message}</p>
+          )}
+        </div>
+      )}
 
-      {/* Description */}
+      {/* Description - selalu muncul */}
       <div>
         <label htmlFor="description" className="block mb-1 font-semibold">Description</label>
-        <textarea
+        <Textarea
           id="description"
           {...register('description')}
-          className="w-full border rounded p-2"
           placeholder="Enter forum description..."
           required
         />
@@ -71,27 +87,38 @@ const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, on
         )}
       </div>
 
-      {/* Tag */}
+      {/* Tag - selalu muncul */}
       <div>
         <label htmlFor="tag" className="block mb-1 font-semibold">Tag</label>
-        <select
-          id="tag"
-          {...register('tag')}
-          className="w-full border rounded p-2"
-          required
-        >
-          <option value="ikan">Ikan</option>
-          <option value="kolam">Kolam</option>
-          <option value="siklus">Siklus</option>
-          <option value="budidayaplus">BudidayaPlus</option>
-        </select>
+        <div className="flex flex-wrap gap-2">
+          {TAG_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setValue('tag', option.value)}
+              className={clsx(
+                "px-4 py-2 rounded-md border text-sm font-medium",
+                selectedTag === option.value
+                  ? "bg-blue-500 text-white border-blue-500"
+                  : "bg-white text-black border-gray-300 hover:border-blue-400"
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
         {errors.tag && (
           <p className="text-red-500 text-sm">{errors.tag.message}</p>
         )}
       </div>
 
-      <Button type="submit" className="w-full">
-        Submit
+      {/* Submit Button */}
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+      >
+        {isSubmitting ? 'Submitting...' : 'Submit'}
       </Button>
     </form>
   );
