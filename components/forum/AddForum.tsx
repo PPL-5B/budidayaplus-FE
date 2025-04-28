@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { IoIosAdd } from 'react-icons/io';
-import { Modal as DialogContent } from '@/components/ui/modal';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { Modal as DialogContent } from '@/components/ui/modal'; // Modal tetap dipakai
 import ForumForm from '@/components/forum/ForumForm';
 
 interface AddForumProps {
@@ -25,13 +25,20 @@ const AddForum: React.FC<AddForumProps> = ({ parentForumId, onForumAdded, isRepl
             {isReply ? 'Reply' : 'Add Forum'}
           </Button>
         </DialogTrigger>
-        <DialogContent title={isReply ? 'Reply to Forum' : 'Create Forum'}>
-          <ForumForm
-            setIsModalOpen={setIsModalOpen}
-            parentForumId={parentForumId}
-            onForumAdded={onForumAdded}
-            isReply={isReply}
-          />
+
+        <DialogContent
+          title=""
+          className="p-0 bg-[#EAF0FF] border-0 shadow-none rounded-md"
+        >
+          {/* Force hidden close button */}
+          <div className="relative w-full">
+            <ForumForm
+              setIsModalOpen={setIsModalOpen}
+              parentForumId={parentForumId}
+              onForumAdded={onForumAdded}
+              isReply={isReply}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
