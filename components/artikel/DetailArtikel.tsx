@@ -5,6 +5,7 @@ interface DetailArtikelProps {
       date: string;
       synopsis: string;
       categories: string[];
+      reference?: string; 
     };
   }
   
@@ -39,6 +40,9 @@ interface DetailArtikelProps {
         </div>
   
         <p className="text-gray-800">{article.synopsis}</p>
+        <p className="text-sm text-gray-500 mt-4">
+          <strong>Referensi:</strong> {article.reference}
+        </p>  
       </div>
     );
   };
