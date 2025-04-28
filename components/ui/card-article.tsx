@@ -7,6 +7,7 @@ interface CardArticleProps {
   date: string;
   synopsis: string;
   categories: string[];
+  references?: string[]; // Optional references
 }
 
 const categoryColorMap: Record<string, string> = {
@@ -15,7 +16,7 @@ const categoryColorMap: Record<string, string> = {
   "Nutrisi Pakan": "bg-red-800",
 };
 
-export default function CardArticle({ id, title, author, date, synopsis, categories }: CardArticleProps) {
+export default function CardArticle({ id, title, author, date, synopsis, categories, references }: CardArticleProps) {
   return (
     <div className="border rounded-lg p-4 space-y-3 shadow bg-white">
       <h2 className="text-blue-700 font-bold text-lg hover:underline">
@@ -26,7 +27,7 @@ export default function CardArticle({ id, title, author, date, synopsis, categor
         {categories.map((cat, i) => (
           <span
             key={i}
-            className={`text-white text-xs px-2 py-1 rounded ${categoryColorMap[cat] ?? 'bg-gray-500'}`}
+            className={`text-white text-xs px-2 py-1 rounded ${categoryColorMap[cat] ?? "bg-gray-500"}`}
           >
             {cat}
           </span>
@@ -44,6 +45,17 @@ export default function CardArticle({ id, title, author, date, synopsis, categor
         className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold"
       >
         Baca Selengkapnya ▸
+        {/* References Section */}
+        {references && references.length > 0 && (
+         <div className="mt-2 text-xs text-gray-400">
+           <p className="font-semibold">Referensi:</p>
+           <ul className="list-disc list-inside">
+             {references.map((ref, i) => (
+               <li key={i}>{ref}</li>
+             ))}
+           </ul>
+         </div>
+       )}
       </Link>
     </div>
   );
