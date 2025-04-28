@@ -1,7 +1,9 @@
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import ForumForm from '@/components/forum/ForumForm';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import ForumForm from '@/components/forum/ForumForm';
+import { createForum } from '@/lib/forum/createForum';
 
 // Mock createForum supaya tidak benar-benar call API
 jest.mock('@/lib/forum/createForum', () => ({
@@ -21,13 +23,9 @@ describe('ForumForm', () => {
       <ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} />
     );
 
-    // Judul
     expect(screen.getByLabelText(/judul/i)).toBeInTheDocument();
-    // Deskripsi
     expect(screen.getByLabelText(/deskripsi/i)).toBeInTheDocument();
-    // Tag
     expect(screen.getByLabelText(/tag/i)).toBeInTheDocument();
-    // Submit
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
@@ -36,11 +34,8 @@ describe('ForumForm', () => {
       <ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} isReply />
     );
 
-    // Title tidak ada
     expect(screen.queryByLabelText(/judul/i)).not.toBeInTheDocument();
-    // Deskripsi tetap ada
     expect(screen.getByLabelText(/deskripsi/i)).toBeInTheDocument();
-    // Tag tetap ada
     expect(screen.getByLabelText(/tag/i)).toBeInTheDocument();
   });
 
@@ -54,8 +49,7 @@ describe('ForumForm', () => {
     await user.type(screen.getByLabelText(/deskripsi/i), 'Ini deskripsi forum test.');
     await user.selectOptions(screen.getByLabelText(/tag/i), 'siklus');
 
-    const submitButton = screen.getByRole('button', { name: /submit/i });
-    await user.click(submitButton);
+    await user.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
       expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
@@ -69,20 +63,17 @@ describe('ForumForm', () => {
       <ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} />
     );
 
-    const submitButton = screen.getByRole('button', { name: /submit/i });
-    await user.click(submitButton);
+    await user.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
-      // Karena tidak mengisi apa-apa, error muncul
       expect(screen.getByText(/title is required/i)).toBeInTheDocument();
       expect(screen.getByText(/description is required/i)).toBeInTheDocument();
     });
   });
 
   it('handles API error gracefully', async () => {
-    // Ubah mock createForum supaya throw error
-    const { createForum } = require('@/lib/forum/createForum');
-    createForum.mockRejectedValueOnce(new Error('API Error'));
+    // Override mock supaya createForum gagal
+    (createForum as jest.Mock).mockRejectedValueOnce(new Error('API Error'));
 
     const user = userEvent.setup();
     render(
@@ -93,12 +84,11 @@ describe('ForumForm', () => {
     await user.type(screen.getByLabelText(/deskripsi/i), 'Deskripsi error');
     await user.selectOptions(screen.getByLabelText(/tag/i), 'ikan');
 
-    const submitButton = screen.getByRole('button', { name: /submit/i });
-    await user.click(submitButton);
+    await user.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
-      expect(mockSetIsModalOpen).not.toHaveBeenCalled(); // Modal tidak langsung tutup
-      expect(mockOnForumAdded).not.toHaveBeenCalled(); // Tidak panggil kalau gagal
+      expect(mockSetIsModalOpen).not.toHaveBeenCalled();
+      expect(mockOnForumAdded).not.toHaveBeenCalled();
     });
   });
 });
