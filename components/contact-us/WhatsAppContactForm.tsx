@@ -20,7 +20,7 @@ interface WhatsAppContactFormProps {
 
 const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitted, setIsModalOpen }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [ , setIsSuccess] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
 
   const {

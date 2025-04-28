@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { } from 'react';
 import { fetchProfile, getProfile } from '@/lib/profile';
 import ProfileComponent from '@/components/profile/ProfileComponent';
 import { Team } from '@/components/profile';
