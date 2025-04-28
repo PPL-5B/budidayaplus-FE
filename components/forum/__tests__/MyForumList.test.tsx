@@ -19,15 +19,16 @@ jest.mock('next/navigation', () => ({
 // Mock ForumCard to include onDeleteSuccess
 jest.mock('@/components/forum/ForumCard', () => ({
   __esModule: true,
-  default: ({ forum, onDeleteSuccess }: any) => (
+  default: (props: { forum: { id: string; description: string }; onDeleteSuccess?: (id: string) => void }) => (
     <div>
-      {forum.description}
-      {onDeleteSuccess && (
-        <button onClick={() => onDeleteSuccess(forum.id)}>Delete</button>
+      {props.forum.description}
+      {props.onDeleteSuccess && (
+        <button onClick={() => props.onDeleteSuccess?.(props.forum.id)}>Delete</button>
       )}
     </div>
   ),
 }));
+
 
 // Mock filterForums
 jest.mock('@/components/forum/SearchForum', () => ({
