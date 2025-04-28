@@ -11,7 +11,7 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('../DeleteForumContainer', () => ({
   __esModule: true,
-  default: ({ onSuccess, onClose }: any) => {
+  Default: ({ onSuccess, onClose }: any) => {
     // Simulasikan pemanggilan otomatis saat di-render
     React.useEffect(() => {
       onSuccess(); // trigger delete success

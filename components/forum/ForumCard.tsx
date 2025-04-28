@@ -6,7 +6,7 @@ import { Forum } from '@/types/forum';
 import DeleteForumContainer from './DeleteForumContainer';
 import { useRouter } from 'next/navigation';
 import ForumCardHeader from './ForumCardHeader';
-import { goToForumDetail } from '@/lib/forum/forumNavigation';
+import { ForumNavigation } from '@/lib/forum/forumNavigation';
 import ForumCardFooter from './ForumCardFooter';
 
 interface ForumCardProps {
@@ -27,7 +27,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess }) => {
   };
 
   const handleViewDetails = () => {
-    goToForumDetail(forum);
+    ForumNavigation()
     router.push(`/forum/${forum.id}`);
   };
 
