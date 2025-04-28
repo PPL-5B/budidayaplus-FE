@@ -8,10 +8,12 @@ import { createReply } from '@/lib/forum/createReply';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
+// Schema validasi
 const ReplySchema = z.object({
   description: z.string().min(1, 'Description is required'),
 });
 
+// Tipe untuk form input
 type ReplyInput = z.infer<typeof ReplySchema>;
 
 interface ReplyFormProps {
@@ -49,7 +51,9 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ setIsModalOpen, parentForumId, on
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label htmlFor="description" className="block mb-1">Description</label>
+        <label htmlFor="description" className="block mb-1">
+          Description
+        </label>
         <Textarea
           id="description"
           {...register('description')}
@@ -70,4 +74,4 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ setIsModalOpen, parentForumId, on
   );
 };
 
-export default ReplyForm; 
+export default ReplyForm;
