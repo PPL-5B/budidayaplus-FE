@@ -39,9 +39,7 @@ const ForumList: React.FC<ForumListProps> = ({ refresh = 0, updatedForum, search
     if (updatedForum) {
       setForums((prev) =>
         prev.map((f) =>
-          f.id === updatedForum.id
-            ? { ...f, description: updatedForum.description }
-            : f
+          f.id === updatedForum.id ? { ...f, description: updatedForum.description } : f
         )
       );
     }
@@ -50,6 +48,9 @@ const ForumList: React.FC<ForumListProps> = ({ refresh = 0, updatedForum, search
   const handleDeleteSuccess = (deletedId: string) => {
     setForums((prev) => prev.filter((forum) => forum.id !== deletedId));
   };
+
+  // Handler untuk memperbarui forum setelah vote
+  const handleVoteSuccess = (updatedForum: Forum) => { setForums((prev) => prev.map((forum) =>forum.id === updatedForum.id ? updatedForum : forum));};
 
   if (loading) return <p>Memuat Forum ...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -60,7 +61,7 @@ const ForumList: React.FC<ForumListProps> = ({ refresh = 0, updatedForum, search
     <div className="space-y-4">
       {filteredForums.length > 0 ? (
         filteredForums.map((forum) => (
-          <ForumCard key={forum.id} forum={forum} onDeleteSuccess={handleDeleteSuccess} />
+          <ForumCard key={forum.id} forum={forum} onDeleteSuccess={handleDeleteSuccess} onVoteSuccess={handleVoteSuccess} />
         ))
       ) : (
         <p className="text-gray-500">Forum tidak ditemukan.</p>

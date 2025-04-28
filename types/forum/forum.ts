@@ -9,7 +9,7 @@ export type Forum = {
     tag: ForumTag;
     timestamp: Date;
     parent_id: string | null;
-    replies: Forum[]; 
+    replies: Forum[];
     upvotes: number;
     downvotes: number;
 };
