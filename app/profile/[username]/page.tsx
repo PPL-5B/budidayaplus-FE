@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { fetchProfile, getProfile } from '@/lib/profile';
 import ProfileComponent from '@/components/profile/ProfileComponent';
 import { Team } from '@/components/profile';
-import FAQ from '@/components/faq/FAQ'; 
-import Link from 'next/link';
+import FAQ from '@/components/faq/FAQ';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { DialogContentNoX } from '@/components/ui/dialog-content-no-x';
+import BigButton from '@/components/ui/big-button';
+import { IoLogoWhatsapp } from 'react-icons/io';
+import WhatsAppContactForm from '@/components/contact-us/WhatsAppContactForm';
 
 interface ProfilePageProps {
   params: { username: string };
@@ -30,13 +34,29 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
       <ProfileComponent isUserSelf={isUserSelf} profile={profile} />
       <Team userRole={userRole} isUserSelf={isUserSelf} username={params.username} />
       <FAQ />
-      <div className="mt-8 flex justify-center">
-        <Link
-          href="/contact-us"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Hubungi Kami
-        </Link>
+
+      {/* Heading baru untuk Hubungi Kami */}
+      <div className="mt-12 px-6">
+        <h2 className="text-2xl font-bold text-left mb-4">Hubungi Kami</h2>
+
+        {/* Dialog popup untuk form */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <BigButton
+              icon={<IoLogoWhatsapp size={24} />}
+              text="Hubungi Kami"
+            />
+          </DialogTrigger>
+
+          <DialogContentNoX>
+            <div className="relative flex items-center justify-center w-full mb-4">
+              <h2 className="text-[#2254C5] text-lg font-bold text-center">
+              </h2>
+            </div>
+
+            <WhatsAppContactForm />
+          </DialogContentNoX>
+        </Dialog>
       </div>
     </div>
   );
