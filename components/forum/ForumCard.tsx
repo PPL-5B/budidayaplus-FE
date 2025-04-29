@@ -3,12 +3,11 @@
 import React, { useState } from 'react';
 import { Forum } from '@/types/forum';
 import DeleteForumContainer from './DeleteForumContainer';
-import { useRouter } from 'next/navigation';
 import ForumCardHeader from './ForumCardHeader';
 import ForumCardFooter from './ForumCardFooter';
 import { useVote } from '@/hooks/useVote';
 import { useUser } from '@/hooks/useUser';
-import { ForumNavigation } from '@/lib/forum/forumNavigation';
+import { useForumNavigation } from '@/lib/forum/forumNavigation';
 
 interface ForumCardProps {
   forum: Forum;
@@ -21,7 +20,9 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   const [tempDesc, setTempDesc] = useState(forum.description);
   const [desc, setDesc] = useState(forum.description);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const router = useRouter();
+
+  const { goToDetail } = useForumNavigation();
+  const user = useUser();
 
   const {
     upvotes,
@@ -43,42 +44,29 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
     });
   };
 
-  const user = useUser();
-
-
-  // Tentukan apakah user adalah pemilik forum
-  const isOwner = !!(user && forum.user.id === user.id) ;
+  const isOwner = !!(user && forum.user.id === user.id);
 
   const handleViewDetails = () => {
-    ForumNavigation();
-    router.push(`/forum/${forum.id}`);
+    goToDetail(forum);
   };
 
   const handleVote = async (voteType: 'upvote' | 'downvote') => {
-  try {
-    if (voteType === 'upvote') {
-      if (userVote === 'upvote') {
-        await handleCancelVote();
+    try {
+      if (voteType === 'upvote') {
+        userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
       } else {
-        await handleUpvote();
+        userVote === 'downvote' ? await handleCancelVote() : await handleDownvote();
       }
-    } else if (voteType === 'downvote') {
-      if (userVote === 'downvote') {
-        await handleCancelVote();
-      } else {
-        await handleDownvote();
-      }
-    }
 
-    onVoteSuccess?.({
-      ...forum,
-      upvotes,
-      downvotes,
-    });
-  } catch (error) {
-    console.error('Error voting:', error);
-  }
-};
+      onVoteSuccess?.({
+        ...forum,
+        upvotes,
+        downvotes,
+      });
+    } catch (error) {
+      console.error('Error voting:', error);
+    }
+  };
 
   if (!isInitialized) {
     return <div className="w-full border rounded-lg p-4 shadow-md bg-white">Loading...</div>;
@@ -130,7 +118,8 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         userVote={userVote === 'upvote' || userVote === 'downvote' ? userVote : null}
         handleVote={handleVote}
         isLoading={isLoading}
-        isOwner={isOwner}  />
+        isOwner={isOwner}
+      />
 
       <DeleteForumContainer
         forumId={forum.id}
