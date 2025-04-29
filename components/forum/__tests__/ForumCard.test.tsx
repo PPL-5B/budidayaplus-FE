@@ -11,7 +11,7 @@ jest.mock('next/navigation', () => ({
 // Mock DeleteForumContainer
 jest.mock('../DeleteForumContainer', () => ({
   __esModule: true,
-  default: function MockDeleteForumContainer({ forumId, isOpen, onClose, onSuccess }: any) {
+  default: function MockDeleteForumContainer({ isOpen, onClose, onSuccess }: { isOpen: boolean; onClose: () => void; onSuccess: () => void }) {
     React.useEffect(() => {
       if (isOpen) {
         onSuccess();
@@ -25,7 +25,17 @@ jest.mock('../DeleteForumContainer', () => ({
 // Mock ForumCardFooter supaya tidak tergantung vote style
 jest.mock('../ForumCardFooter', () => ({
   __esModule: true,
-  default: ({ onEdit, onDelete, onViewDetails, handleVote }: any) => (
+  default: ({
+    onEdit,
+    onDelete,
+    onViewDetails,
+    handleVote,
+  }: {
+    onEdit: () => void;
+    onDelete: () => void;
+    onViewDetails: () => void;
+    handleVote: (type: 'upvote' | 'downvote') => void;
+  }) => (
     <div>
       <button onClick={onEdit}>Edit</button>
       <button onClick={onDelete}>Hapus</button>
@@ -155,15 +165,15 @@ describe('ForumCard', () => {
       handleDownvote: jest.fn(),
       handleCancelVote,
     });
-  
+
     render(<ForumCard forum={forumMock} />);
     fireEvent.click(screen.getByText('Upvote'));
-  
+
     await waitFor(() => {
       expect(handleCancelVote).toHaveBeenCalled();
     });
   });
-  
+
   it('cancels vote when user already downvoted and clicks downvote again', async () => {
     const handleCancelVote = jest.fn();
     (useVote as jest.Mock).mockReturnValue({
@@ -176,15 +186,15 @@ describe('ForumCard', () => {
       handleDownvote: jest.fn(),
       handleCancelVote,
     });
-  
+
     render(<ForumCard forum={forumMock} />);
     fireEvent.click(screen.getByText('Downvote'));
-  
+
     await waitFor(() => {
       expect(handleCancelVote).toHaveBeenCalled();
     });
   });
-  
+
   it('handles error when voting fails', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     (useVote as jest.Mock).mockReturnValue({
@@ -197,16 +207,16 @@ describe('ForumCard', () => {
       handleDownvote: jest.fn(),
       handleCancelVote: jest.fn(),
     });
-  
+
     render(<ForumCard forum={forumMock} />);
     fireEvent.click(screen.getByText('Upvote'));
-  
+
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error voting:', expect.any(Error));
     });
-  
+
     consoleErrorSpy.mockRestore();
-  });  
+  });
 
   it('handles voting (upvote and downvote)', async () => {
     const handleUpvote = jest.fn();
@@ -239,14 +249,14 @@ describe('ForumCard', () => {
 
   it('calls onVoteSuccess when saving edited description', () => {
     const mockOnVoteSuccess = jest.fn();
-  
+
     render(<ForumCard forum={forumMock} onVoteSuccess={mockOnVoteSuccess} />);
-  
+
     fireEvent.click(screen.getByText('Edit'));
     const textarea = screen.getByRole('textbox');
     fireEvent.change(textarea, { target: { value: 'Updated by Save' } });
     fireEvent.click(screen.getByText('Simpan'));
-  
+
     expect(mockOnVoteSuccess).toHaveBeenCalledWith(
       expect.objectContaining({
         ...forumMock,
@@ -257,7 +267,7 @@ describe('ForumCard', () => {
 
   it('calls onVoteSuccess when voting succeeds', async () => {
     const mockOnVoteSuccess = jest.fn();
-  
+
     (useVote as jest.Mock).mockReturnValue({
       upvotes: 10,
       downvotes: 2,
@@ -268,10 +278,10 @@ describe('ForumCard', () => {
       handleDownvote: jest.fn(),
       handleCancelVote: jest.fn(),
     });
-  
+
     render(<ForumCard forum={forumMock} onVoteSuccess={mockOnVoteSuccess} />);
     fireEvent.click(screen.getByText('Upvote'));
-  
+
     await waitFor(() => {
       expect(mockOnVoteSuccess).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -282,5 +292,4 @@ describe('ForumCard', () => {
       );
     });
   });
-  
 });
