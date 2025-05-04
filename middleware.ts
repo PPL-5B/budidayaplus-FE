@@ -46,8 +46,16 @@ export async function middleware(req: NextRequest) {
   console.log("Access Token:", accessToken);
   console.log("Refresh Token:", refreshToken);
 
-  if (!accessToken) {
+  let isValid = await validateAccessToken(accessToken);
+
+  if (!isValid) {
+    const newAccessToken = await refreshAccessToken(refreshToken);
+    if (!newAccessToken) {
       return NextResponse.redirect(new URL("/auth/login", req.url))
+    }
+    const response = NextResponse.next();
+    response.cookies.set("accessToken", newAccessToken, { path: "/", httpOnly: true });
+    return response
   }
 
   return NextResponse.next();
