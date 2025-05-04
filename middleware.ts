@@ -51,8 +51,11 @@ export async function middleware(req: NextRequest) {
   if (!isValid) {
     return NextResponse.redirect(new URL("/auth/login", req.url))
   }
-
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (accessToken) {
+    response.cookies.set("accessToken", accessToken, { path: "/", httpOnly: true });
+  }
+  return response
 }
 
 export const config = {
