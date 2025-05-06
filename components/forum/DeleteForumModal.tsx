@@ -3,7 +3,6 @@ import CancelButton from "../ui/cancel-button";
 import DangerButton from "../ui/danger-button";
 
 interface DeleteForumModalProps {
-  forumTitle: string;
   onDelete: () => void;
   onClose: () => void;
   loading?: boolean;
@@ -11,7 +10,6 @@ interface DeleteForumModalProps {
 }
 
 const DeleteForumModal: React.FC<DeleteForumModalProps> = ({
-  forumTitle,
   onDelete,
   onClose,
   loading = false,

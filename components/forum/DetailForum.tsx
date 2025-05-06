@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation';
 
 interface ForumDetailProps {
   forum: {
-    id: number;
+    id: string;
     description: string;
     timestamp: string;
     user: {
       first_name: string;
       last_name: string;
-      email: string;
+      phone_number: string;
     };
   };
 }
@@ -42,8 +42,7 @@ const DetailForum: React.FC<{ forum: ForumDetailProps['forum'] }> = ({ forum }) 
 
         {/* Isi Detail */}
         <div className="text-[13px] text-[#333] space-y-1">
-          <p><strong>Username:</strong> {forum.user.first_name}</p>
-          <p><strong>Email:</strong> {forum.user.last_name}</p>
+          <p><strong>Username:</strong> {forum.user.first_name} {forum.user.last_name}</p>
           <p><strong>Tanggal Pembuatan:</strong> {tanggal}</p>
           <p><strong>Jam Pembuatan:</strong> {jam}</p>
           <p><strong>Deskripsi Forum:</strong></p>

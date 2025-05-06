@@ -8,11 +8,11 @@ import ForumList from '@/components/forum/MyForumList';
 import Frame from '@/src/assets/Frame.svg';
 import { ChevronLeft } from 'lucide-react';
 
-
 const ForumPage: React.FC = () => {
   const [refreshForums, setRefreshForums] = useState(0);
   const [updatedForum, setUpdatedForum] = useState<Forum | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTag, setSelectedTag] = useState(''); // 🔥 filter tag
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -41,29 +41,28 @@ const ForumPage: React.FC = () => {
   }, [searchParams, router]);
 
   return (
-  <div className="h-screen overflow-y-auto p-8 pb-40 bg-[#EAF0FF]">
-
-    <button
-          onClick={() => router.push('/')}
-          className="flex items-center text-sm text-blue-600 hover:underline mb-3"
-        >
-          <ChevronLeft size={16} className="mr-1" />
-          Kembali
-    </button>
-
-    <div className="flex items-center justify-between mb-5 mt-5">
-      {/* Kiri: Ikon + Teks */}
-      <div className="flex items-center gap-2">
-        <Frame className="w-[30px] h-[30px]" />
-        <h1 className="text-[24px] font-bold leading-[36px] text-[#14142B]">
-          Daftar Forum
-        </h1>
+    <div className="h-screen overflow-y-auto p-8 pb-40 bg-[#EAF0FF]">
+      <button
+        onClick={() => router.push('/')}
+        className="flex items-center text-sm text-blue-600 hover:underline mb-3"
+      >
+        <ChevronLeft size={16} className="mr-1" />
+        Kembali
+     </button>
+      <div className="flex items-center justify-between mb-5 mt-5">
+        {/* Kiri: Ikon + Teks */}
+        <div className="flex items-center gap-2">
+          <Frame className="w-[30px] h-[30px]" />
+          <h1 className="text-[24px] font-bold leading-[36px] text-[#14142B]">
+            Daftar Forum
+          </h1>
+        </div>
+        <AddForum onForumAdded={handleForumAdded} />
       </div>
-      <AddForum onForumAdded={handleForumAdded}/>
-    </div>
 
-      {/* 🔍 Search Box */}
-      <div className="mb-5">
+      {/* 🔍 Search + Filter */}
+      <div className="flex gap-4 mb-5">
+        {/* Search Box */}
         <div className="flex items-center w-[300px] h-[38px] rounded-full bg-white px-4 shadow-sm">
           <svg
             className="w-[16px] h-[16px] text-[#979797]"
@@ -86,13 +85,34 @@ const ForumPage: React.FC = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+
+        {/* Filter Dropdown */}
+        <div className="flex items-center w-[180px] h-[38px] rounded-full bg-white px-4 shadow-sm relative">
+          <select
+            value={selectedTag}
+            onChange={(e) => setSelectedTag(e.target.value)}
+            className="w-full appearance-none bg-transparent outline-none text-[#979797] placeholder:text-[#979797] text-[16px] capitalize font-normal"
+          >
+            <option value="">Semua</option>
+            <option value="ikan">Ikan</option>
+            <option value="kolam">Kolam</option>
+            <option value="siklus">Siklus</option>
+            <option value="budidayaplus">BudidayaPlus</option>
+          </select>
+
+          {/* Arrow Icon */}
+          <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
-  
-    {/*Forum list di luar search box */}
-    <ForumList refresh={refreshForums} updatedForum={updatedForum} searchQuery={searchQuery}/>
-  </div>
+
+      {/* 🧹 Forum List */}
+      <ForumList refresh={refreshForums} updatedForum={updatedForum} searchQuery={searchQuery} selectedTag={selectedTag} />
+    </div>
   )
-}
-  
+};
 
 export default ForumPage;

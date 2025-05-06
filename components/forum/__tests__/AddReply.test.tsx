@@ -2,20 +2,29 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AddReply from '@/components/forum/AddReply';
 import '@testing-library/jest-dom';
 
-// Mock ReplyForm
+// Buat interface props untuk MockReplyForm
+interface MockReplyFormProps {
+  setIsModalOpen: (isOpen: boolean) => void;
+  onReplyAdded?: () => void;
+}
+
+
 jest.mock('@/components/forum/ReplyForm', () => {
-  return function MockReplyForm({ setIsModalOpen, onReplyAdded }: any) {
-    return (
-      <div>
-        <p>Reply Form</p>
-        <button onClick={() => {
-          setIsModalOpen(false);
-          if (onReplyAdded) onReplyAdded();
-        }}>
-          Submit Mock
-        </button>
-      </div>
-    );
+  return {
+    __esModule: true,
+    default: ({ setIsModalOpen, onReplyAdded }: MockReplyFormProps) => {
+      return (
+        <div data-testid="reply-form">
+          <p>Reply Form</p>
+          <button onClick={() => {
+            setIsModalOpen(false);
+            if (onReplyAdded) onReplyAdded();
+          }}>
+            Submit Mock
+          </button>
+        </div>
+      );
+    }
   };
 });
 
@@ -34,13 +43,11 @@ describe('AddReply', () => {
   it('opens modal when Add Reply button is clicked', async () => {
     render(<AddReply parentForumId="forum123" />);
 
-    // Modal belum muncul
-    expect(screen.queryByText(/reply form/i)).not.toBeInTheDocument();
+    expect(screen.queryByTestId('reply-form')).not.toBeInTheDocument();
 
-    // Klik tombol
     fireEvent.click(screen.getByRole('button', { name: /add reply/i }));
 
-    // Modal muncul
+    expect(await screen.findByTestId('reply-form')).toBeInTheDocument();
     expect(await screen.findByText(/reply form/i)).toBeInTheDocument();
   });
 
@@ -53,7 +60,7 @@ describe('AddReply', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockOnReplyAdded).toHaveBeenCalled();
+      expect(mockOnReplyAdded).toHaveBeenCalledTimes(1);
     });
   });
 });

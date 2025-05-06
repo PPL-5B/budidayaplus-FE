@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ReplyForm from '@/components/forum/ReplyForm';
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 
 // Mock createReply API
 jest.mock('@/lib/forum/createReply', () => ({
@@ -28,23 +28,28 @@ describe('ReplyForm', () => {
   it('shows validation error when description is empty', async () => {
     render(<ReplyForm setIsModalOpen={mockSetIsModalOpen} parentForumId="forum123" />);
 
-    fireEvent.click(screen.getByRole('button', { name: /submit reply/i }));
+    const submitButton = screen.getByRole('button', { name: /submit reply/i });
+    await userEvent.click(submitButton);
 
-    await waitFor(() => {
-      expect(screen.getByText(/description is required/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/description is required/i)).toBeInTheDocument();
   });
 
   it('submits form successfully with valid data', async () => {
     (createReply as jest.Mock).mockResolvedValueOnce({});
 
-    render(<ReplyForm setIsModalOpen={mockSetIsModalOpen} parentForumId="forum123" onReplyAdded={mockOnReplyAdded} />);
+    render(
+      <ReplyForm
+        setIsModalOpen={mockSetIsModalOpen}
+        parentForumId="forum123"
+        onReplyAdded={mockOnReplyAdded}
+      />
+    );
 
     const descriptionTextarea = screen.getByPlaceholderText(/enter your reply/i);
     const submitButton = screen.getByRole('button', { name: /submit reply/i });
 
     await userEvent.type(descriptionTextarea, 'This is a reply');
-    fireEvent.click(submitButton);
+    await userEvent.click(submitButton);
 
     await waitFor(() => {
       expect(createReply).toHaveBeenCalledWith({
@@ -57,7 +62,7 @@ describe('ReplyForm', () => {
   });
 
   it('handles error when createReply fails', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     (createReply as jest.Mock).mockRejectedValueOnce(new Error('API failed'));
 
     render(<ReplyForm setIsModalOpen={mockSetIsModalOpen} parentForumId="forum123" />);
@@ -66,14 +71,17 @@ describe('ReplyForm', () => {
     const submitButton = screen.getByRole('button', { name: /submit reply/i });
 
     await userEvent.type(descriptionTextarea, 'Another reply');
-    fireEvent.click(submitButton);
+    await userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(createReply).toHaveBeenCalled();
-      expect(mockSetIsModalOpen).not.toHaveBeenCalled();
-      expect(consoleSpy).toHaveBeenCalledWith('Error creating reply:', expect.any(Error));
+      expect(createReply).toHaveBeenCalledWith({
+        description: 'Another reply',
+        parent_id: 'forum123',
+      });
+      expect(mockSetIsModalOpen).not.toHaveBeenCalled(); // Modal tidak ditutup kalau gagal
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error creating reply:', expect.any(Error));
     });
 
-    consoleSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 });

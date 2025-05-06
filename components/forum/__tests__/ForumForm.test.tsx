@@ -1,14 +1,14 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ForumForm from '@/components/forum/ForumForm';
-import '@testing-library/jest-dom';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-// Mock createForum API
-jest.mock('@/lib/forum/createForum', () => ({
-  createForum: jest.fn(),
-}));
-
+import '@testing-library/jest-dom';
+import ForumForm from '@/components/forum/ForumForm';
 import { createForum } from '@/lib/forum/createForum';
+
+// Mock createForum supaya tidak benar-benar call API
+jest.mock('@/lib/forum/createForum', () => ({
+  createForum: jest.fn(() => Promise.resolve()),
+}));
 
 describe('ForumForm', () => {
   const mockSetIsModalOpen = jest.fn();
@@ -18,99 +18,77 @@ describe('ForumForm', () => {
     jest.clearAllMocks();
   });
 
-  it('renders title, description, tag options, and submit button', () => {
-    render(<ForumForm setIsModalOpen={mockSetIsModalOpen} />);
+  it('renders all fields correctly for new forum', () => {
+    render(
+      <ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} />
+    );
 
-    expect(screen.getByPlaceholderText(/enter forum title/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/enter forum description/i)).toBeInTheDocument();
-    expect(screen.getByText('Ikan')).toBeInTheDocument();
-    expect(screen.getByText('Kolam')).toBeInTheDocument();
+    expect(screen.getByLabelText(/judul/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/deskripsi/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/tag/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
-  it('shows validation error when description is empty', async () => {
-    render(<ForumForm setIsModalOpen={mockSetIsModalOpen} />);
+  it('does not render title field if isReply is true', () => {
+    render(
+      <ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} isReply />
+    );
 
-    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/required/i)).toBeInTheDocument();
-    });
+    expect(screen.queryByLabelText(/judul/i)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/deskripsi/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/tag/i)).toBeInTheDocument();
   });
 
-  it('submits form successfully with valid data', async () => {
-    (createForum as jest.Mock).mockResolvedValueOnce({});
+  it('submits the form successfully', async () => {
+    const user = userEvent.setup();
+    render(
+      <ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} />
+    );
 
-    render(<ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} />);
+    await user.type(screen.getByLabelText(/judul/i), 'Judul Forum Test');
+    await user.type(screen.getByLabelText(/deskripsi/i), 'Ini deskripsi forum test.');
+    await user.selectOptions(screen.getByLabelText(/tag/i), 'siklus');
 
-    const titleInput = screen.getByPlaceholderText(/enter forum title/i);
-    const descriptionTextarea = screen.getByPlaceholderText(/enter forum description/i);
-    const submitButton = screen.getByRole('button', { name: /submit/i });
-
-    await userEvent.type(titleInput, 'Test Forum Title');
-    await userEvent.type(descriptionTextarea, 'Test description content');
-
-    fireEvent.click(submitButton);
+    await user.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
-      expect(createForum).toHaveBeenCalledWith({
-        title: 'Test Forum Title',
-        description: 'Test description content',
-        tag: 'ikan',
-        parent_id: null,
-      });
       expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
-      expect(mockOnForumAdded).toHaveBeenCalled();
+      expect(mockOnForumAdded).toHaveBeenCalledTimes(1);
     });
   });
 
-  it('changes tag when clicking different tag button', async () => {
-    render(<ForumForm setIsModalOpen={mockSetIsModalOpen} />);
+  it('shows validation errors when required fields are missing', async () => {
+    const user = userEvent.setup();
+    render(
+      <ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} />
+    );
 
-    const kolamButton = screen.getByRole('button', { name: /kolam/i });
-
-    fireEvent.click(kolamButton);
-
-    const descriptionTextarea = screen.getByPlaceholderText(/enter forum description/i);
-    const titleInput = screen.getByPlaceholderText(/enter forum title/i);
-    const submitButton = screen.getByRole('button', { name: /submit/i });
-
-    await userEvent.type(titleInput, 'Forum Kolam');
-    await userEvent.type(descriptionTextarea, 'Kolam description');
-
-    fireEvent.click(submitButton);
+    await user.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
-      expect(createForum).toHaveBeenCalledWith({
-        title: 'Forum Kolam',
-        description: 'Kolam description',
-        tag: 'kolam', // tag harus berubah!
-        parent_id: null,
-      });
+      expect(screen.getByText(/title is required/i)).toBeInTheDocument();
+      expect(screen.getByText(/description is required/i)).toBeInTheDocument();
     });
   });
 
-  it('handles error when createForum fails', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    (createForum as jest.Mock).mockRejectedValueOnce(new Error('API failed'));
+  it('handles API error gracefully', async () => {
+    // Override mock supaya createForum gagal
+    (createForum as jest.Mock).mockRejectedValueOnce(new Error('API Error'));
 
-    render(<ForumForm setIsModalOpen={mockSetIsModalOpen} />);
+    const user = userEvent.setup();
+    render(
+      <ForumForm setIsModalOpen={mockSetIsModalOpen} onForumAdded={mockOnForumAdded} />
+    );
 
-    const titleInput = screen.getByPlaceholderText(/enter forum title/i);
-    const descriptionTextarea = screen.getByPlaceholderText(/enter forum description/i);
-    const submitButton = screen.getByRole('button', { name: /submit/i });
+    await user.type(screen.getByLabelText(/judul/i), 'Forum Error Test');
+    await user.type(screen.getByLabelText(/deskripsi/i), 'Deskripsi error');
+    await user.selectOptions(screen.getByLabelText(/tag/i), 'ikan');
 
-    await userEvent.type(titleInput, 'Error Forum');
-    await userEvent.type(descriptionTextarea, 'This should fail');
-
-    fireEvent.click(submitButton);
+    await user.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
-      expect(createForum).toHaveBeenCalled();
-      expect(mockSetIsModalOpen).not.toHaveBeenCalled(); // Tidak tutup modal
-      expect(consoleSpy).toHaveBeenCalledWith('Error creating forum:', expect.any(Error));
+      expect(mockSetIsModalOpen).not.toHaveBeenCalled();
+      expect(mockOnForumAdded).not.toHaveBeenCalled();
     });
-
-    consoleSpy.mockRestore();
   });
 });

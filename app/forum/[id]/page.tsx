@@ -35,7 +35,7 @@ const ForumDetailPage = () => {
   const router = useRouter();
   const params = useParams();
 
-  const forumId = params?.id || (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedForum') || '{}').id : null);
+  const forumId = params?.id || (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedForum') ?? '{}').id : null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
