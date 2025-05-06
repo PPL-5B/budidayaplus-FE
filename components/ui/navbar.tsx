@@ -1,51 +1,56 @@
-'use client'
+'use client';
+import React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useProfile } from '@/hooks/useProfile';
 
-import React from 'react'
-import { Button } from '@/components/ui/button'
-import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
-import { useProfile } from '@/hooks/useProfile'
+// Import Heroicons
+import { CheckCircleIcon, UserIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon as CheckCircleIconOutline, UserIcon as UserIconOutline } from '@heroicons/react/24/outline';
+import { Home, Fish } from 'lucide-react';
 
 const menuItems = [
-  { name: 'Home', href: '/' },
-  { name: 'Pond', href: '/pond' },
-  { name: 'Task', href: '/task' },
-  { name: 'Profile', href: '/profile' },
-]
+  { name: 'Beranda', href: '/', icon: Home, activeIcon: Home },
+  { name: 'Kolam', href: '/pond', icon: Fish, activeIcon: Fish },
+  { name: 'Tugas', href: '/task', icon: CheckCircleIconOutline, activeIcon: CheckCircleIcon },
+  { name: 'Profil', href: '/profile', icon: UserIconOutline, activeIcon: UserIcon },
+];
 
 const Navbar = () => {
-  const pathname = usePathname()
-  const router = useRouter()
+  const pathname = usePathname();
+  const router = useRouter();
+  const profile = useProfile();
+  const username = profile?.user.phone_number || '';
+
   const handleNavigation = (href: string) => {
-    router.push(href)
-  }
-  const profile = useProfile()
-  const username = profile?.user.phone_number || ''
-
-  if (pathname.startsWith('/auth')) return (
-    <div>
-
-    </div>
-  )
-
+    router.push(href === '/profile' ? `/profile/${username}` : href);
+  };
 
   return (
-    <div className='flex fixed bottom-0 justify-around border-t-gray-50 bg-[#2154C5] w-full sm:hidden h-20 items-center'>
+    <div className="flex justify-center items-center gap-7 bg-[#EAF0FF] px-4 py-3 w-full h-full">
       {menuItems.map((item) => {
-        const isActive = item.href === '/profile' ? pathname.startsWith(item.href) : pathname === item.href
-        return isActive ? (
-          <Button key={item.name} className='bg-white hover:bg-white'>
-            <Image src={`/navbar/pressed/${item.name}.svg`} height={50} width={50} color='#2154C5' alt={item.name} className='w-8 h-8' />
-            <p className='text-[#2154C5] ml-2'>{item.name}</p>
-          </Button>
-        ) : (
-          <Button key={item.name} onClick={() => handleNavigation(item.href === '/profile' ? `/profile/${username}` : item.href)} size={'icon'} className='bg-transparent hover:bg-transparent'>
-            <Image src={`/navbar/idle/${item.name}.svg`} height={50} width={50} alt={item.name} className='w-8 h-8' />
-          </Button>
-        )
+        const isActive = pathname === item.href ||
+          (item.href === '/profile' && pathname.startsWith('/profile'));
+        const Icon = isActive ? item.activeIcon : item.icon;
+
+        return (
+          <button
+            key={item.name}
+            type="button"
+            onClick={() => handleNavigation(item.href)}
+            className={`w-16 flex flex-col items-center cursor-pointer ${isActive ? 'text-blue-700' : 'text-neutral-600'}`}
+          >
+            {/* Icon */}
+            <Icon className="w-6 h-6" />
+
+            {/* Text */}
+            <div className="text-xs font-medium mt-1">
+              {item.name}
+            </div>
+          </button>
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
