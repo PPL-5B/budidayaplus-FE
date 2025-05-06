@@ -9,6 +9,9 @@ const nextConfig = {
     });
     return config;
   },
+  images: {
+    domains: ['www.svgrepo.com'],
+  },
 };
 
 export default nextConfig;

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen } from "@testing-library/react";
@@ -15,6 +16,7 @@ describe("DaftarArtikel", () => {
       originalConsoleError(...args);
     };
   });
+
 
   afterAll(() => {
     console.error = originalConsoleError;
@@ -42,7 +44,6 @@ describe("DaftarArtikel", () => {
 
     const CustomDaftarArtikel = require("@/components/artikel/DaftarArtikel").default;
     render(<CustomDaftarArtikel />);
-
     expect(screen.getByText("Daftar Artikel")).toBeInTheDocument();
     expect(screen.queryByTestId("mock-card-article")).not.toBeInTheDocument();
   });
@@ -64,3 +65,4 @@ describe("DaftarArtikel", () => {
     );
   });
 });
+

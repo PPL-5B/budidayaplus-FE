@@ -1,9 +1,12 @@
+// app/page.tsx
 import React from "react";
-import Cycle from "@/components/cycle/Cycle"; // The file above
+import Cycle from "@/components/cycle/Cycle";
 import TaskByDateList from "@/components/tasks/TaskByDateList";
+import DaftarArtikel from "@/components/artikel/DaftarArtikel"; // ✅ tambahkan ini
 import { formatDate } from "date-fns";
 import { id } from "date-fns/locale";
 import Image from "next/image";
+
 
 export default function Home() {
   return (
@@ -22,6 +25,7 @@ export default function Home() {
         />
       </div>
 
+
       <div className="flex gap-2 items-center justify-center w-full">
         <div className="w-[80%] flex gap-2">
           <div className="h-5 w-0.5 bg-[#ff8585]" />
@@ -31,16 +35,16 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Renders your Cycle component with both buttons */}
+
       <Cycle />
+
 
       <div className="flex flex-col items-center w-full">
         <p className="mt-10 py-10 pb-5 w-[80%] text-2xl font-medium text-neutral-60">
           Tugas Hari Ini
         </p>
         <TaskByDateList />
-      </div>
-  
+      </div>  
       <div className="w-full flex justify-center mt-28">
   <details className="w-full md:w-[60%] rounded-md bg-neutral-100 text-center group">
     <summary className="px-4 py-3 text-lg text-black font-medium cursor-pointer list-none group-open:mb-4">
@@ -63,3 +67,6 @@ export default function Home() {
 
   );
 }
+
+
+

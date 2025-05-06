@@ -27,6 +27,7 @@ const articles = [
   },
 ];
 
+
 export default function DaftarArtikel() {
   return (
     <section className="space-y-6 p-4">
@@ -37,3 +38,4 @@ export default function DaftarArtikel() {
     </section>
   );
 }
+
