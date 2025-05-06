@@ -17,6 +17,7 @@ interface DetailArtikelProps {
         <h1 className="text-3xl font-bold text-gray-900 mb-4">{article.title}</h1>
   
         {/* Info Penulis & Waktu Baca */}
+
         <div className="text-sm text-gray-600 mt-2 mb-4">
           <p>Oleh: {article.author}</p>
           <p>{article.date} ● {readingTime} menit untuk membaca</p>
@@ -41,9 +42,11 @@ interface DetailArtikelProps {
         </div>
   
         {/* Isi Artikel */}
+
         <p className="text-gray-800">{article.synopsis}</p>
       </div>
     );
   };
   
   export default DetailArtikel;
+
