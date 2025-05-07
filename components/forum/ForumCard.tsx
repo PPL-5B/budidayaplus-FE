@@ -112,7 +112,7 @@ const ForumCard: React.FC<ForumCardProps> = ({
           />
         </div>
       ) : (
-        <p className="text-[12px] text-[#646464] line-clamp-2 mb-2">
+        <p className="text-[12px] text-[#646464] whitespace-pre-line mb-2">
           {desc}
         </p>
       )}
