@@ -22,6 +22,8 @@ const EditForumForm: React.FC<EditForumFormProps> = ({
   const [title, setTitle] = useState(initialTitle);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingDesc, setIsEditingDesc] = useState(false);
 
   const handleSave = async () => {
     if (!desc.trim()) {
@@ -54,41 +56,60 @@ const EditForumForm: React.FC<EditForumFormProps> = ({
 
   return (
     <div className="flex flex-col gap-2 mb-8">
-      <input 
-        type="text" 
-        value={title}
-        onChange={(e) => setTitle(e.target.value)} 
-        placeholder="Judul forum"
-        className="w-full p-2 border rounded text-sm"
-        disabled={isLoading}
-        required
-      />
-      <textarea 
-        value={desc} 
-        onChange={(e) => setDesc(e.target.value)} 
-        placeholder="Deskripsi forum"
-        className="w-full p-2 border rounded text-sm min-h-[80px]"
-        disabled={isLoading}
-        required
-      />
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <div className="flex gap-2 justify-end">
-        <button 
-          onClick={onCancel}
-          className="px-3 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300"
-          disabled={isLoading}
-        >
-          Batal
-        </button>
-        <button 
-          onClick={handleSave}
-          className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Menyimpan...' : 'Simpan'}
-        </button>
-      </div>
-    </div>
+  <div>
+    <label className="block text-xs text-gray-700 mb-1">
+      Ubah Judul
+    </label>
+    <input 
+      type="text" 
+      value={title}
+      onChange={(e) => {
+        setTitle(e.target.value);
+        if (!isEditingTitle) setIsEditingTitle(true);
+      }}
+      placeholder="Judul forum"
+      className="w-full p-2 border rounded text-sm"
+      disabled={isLoading}
+      required
+    />
+  </div>
+
+  <div>
+    <label className="block text-xs text-gray-700 mb-1">
+      Ubah Deskripsi
+    </label>
+    <textarea 
+      value={desc} 
+      onChange={(e) => {
+        setDesc(e.target.value);
+        if (!isEditingDesc) setIsEditingDesc(true);
+      }}
+      placeholder="Deskripsi forum"
+      className="w-full p-2 border rounded text-sm min-h-[80px]"
+      disabled={isLoading}
+      required
+    />
+  </div>
+
+  {error && <p className="text-red-500 text-sm">{error}</p>}
+
+  <div className="flex gap-2 justify-end">
+    <button 
+      onClick={onCancel}
+      className="px-3 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300"
+      disabled={isLoading}
+    >
+      Batal
+    </button>
+    <button 
+      onClick={handleSave}
+      className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+      disabled={isLoading}
+    >
+      {isLoading ? 'Menyimpan...' : 'Simpan'}
+    </button>
+  </div>
+</div>
   );
 };
 
