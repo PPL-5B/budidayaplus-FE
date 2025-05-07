@@ -1,68 +1,95 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { updateForum } from '@/lib/forum/updateForum';
 
 interface EditForumFormProps {
   forumId: string;
+  initialTitle: string;
+  initialDesc: string;
+  onUpdateSuccess: (updatedDesc: string, updatedTitle: string) => void;
+  onCancel: () => void;
 }
 
-export default function EditForumForm({ forumId }: EditForumFormProps) {
-  const router = useRouter();
-  const [desc, setDesc] = useState('');
-  const [loading, setLoading] = useState(false);
+const EditForumForm: React.FC<EditForumFormProps> = ({
+  forumId,
+  initialTitle,
+  initialDesc,
+  onUpdateSuccess,
+  onCancel,
+}) => {
+  const [desc, setDesc] = useState(initialDesc);
+  const [title, setTitle] = useState(initialTitle);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/forum/get_by_id/${forumId}`,
-          { credentials: 'include' }
-        );
-        if (!res.ok) throw new Error("Gagal ambil data forum");
-        const data = await res.json();
-        setDesc(data.description || '');
-      } catch (err) {
-        console.error(err);
-        alert('Gagal mengambil data forum');
+  const handleSave = async () => {
+    if (!desc.trim()) {
+      setError('Deskripsi tidak boleh kosong');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await updateForum(
+        forumId,
+        title.trim(), 
+        desc.trim()
+      );
+
+      if (result.success) {
+        onUpdateSuccess(desc.trim(), title.trim());
+      } else {
+        setError(result.message || 'Gagal menyimpan perubahan');
       }
-    };
-    fetchData();
-  }, [forumId]);
-
-  const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append('description', desc);
-    setLoading(true);
-
-    const res = await updateForum(forumId, formData); 
-    setLoading(false);
-
-    if (res.success) {
-      alert('Forum berhasil diupdate');
-      router.push('/forum?updated=true'); 
-    } else {
-      alert(res.message ?? 'Gagal update forum');
+    } catch (err) {
+      setError('Terjadi kesalahan saat menyimpan');
+      console.error('Error:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="space-y-4">
-      <textarea
-        className="w-full border p-2 rounded"
-        rows={6}
-        value={desc}
-        onChange={(e) => setDesc(e.target.value)}
-        placeholder="Edit deskripsi forum..."
+    <div className="flex flex-col gap-2 mb-8">
+      <input 
+        type="text" 
+        value={title}
+        onChange={(e) => setTitle(e.target.value)} 
+        placeholder="Judul forum"
+        className="w-full p-2 border rounded text-sm"
+        disabled={isLoading}
+        required
       />
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-      >
-        {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
-      </button>
+      <textarea 
+        value={desc} 
+        onChange={(e) => setDesc(e.target.value)} 
+        placeholder="Deskripsi forum"
+        className="w-full p-2 border rounded text-sm min-h-[80px]"
+        disabled={isLoading}
+        required
+      />
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <div className="flex gap-2 justify-end">
+        <button 
+          onClick={onCancel}
+          className="px-3 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300"
+          disabled={isLoading}
+        >
+          Batal
+        </button>
+        <button 
+          onClick={handleSave}
+          className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Menyimpan...' : 'Simpan'}
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default EditForumForm;
