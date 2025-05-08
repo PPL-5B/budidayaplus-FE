@@ -1,18 +1,49 @@
-export async function updateForum(id: string, formData: FormData) {
+import Cookies from 'js-cookie';
+
+interface UpdateForumResponse {
+  success: boolean;
+  message?: string;
+  data?: any;
+}
+
+export async function updateForum(
+  id: string,
+  title: string, 
+  description: string
+): Promise<UpdateForumResponse> {
+  const token = Cookies.get('accessToken');
+  if (!token) {
+    return { success: false, message: 'Token tidak ditemukan' };
+  }
+
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/forum/update/${id}`, {
       method: 'PUT',
-      body: formData,
-      credentials: 'include', // <<< INI WAJIB BANGET
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: title,
+        description: description,
+      }),
     });
 
     if (!res.ok) {
-      const err = await res.json();
-      return { success: false, message: err.message || 'Gagal update forum' };
+      const errorData = await res.json();
+      return { 
+        success: false, 
+        message: errorData.error || 'Gagal update forum' 
+      };
     }
 
-    return { success: true };
+    const data = await res.json();
+    return { success: true, data };
   } catch (error) {
-    return { success: false, message: 'Terjadi kesalahan saat update forum' };
+    console.error('Update forum error:', error);
+    return { 
+      success: false, 
+      message: 'Terjadi kesalahan saat update forum' 
+    };
   }
 }

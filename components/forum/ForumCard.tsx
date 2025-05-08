@@ -8,17 +8,33 @@ import ForumCardFooter from './ForumCardFooter';
 import { useVote } from '@/hooks/useVote';
 import { useUser } from '@/hooks/useUser';
 import { useForumNavigation } from '@/lib/forum/forumNavigation';
+import EditForumForm from '@/components/forum/EditForum';
 
 interface ForumCardProps {
-  forum: Forum;
+  forum: Omit<Forum, 'timestamp'> & {
+    timestamp: Date | string; 
+  };
   onDeleteSuccess?: (id: string) => void;
   onVoteSuccess?: (updatedForum: Forum) => void;
+  onUpdateSuccess?: (updatedForum: Forum) => void;
 }
 
-const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuccess }) => {
+const ForumCard: React.FC<ForumCardProps> = ({
+  forum: originalForum,
+  onDeleteSuccess,
+  onVoteSuccess,
+  onUpdateSuccess,
+}) => {
+  const forum = {
+    ...originalForum,
+    timestamp: originalForum.timestamp instanceof Date 
+      ? originalForum.timestamp 
+      : new Date(originalForum.timestamp)
+  };
+
   const [isEditing, setIsEditing] = useState(false);
-  const [tempDesc, setTempDesc] = useState(forum.description);
   const [desc, setDesc] = useState(forum.description);
+  const [title, setTitle] = useState(forum.title);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { goToDetail } = useForumNavigation();
@@ -35,16 +51,18 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
     handleCancelVote,
   } = useVote(forum.id);
 
-  const handleSave = () => {
-    setDesc(tempDesc);
+  const handleUpdateSuccess = (updatedDesc: string, updatedTitle: string) => {
+    setDesc(updatedDesc);
+    setTitle(updatedTitle);
     setIsEditing(false);
-    onVoteSuccess?.({
+    onUpdateSuccess?.({
       ...forum,
-      description: tempDesc,
+      description: updatedDesc,
+      title: updatedTitle,
     });
   };
 
-  const isOwner = !!(user && forum.user.id === user.id);
+  const isOwner = !!(user && forum?.user?.id === user.id);
 
   const handleViewDetails = () => {
     goToDetail(forum);
@@ -69,46 +87,39 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   };
 
   if (!isInitialized) {
-    return <div className="w-full border rounded-lg p-4 shadow-md bg-white">Loading...</div>;
+    return (
+      <div className="w-full border rounded-lg p-4 shadow-md bg-white text-sm text-gray-500">
+        Loading...
+      </div>
+    );
   }
 
   return (
-    <div className="relative w-full max-w-[338px] h-[150px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
-      <ForumCardHeader title={forum.title} timestamp={forum.timestamp} />
+    <div className="relative w-full max-w-[338px] min-h-[150px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
+      <ForumCardHeader
+        title={title}
+        timestamp={forum.timestamp} 
+      />
 
       {isEditing ? (
-        <>
-          <textarea
-            className="w-full border p-2 rounded text-[12px]"
-            rows={2}
-            value={tempDesc}
-            onChange={(e) => setTempDesc(e.target.value)}
+        <div className="mb-8">
+          <EditForumForm
+            forumId={forum.id}
+            initialTitle={title}
+            initialDesc={desc}
+            onUpdateSuccess={handleUpdateSuccess}
+            onCancel={() => setIsEditing(false)}
           />
-          <div className="flex justify-end gap-2 mt-1">
-            <button
-              onClick={handleSave}
-              className="px-3 py-1 bg-green-600 text-white rounded text-[10px] hover:bg-green-700"
-            >
-              Simpan
-            </button>
-            <button
-              onClick={() => {
-                setTempDesc(desc);
-                setIsEditing(false);
-              }}
-              className="px-3 py-1 bg-gray-300 text-black rounded text-[10px] hover:bg-gray-400"
-            >
-              Batal
-            </button>
-          </div>
-        </>
+        </div>
       ) : (
-        <p className="text-[12px] text-[#646464] line-clamp-2 mb-2">{desc}</p>
+        <p className="text-[12px] text-[#646464] whitespace-pre-line mb-2">
+          {desc}
+        </p>
       )}
 
       <ForumCardFooter
         onViewDetails={handleViewDetails}
-        userInitial={forum.user.first_name.charAt(0)}
+        userInitial={forum?.user?.first_name?.charAt(0) ?? '?'}
         onEdit={() => setIsEditing(true)}
         onDelete={() => setIsDeleteOpen(true)}
         isEditing={isEditing}
