@@ -1,7 +1,6 @@
 import React from "react";
 import { AddCycle, CycleList } from "@/components/cycle";
 import { getProfile } from "@/lib/profile";
-import SeePage from "@/components/forum/SeePage";
 
 const Cycle = async () => {
   const user = await getProfile();
@@ -15,9 +14,6 @@ const Cycle = async () => {
       <div className="flex w-[80%] justify-start gap-4">
         {/* "Memulai Siklus" button (AddCycle) */}
         <AddCycle user={user} className="flex" />
-
-        {/* "Check our Forum" button (SeePage) */}
-        <SeePage />
       </div>
 
       {/* Your cycle list below */}
