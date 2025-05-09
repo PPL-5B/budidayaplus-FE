@@ -45,7 +45,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   };
 
   const isOwner = !!(user && forum.user.id === user.id);
-
   const handleViewDetails = () => {
     goToDetail(forum);
   };
@@ -75,19 +74,18 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   return (
     <div className="relative w-full max-w-[338px] h-[150px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
       <ForumCardHeader title={forum.title} timestamp={forum.timestamp} />
-
       {isEditing ? (
         <>
           <textarea
-            className="w-full border p-2 rounded text-[12px]"
+            className="w-full border p-2 rounded text-[12px] mt-2"
             rows={2}
             value={tempDesc}
             onChange={(e) => setTempDesc(e.target.value)}
           />
-          <div className="flex justify-end gap-2 mt-1">
+          <div className="flex justify-end gap-2 mt-2">
             <button
               onClick={handleSave}
-              className="px-3 py-1 bg-green-600 text-white rounded text-[10px] hover:bg-green-700"
+              className="px-3 py-1 bg-blue-600 text-white rounded text-[10px] hover:bg-green-700"
             >
               Simpan
             </button>
@@ -103,9 +101,9 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
           </div>
         </>
       ) : (
-        <p className="text-[12px] text-[#646464] line-clamp-2 mb-2">{desc}</p>
+        <p className="text-[12px] text-[#646464] line-clamp-2 mt-2">{desc}</p>
       )}
-
+  
       <ForumCardFooter
         onViewDetails={handleViewDetails}
         userInitial={forum.user.first_name.charAt(0)}
@@ -120,7 +118,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         isLoading={isLoading}
         isOwner={isOwner}
       />
-
+  
       <DeleteForumContainer
         forumId={forum.id}
         isOpen={isDeleteOpen}
@@ -130,7 +128,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         }}
       />
     </div>
-  );
+  );  
 };
 
 export default ForumCard;

@@ -1,4 +1,3 @@
-// app/contact-us/page.tsx
 import ContactForm from '@/components/contact-us/WhatsAppContactForm';
 
 export default function ContactUs() {
