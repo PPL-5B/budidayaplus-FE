@@ -1,50 +1,36 @@
 'use client'
 
-import React from 'react';
-import type { Profile } from '@/types/profile';
-import Image from 'next/image';
-import { UpdateProfileModal } from '@/components/profile';
-import { LogOut } from 'lucide-react';
-import { logout } from '@/lib/auth/logout/logoutAction';
+import React from 'react'
+import type { Profile } from '@/types/profile'
+import { UpdateProfileModal } from '@/components/profile'
 
 interface UserProfileProps {
-  profile: Profile;
-  isUserSelf?: boolean;
+  profile: Profile
+  isUserSelf?: boolean
 }
 
 const ProfileComponent: React.FC<UserProfileProps> = ({ profile, isUserSelf }) => {
-  const fallbackImgSrc = 'fallbackimage.png'
   return (
-    <div className='flex flex-col py-10 items-center'>
-      <div className='w-[80%]'>
-        <div className='flex flex-col space-y-6'>
-          <div className='flex justify-between'>
-            <div>
-              <p className='text-3xl font-semibold'>
-                {profile.user.first_name} {profile.user.last_name}
-              </p>
-              <p className='text-lg mt-1'>
-                {profile.user.phone_number}
-              </p>
-            </div>
-            <button onClick={() => logout()} className='h-7'>
-              <LogOut className='text-red-500 mt-2 h-7 w-7' />
-            </button>
-          </div>
-          {isUserSelf && (
-            <div className='flex flex-col gap-2'>
-              <UpdateProfileModal profile={profile} />
-            </div>
-          )}
-          <div>
-            <p>
-              <Image className='object-cover h-full w-full' src={`/${fallbackImgSrc}`} width={500} height={400} alt={`${profile.user.first_name} image`} />
-            </p>
-          </div>
+    <div className="flex flex-col items-center justify-center py-8 bg-[#EAF0FF] rounded-xl p-4 w-full max-w-md mx-auto">
+      {/* Card biru */}
+      <div className="bg-[#2254C5] rounded-xl p-4 w-full flex flex-col items-start space-y-1">
+        <div className="text-[#EAF0FF] text-2xl font-bold leading-tight">
+          Halo, {profile.user.first_name}!
         </div>
+        <div className="text-[#EAF0FF] text-base leading-tight">
+          {profile.user.phone_number}
+        </div>
+
+        {isUserSelf && (
+          <UpdateProfileModal profile={profile}>
+            <p className="underline text-[#EAF0FF] cursor-pointer text-base leading-tight">
+              Ubah Profil
+            </p>
+          </UpdateProfileModal>
+        )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfileComponent;
+export default ProfileComponent
