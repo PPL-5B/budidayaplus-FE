@@ -3,37 +3,40 @@
 import { Pond } from '@/types/pond'
 import React from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { Info } from 'lucide-react'
 
 interface PondCardProps {
   pond: Pond
 }
 
 const PondCard: React.FC<PondCardProps> = ({ pond }) => {
-  const fallbackImgSrc = 'fallbackimage.png'
   const volume = pond.depth * pond.width * pond.length
-  const [imgSrc, setImgSrc] = React.useState<string>(fallbackImgSrc) //TODO: change this later
 
   return (
     <div>
-      <Card>
-        <CardHeader className='space-y-4 pb-2'>
-          <Image style={{ width: "auto" }} priority width={500} height={500} alt={`${pond.name} image`} src={`/${imgSrc}`} onError={() => setImgSrc(fallbackImgSrc)} />
-          <CardTitle>
-            {pond.name}
+      <Card className="bg-[#EAF0FF] border border-[#ccc] rounded-lg">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-blue-700 text-lg font-bold">
+            Kolam {pond.name.toUpperCase()}
           </CardTitle>
         </CardHeader>
-        <CardContent className='pb-2'>
-          <p>Volume: {volume.toFixed(2)} m<sup>3</sup></p>
+        <CardContent className="pb-2">
+          <p className="text-sm font-semibold text-gray-700">
+            Volume Kolam: {volume.toFixed(0)} m<sup>3</sup>
+          </p>
         </CardContent>
         <CardFooter>
-          <Button className='bg-[#ff8585] hover:bg-[#ff8585] text-white rounded-xl'>
-            <Link href={`/pond/${pond.pond_id}`}>
-              View Pond
-            </Link>
+          <Link href={`/pond/${pond.pond_id}`}>
+          <Button
+            variant="outline"
+            className="group bg-[#EAF0FF] border-2 border-blue-700 text-blue-700 text-sm font-semibold rounded-m hover:bg-blue-700 flex items-center px-3 py-1 space-x-2"
+          >
+            <Info className="w-4 h-4 group-hover:text-white text-blue-700" />
+            <span className="group-hover:text-white">Lihat Detail Kolam</span>
           </Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>
