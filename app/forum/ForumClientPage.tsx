@@ -43,7 +43,7 @@ const ForumPage: React.FC = () => {
   return (
     <div className="h-screen overflow-y-auto p-8 pb-40 bg-[#EAF0FF]">
       <button
-        onClick={() => router.push('/')}
+        onClick={() => router.push('/community')}
         className="flex items-center text-sm text-blue-600 hover:underline mb-3"
       >
         <ChevronLeft size={16} className="mr-1" />
