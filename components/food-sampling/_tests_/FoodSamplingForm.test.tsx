@@ -2,7 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FoodSamplingForm from '@/components/food-sampling/FoodSamplingForm';
 import { addFoodSampling } from '@/lib/food-sampling';
 
-// Mock window.location.reload
 beforeAll(() => {
   Object.defineProperty(window, 'location', {
     value: {
@@ -12,7 +11,6 @@ beforeAll(() => {
   });
 });
 
-// Mock the external dependencies
 jest.mock('@/lib/food-sampling', () => ({
   addFoodSampling: jest.fn(),
 }));
@@ -39,7 +37,6 @@ describe('FoodSamplingForm', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Mock environment variable
     process.env.NEXT_PUBLIC_FOOD_QUANTITY_THRESHOLD = '1000';
   });
 
@@ -122,7 +119,6 @@ describe('FoodSamplingForm', () => {
       expect(screen.getByTestId('warning-popup')).toBeInTheDocument();
     });
     
-    // Test popup interaction
     fireEvent.click(screen.getByText('Close Popup'));
     expect(screen.queryByTestId('warning-popup')).not.toBeInTheDocument();
   });

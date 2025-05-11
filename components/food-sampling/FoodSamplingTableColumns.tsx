@@ -55,4 +55,3 @@ export const columns: ColumnDef<FoodSampling>[] = [
     },
   },
 ];
-

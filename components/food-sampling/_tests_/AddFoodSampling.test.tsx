@@ -5,12 +5,10 @@ import AddFoodSampling from '../AddFoodSampling';
 import { FoodSamplingForm } from '@/components/food-sampling';
 import { FoodSampling } from '@/types/food-sampling';
 
-// Mock the FoodSamplingForm component
 jest.mock('@/components/food-sampling', () => ({
   FoodSamplingForm: jest.fn(() => <div data-testid="food-sampling-form">Mocked Form</div>)
 }));
 
-// Mock the dialog components
 jest.mock('@/components/ui/dialog', () => ({
   Dialog: ({ children, open, onOpenChange }) => (
     <div data-testid="dialog" data-open={open} onClick={() => onOpenChange && onOpenChange(!open)}>
@@ -22,7 +20,6 @@ jest.mock('@/components/ui/dialog', () => ({
   DialogFooter: ({ children }) => <div data-testid="dialog-footer">{children}</div>
 }));
 
-// Mock the modal component
 jest.mock('@/components/ui/modal', () => ({
   Modal: ({ title, className, children }) => (
     <div data-testid="modal" className={className}>
@@ -32,7 +29,6 @@ jest.mock('@/components/ui/modal', () => ({
   )
 }));
 
-// Mock the button component
 jest.mock('@/components/ui/button', () => ({
   Button: ({ children, onClick, className, size, variant, ...rest }) => (
     <button
@@ -47,7 +43,6 @@ jest.mock('@/components/ui/button', () => ({
   )
 }));
 
-// Mock icons
 jest.mock('react-icons/io', () => ({
   IoIosAdd: () => <div data-testid="add-icon" />
 }));
@@ -62,7 +57,6 @@ describe('AddFoodSampling Component', () => {
     cycleId: 'cycle-456'
   };
 
-  // Mock data with proper types
   const mockFoodSampling: FoodSampling = {
     sampling_id: 'fs-123',
     pond_id: 'pond-123',

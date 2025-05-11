@@ -77,22 +77,8 @@ describe('FoodSamplingList Component', () => {
   test('passes extra HTML attributes correctly', () => {
     render(<FoodSamplingList foodSampling={mockFoodSampling} className="test-class" data-custom="custom-attr" />);
     
-    // Check if custom props are passed
     const container = screen.getByTestId('food-sampling-list');
     expect(container).toHaveClass('test-class');
     expect(container).toHaveAttribute('data-custom', 'custom-attr');
   });
-  
-  // test('renders with the Package icon for food quantity', () => {
-  //   render(<FoodSamplingList foodSampling={mockFoodSampling} />);
-    
-  //   // Check if text next to icon is rendered
-  //   expect(screen.getByText('Kuantitas (gram)')).toBeInTheDocument();
-    
-  //   // check for the container that should include the icon
-  //   const containerWithIcon = screen.getByText('Kuantitas (gram)').parentElement;
-  //   expect(containerWithIcon).toHaveClass('flex');
-  //   expect(containerWithIcon).toHaveClass('gap-1');
-  //   expect(containerWithIcon).toHaveClass('items-center');
-  // });
 });
