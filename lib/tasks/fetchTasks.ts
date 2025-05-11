@@ -7,6 +7,11 @@ export async function fetchTasks(): Promise<Task[]> {
   const token = cookies().get('accessToken')?.value
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
+  if (!API_BASE_URL) {
+    console.error("API_BASE_URL belum didefine")
+    return []
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/api/tasks/`, {
       method: 'GET',
