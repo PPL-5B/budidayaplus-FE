@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { addFoodSampling } from '@/lib/food-sampling';
 import FoodSamplingWarningPopup from './FoodSamplingWarningPopUp';
+import { X } from 'lucide-react';
 
 interface FormPropsBase {
   setIsModalOpen: (open: boolean) => void;
@@ -72,10 +73,17 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
   };
 
   return (
-    <div>
-      <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
-        <div className="col-span-2">
-          <Label className="text-sm" htmlFor="food_quantity">
+    <div className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-[#2154C5] font-semibold text-base">Tambah Data Jumlah Makanan</h2>
+        <button onClick={() => setIsModalOpen(false)} aria-label="Tutup">
+          <X className="text-[#2154C5] w-5 h-5" />
+        </button>
+      </div>
+
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <Label htmlFor="food_quantity" className="text-sm text-[#2154C5]">
             Kuantitas Makanan
           </Label>
           <Input
@@ -84,23 +92,25 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
             {...register('food_quantity', { setValueAs: (value) => parseInt(value) })}
             type="number"
             placeholder="Kuantitas Makanan"
-            className={foodQuantity > FOOD_QUANTITY_THRESHOLD ? 'text-red-500' : ''}
+            className={`mt-1 bg-[#E7E7E7] ${foodQuantity > FOOD_QUANTITY_THRESHOLD ? 'text-red-500' : ''}`}
           />
-          {errors.food_quantity && <span>{errors.food_quantity.message}</span>}
+          {errors.food_quantity && (
+            <p className="text-sm text-red-500 mt-1">{errors.food_quantity.message}</p>
+          )}
         </div>
 
         {errorMessage && (
-          <div className="col-span-2 text-red-500 text-sm" data-testid="error-message">
+          <p className="text-sm text-red-500" data-testid="error-message">
             {errorMessage}
-          </div>
+          </p>
         )}
 
         <Button
-          className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 col-span-2"
+          className="w-full bg-[#2154C5] hover:bg-[#1A3F96] text-white font-medium rounded-md py-2"
           type="submit"
           disabled={isSubmitting}
         >
-          Simpan
+          Submit
         </Button>
       </form>
 
