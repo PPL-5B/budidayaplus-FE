@@ -17,7 +17,7 @@ const categoryColorMap: Record<string, string> = {
 
 export default function CardArticle({ id, title, author, date, synopsis, categories }: CardArticleProps) {
   return (
-    <div className="border rounded-lg p-4 space-y-3 shadow bg-white">
+    <div className="border border-black rounded-lg p-4 space-y-3 shadow bg-white">
       <h2 className="text-blue-700 font-bold text-lg hover:underline">
         <Link href={`/artikel/${id}`}>{title}</Link>
       </h2>
@@ -39,12 +39,14 @@ export default function CardArticle({ id, title, author, date, synopsis, categor
 
       <p className="text-sm text-gray-600">{synopsis}</p>
 
+      <div className="text-right"> 
       <Link
         href={`/artikel/${id}`}
         className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold"
       >
         Baca Selengkapnya ▸
       </Link>
+      </div>
     </div>
   );
 }
