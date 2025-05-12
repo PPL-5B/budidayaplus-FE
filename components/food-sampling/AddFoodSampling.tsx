@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { IoIosAdd } from 'react-icons/io';
 import { Modal as DialogContent } from '@/components/ui/modal';
-import { Dialog, DialogClose, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogTrigger } from '@/components/ui/dialog';
 import { FoodSamplingForm } from '@/components/food-sampling';
 import { FoodSampling } from '@/types/food-sampling';
 import { X } from 'lucide-react';
@@ -76,8 +76,7 @@ const AddFoodSampling: React.FC<AddFoodSamplingProps> = ({ pondId, cycleId, food
             >
               <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-[#2154C5]">
                 <IoIosAdd size={14} />
-              </span>
-              Tambahkan Data
+              </span>Tambahkan Data
             </Button>
           </DialogTrigger>
         )}
