@@ -8,6 +8,7 @@ const articles = [
     date: "14 April 2025",
     synopsis: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
     categories: ["Kisah Inspiratif", "Teknik Budidaya"],
+
   },
   {
     id: "2",
@@ -16,6 +17,7 @@ const articles = [
     date: "15 April 2025",
     synopsis: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
     categories: ["Nutrisi Pakan"],
+    
   },
   {
     id: "3",
@@ -24,6 +26,7 @@ const articles = [
     date: "16 April 2025",
     synopsis: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
     categories: ["Teknik Budidaya"],
+    
   },
 ];
 

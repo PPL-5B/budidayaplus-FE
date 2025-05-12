@@ -5,6 +5,7 @@ interface DetailArtikelProps {
     date: string;
     synopsis: string;
     categories: string[];
+    reference?: string; 
   };
 }
 
