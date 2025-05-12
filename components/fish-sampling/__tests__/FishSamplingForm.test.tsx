@@ -119,8 +119,8 @@ describe('FishSamplingForm Component', () => {
 
     setup();
     
-    const weightInput = screen.getByLabelText('Berat Ikan (kg)') as HTMLInputElement;
-    const lengthInput = screen.getByLabelText('Panjang Ikan (cm)') as HTMLInputElement;
+    const weightInput = screen.getByLabelText('Berat Ikan (kg)');
+    const lengthInput = screen.getByLabelText('Panjang Ikan (cm)');
 
     fireEvent.change(weightInput, { target: { value: '5' } });
     fireEvent.change(lengthInput, { target: { value: '30' } });
@@ -134,8 +134,8 @@ describe('FishSamplingForm Component', () => {
       );
       
       // Verify form reset
-      expect(weightInput.value).toBe('0');
-      expect(lengthInput.value).toBe('0');
+      expect((weightInput as HTMLInputElement).value).toBe('0');
+      expect((lengthInput as HTMLInputElement).value).toBe('0');
       
       // Verify modal closed
       expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
@@ -146,21 +146,22 @@ describe('FishSamplingForm Component', () => {
   });
 
   test('closes modal when X button is clicked', () => {
-    setup();
-    fireEvent.click(screen.getByRole('button', { name: /tutup/i }));
-    expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
-  });
+      setup();
+      fireEvent.click(screen.getByRole('button', { name: /tutup/i }));
+      expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
+    });
 
   test('disables submit button when isSubmitting', async () => {
-    (addFishSampling as jest.Mock).mockImplementationOnce(
-      () => new Promise((resolve) => setTimeout(() => resolve({ success: true }), 100))
-    );
+    const resolveLater = (resolve: (value: unknown) => void) => {
+      setTimeout(() => resolve({ success: true }), 100);
+    };
+
+    const delayedResolve = () => new Promise(resolveLater);
+
+    (addFishSampling as jest.Mock).mockImplementationOnce(delayedResolve);
 
     setup();
-    
-    fireEvent.change(screen.getByLabelText('Berat Ikan (kg)'), { target: { value: '5' } });
-    fireEvent.change(screen.getByLabelText('Panjang Ikan (cm)'), { target: { value: '30' } });
-    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+    fillFormAndSubmit();
 
     const submitButton = screen.getByRole('button', { name: /submit/i });
     expect(submitButton).toBeDisabled();
@@ -169,6 +170,12 @@ describe('FishSamplingForm Component', () => {
       expect(submitButton).not.toBeDisabled();
     });
   });
+
+function fillFormAndSubmit() {
+  fireEvent.change(screen.getByLabelText('Berat Ikan (kg)'), { target: { value: '5' } });
+  fireEvent.change(screen.getByLabelText('Panjang Ikan (cm)'), { target: { value: '30' } });
+  fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+}
 
  test('clears custom errors when popup is closed', async () => {
     (addFishSampling as jest.Mock).mockResolvedValueOnce({
