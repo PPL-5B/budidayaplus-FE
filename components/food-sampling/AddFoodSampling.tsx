@@ -15,7 +15,12 @@ interface AddFoodSamplingProps extends React.HTMLAttributes<HTMLDivElement> {
   foodSampling?: FoodSampling;
 }
 
-const AddFoodSampling: React.FC<AddFoodSamplingProps> = ({ pondId, cycleId, foodSampling, ...props }) => {
+const AddFoodSampling: React.FC<AddFoodSamplingProps> = ({
+  pondId,
+  cycleId,
+  foodSampling,
+  ...props
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -23,19 +28,23 @@ const AddFoodSampling: React.FC<AddFoodSamplingProps> = ({ pondId, cycleId, food
       {foodSampling ? (
         <Dialog>
           <DialogTrigger asChild>
-<Button
-  size="sm"
-  data-testid="add-fish-sampling-button"
-  className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-[#EAF0FF] font-semibold rounded-md px-4 py-2"
->
-  <IoIosAdd size={20} />
-  Tambahkan Data
-</Button>
-
+            <Button
+              size="sm"
+              data-testid="add-fish-sampling-button"
+              className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-4 py-2"
+            >
+              <IoIosAdd size={16} />
+              Tambahkan Data
+            </Button>
           </DialogTrigger>
-          <DialogContent title = "" className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto [&>button.absolute]:hidden">
+          <DialogContent
+            title=""
+            className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto [&>button.absolute]:hidden"
+          >
             <div className="flex justify-between items-center mb-3">
-              <h2 className="text-[#2154C5] font-semibold text-base">Timpa Data Jumlah Makanan</h2>
+              <h2 className="text-[#2154C5] font-semibold text-base">
+                Timpa Data Jumlah Makanan
+              </h2>
               <DialogClose asChild>
                 <button aria-label="Close">
                   <X className="w-5 h-5 text-[#2154C5]" />
@@ -71,16 +80,20 @@ const AddFoodSampling: React.FC<AddFoodSamplingProps> = ({ pondId, cycleId, food
         {!foodSampling && (
           <DialogTrigger asChild>
             <Button
-              className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-full px-4 py-2"
+              className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-4 py-2"
               size="sm"
             >
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-[#2154C5]">
+              <span className="flex items-center justify-center w-5 h-5 text-[#EAF0FF]">
                 <IoIosAdd size={14} />
-              </span>Tambahkan Data
+              </span>
+              Tambahkan Data
             </Button>
           </DialogTrigger>
         )}
-        <DialogContent title="" className="p-0 bg-transparent shadow-none border-none [&>button.absolute]:hidden">
+        <DialogContent
+          title=""
+          className="p-0 bg-transparent shadow-none border-none [&>button.absolute]:hidden"
+        >
           <FoodSamplingForm
             setIsModalOpen={setIsModalOpen}
             pondId={pondId}
