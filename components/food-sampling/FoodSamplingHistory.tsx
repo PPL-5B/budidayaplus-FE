@@ -1,28 +1,59 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { getFoodSamplingHistory } from '@/lib/food-sampling';
-import { DataTable } from '@/components/ui/data-table';
-import { columns } from '@/components/food-sampling';
-import { History } from 'lucide-react';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
+import { EmptyData } from '@/components/ui/empty-data';
+import { LoadingData } from '@/components/ui/loading-data';
+import { FoodSampling } from '@/types/food-sampling';
 
 interface FoodSamplingHistoryProps {
   pondId: string;
 }
 
-const FoodSamplingHistory: React.FC<FoodSamplingHistoryProps> = async ({ pondId }) => {
-  const result = await getFoodSamplingHistory(pondId);
-  const history = result.food_samplings;
+const FoodSamplingHistory: React.FC<FoodSamplingHistoryProps> = ({ pondId }) => {
+  const [history, setHistory] = useState<FoodSampling[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setIsLoading(true);
+      const result = await getFoodSamplingHistory(pondId);
+      setHistory(result.food_samplings || []);
+      setIsLoading(false);
+    };
+    fetchHistory();
+  }, [pondId]);
 
   return (
-    <div className="w-full">
-      <div className="flex justify-center">
-        <div className="w-[80%] flex gap-4">
-          <History className="w-10 h-10 text-[#2154C5]" />
-          <p className="w-full text-start text-3xl font-semibold">Riwayat Sampling Pakan</p>
-        </div>
-      </div>
-      <div className="mt-6">
-        <DataTable columns={columns} data={history} />
-      </div>
+    <div className="w-full bg-[#e8f0fe] p-6 rounded-md">
+      <p className="text-lg font-bold mb-4">Riwayat Jumlah Makanan</p>
+
+      {isLoading ? (
+        <LoadingData />
+      ) : history.length === 0 ? (
+        <EmptyData />
+      ) : (
+        history.map((item, index) => {
+          const date = format(new Date(item.recorded_at), 'EEEE, d MMM yyyy', { locale: id });
+          const fullName = `${item.reporter.first_name} ${item.reporter.last_name}`;
+
+          return (
+            <div
+              key={index}
+              className="bg-[#EDF2FF] border border-gray-400 rounded-lg p-4 mb-3 text-sm text-gray-700"
+            >
+              <p className="mb-1">
+                {date}, oleh {fullName}
+              </p>
+              <p className="font-bold">
+                Kuantitas (gram): <span className="font-normal">{item.food_quantity}</span>
+              </p>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 };
