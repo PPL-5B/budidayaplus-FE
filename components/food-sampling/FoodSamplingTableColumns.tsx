@@ -1,57 +1,42 @@
 'use client';
 
-import { FoodSampling } from "@/types/food-sampling";
-import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
-import { Calendar, Package, UserRound } from "lucide-react";
+import React from 'react';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
+import { FoodSampling } from '@/types/food-sampling';
 
-export const columns: ColumnDef<FoodSampling>[] = [
-  {
-    accessorKey: "recorded_at",
-    header: () => (
-      <div className="flex gap-2">
-        <Calendar />
-        <p>Tanggal</p>
-      </div>
-    ),
-    cell: ({ row }) => {
-      const date = row.original.recorded_at;
-      return (
-        <div>
-          {format(date, "dd-MM-yyyy", { locale: id })}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "food_quantity",
-    header: () => (
-      <div className="flex gap-2">
-        <Package />
-        <p>Kuantitas Makanan (gram)</p>
-      </div>
-    ),
-    cell: ({ row }) => {
-      const foodQuantity = row.original.food_quantity;
-      return <div>{foodQuantity} gram</div>;
-    },
-  },
-  {
-    accessorKey: "reporter",
-    header: () => (
-      <div className="flex gap-2">
-        <UserRound />
-        <p>Reporter</p>
-      </div>
-    ),
-    cell: ({ row }) => {
-      const { first_name, last_name } = row.original.reporter;
-      return (
-        <div>
-          {first_name} {last_name}
-        </div>
-      );
-    },
-  },
-];
+interface FoodSamplingTableColumnsProps {
+  data: FoodSampling[];
+}
+
+const FoodSamplingTableColumns: React.FC<FoodSamplingTableColumnsProps> = ({ data }) => {
+  return (
+    <div className="bg-[#e8f0fe] p-6 rounded-md">
+      <h2 className="text-lg font-bold mb-4">Riwayat Jumlah Makanan</h2>
+      {data.length === 0 ? (
+        <p className="text-sm text-gray-500">Belum ada data makanan.</p>
+      ) : (
+        data.map((item, index) => {
+          const date = format(new Date(item.recorded_at), 'EEEE, d MMM yyyy', { locale: id });
+          const fullName = `${item.reporter.first_name} ${item.reporter.last_name}`;
+
+          return (
+            <div
+              key={index}
+              className="bg-white border border-gray-400 rounded-lg p-4 mb-3 text-sm text-gray-700"
+            >
+              <p className="mb-1">
+                {date}, oleh {fullName}
+              </p>
+              <p className="font-bold">
+                Kuantitas (gram): <span className="font-normal">{item.food_quantity}</span>
+              </p>
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+};
+
+export default FoodSamplingTableColumns;
