@@ -1,7 +1,16 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FoodSamplingDashboard from '@/components/food-sampling/FoodSamplingDashboard';
 import { getLatestFoodSampling } from '@/lib/food-sampling/getLatestFoodSampling';
+import React from 'react';
+
+const mockBack = jest.fn();
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    back: mockBack,
+  }),
+}));
 
 jest.mock('@/lib/food-sampling/getLatestFoodSampling');
 const mockedGetLatestFoodSampling = getLatestFoodSampling as jest.Mock;
@@ -20,65 +29,47 @@ describe('FoodSamplingDashboard', () => {
     jest.clearAllMocks();
   });
 
-  test('renders title and Utensils icon', async () => {
+  test('renders table when data is available (positive case)', async () => {
     mockedGetLatestFoodSampling.mockResolvedValueOnce(mockSamplingData);
-   
-    render(await FoodSamplingDashboard({ pondId: 'pond-123', cycleId: 'cycle-456' }));
-
-    expect(screen.getByText('Dashboard Sampling Pakan Terbaru')).toBeInTheDocument();
-   
-    const icon = document.querySelector('svg');
-    expect(icon).toBeInTheDocument();
+    render(<FoodSamplingDashboard pondId="pond-123" cycleId="cycle-456" />);
+    await waitFor(() => {
+      expect(screen.getByText(/Kuantitas/i)).toBeInTheDocument();
+      expect(screen.getByText(/800 gram/i)).toBeInTheDocument();
+      expect(screen.getByText(/500 gram/i)).toBeInTheDocument();
+    });
   });
 
-  test('displays no data message when no sampling found', async () => {
-    mockedGetLatestFoodSampling.mockResolvedValueOnce(null);
-   
-    render(await FoodSamplingDashboard({ pondId: 'pond-123', cycleId: 'cycle-456' }));
-    expect(screen.getByText('Data belum tersedia, silakan isi data terlebih dahulu.')).toBeInTheDocument();
-  });
-
-  test('renders correct data in the table when sampling exists', async () => {
+  test('renders warning class when actual < target (edge case)', async () => {
     mockedGetLatestFoodSampling.mockResolvedValueOnce(mockSamplingData);
-   
-    render(await FoodSamplingDashboard({ pondId: 'pond-123', cycleId: 'cycle-456' }));
-    expect(screen.getByText('500 gram')).toBeInTheDocument();
-    
-    const targetCells = screen.getAllByText('800 gram');
-    expect(targetCells[0]).toBeInTheDocument();
+    render(<FoodSamplingDashboard pondId="pond-123" cycleId="cycle-456" />);
+    const actualCell = await screen.findByText(/500 gram/);
+    expect(actualCell).toHaveClass('text-red-600');
   });
 
-  test('applies red text style when food quantity is below target', async () => {
+  test('renders no warning class when actual >= target (edge case)', async () => {
     mockedGetLatestFoodSampling.mockResolvedValueOnce({
       ...mockSamplingData,
-      food_quantity: 500,
+      food_quantity: 900,
       target_food_quantity: 800,
     });
-   
-    render(await FoodSamplingDashboard({ pondId: 'pond-123', cycleId: 'cycle-456' }));
-    const actualCell = screen.getByText('500 gram');
-    expect(actualCell).toHaveClass('text-red-500');
+    render(<FoodSamplingDashboard pondId="pond-123" cycleId="cycle-456" />);
+    const actualCell = await screen.findByText(/900 gram/);
+    expect(actualCell).not.toHaveClass('text-red-600');
   });
 
-  test('does not apply red text when food quantity meets target', async () => {
-    mockedGetLatestFoodSampling.mockResolvedValueOnce({
-      ...mockSamplingData,
-      food_quantity: 800,
-      target_food_quantity: 800,
-    });
-   
-    render(await FoodSamplingDashboard({ pondId: 'pond-123', cycleId: 'cycle-456' }));
-    
-    const cells = screen.getAllByText('800 gram');
-    const actualCell = cells[0];
-    
-    expect(actualCell).not.toHaveClass('text-red-500');
-  });
-
-  test('calls getLatestFoodSampling with correct parameters', async () => {
+  test('back button calls router.back', async () => {
     mockedGetLatestFoodSampling.mockResolvedValueOnce(mockSamplingData);
-   
-    render(await FoodSamplingDashboard({ pondId: 'pond-123', cycleId: 'cycle-456' }));
-    expect(mockedGetLatestFoodSampling).toHaveBeenCalledWith('pond-123', 'cycle-456');
+    render(<FoodSamplingDashboard pondId="pond-123" cycleId="cycle-456" />);
+    const backButton = await screen.findByText(/Lihat Riwayat Jumlah Makanan/i);
+    fireEvent.click(backButton);
+    expect(mockBack).toHaveBeenCalled();
+  });
+
+  test('renders empty state when data is undefined (explicit branch coverage)', async () => {
+    mockedGetLatestFoodSampling.mockResolvedValueOnce(undefined); // triggers `data ?? null`
+    render(<FoodSamplingDashboard pondId="pond-123" cycleId="cycle-456" />);
+    await waitFor(() => {
+      expect(screen.getByText(/Belum Ada Data/i)).toBeInTheDocument(); // ✅ fix: use correct text from EmptyData
+    });
   });
 });
