@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 interface FishSamplingWarningPopupProps {
   onClose: () => void;
@@ -10,20 +11,37 @@ const FishSamplingWarningPopup: React.FC<FishSamplingWarningPopupProps> = ({
   errorMessages,
 }) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
-        <div className="text-3xl mb-2">⚠️</div>
-        <h2 className="text-lg font-bold">Indikator Abnormal!</h2>
-        <ul className="mt-3 text-sm font-medium list-disc list-inside text-left text-red-600">
-          {errorMessages.map((message) => (
-            <li key={message} role="alert">{message}</li>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div
+        className="bg-[#EAF0FF] rounded-lg p-6 shadow-md w-full max-w-xs mx-auto"
+        data-testid="popup-warning"
+      >
+        {/* Icon bulat */}
+        <div className="flex justify-center mb-4">
+          <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center">
+            <X className="w-5 h-5 text-purple-400" />
+          </div>
+        </div>
+
+        {/* Judul */}
+        <h2 className="text-center text-lg font-semibold text-neutral-800">
+          Indikator Tidak Sehat!
+        </h2>
+
+        {/* Deskripsi tanpa bullet, rata tengah */}
+        <ul className="mt-2 text-sm text-neutral-600 list-none space-y-1 text-center">
+          {errorMessages.map((msg) => (
+            <li key={msg}>{msg}</li>
           ))}
         </ul>
-        <div className="mt-4 border-t pt-3">
-          <button onClick={onClose} className="text-black font-medium">
-            Tutup
-          </button>
-        </div>
+
+        {/* Tombol */}
+        <button
+          onClick={onClose}
+          className="mt-5 w-full bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold py-2 rounded-md text-sm"
+        >
+          Saya Paham
+        </button>
       </div>
     </div>
   );
