@@ -85,8 +85,7 @@ const AddFoodSampling: React.FC<AddFoodSamplingProps> = ({
             >
               <span className="flex items-center justify-center w-5 h-5 text-[#EAF0FF]">
                 <IoIosAdd size={14} />
-              </span>
-              Tambahkan Data
+              </span>Tambahkan Data
             </Button>
           </DialogTrigger>
         )}

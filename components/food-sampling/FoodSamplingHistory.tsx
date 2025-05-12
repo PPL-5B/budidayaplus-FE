@@ -30,18 +30,22 @@ const FoodSamplingHistory: React.FC<FoodSamplingHistoryProps> = ({ pondId }) => 
     <div className="w-full bg-[#e8f0fe] p-6 rounded-md">
       <p className="text-lg font-bold mb-4">Riwayat Jumlah Makanan</p>
 
-      {isLoading ? (
-        <LoadingData />
-      ) : history.length === 0 ? (
-        <EmptyData />
-      ) : (
-        history.map((item, index) => {
+      {(() => {
+        if (isLoading) {
+          return <LoadingData />;
+        }
+
+        if (history.length === 0) {
+          return <EmptyData />;
+        }
+
+        return history.map((item, index) => {
           const date = format(new Date(item.recorded_at), 'EEEE, d MMM yyyy', { locale: id });
           const fullName = `${item.reporter.first_name} ${item.reporter.last_name}`;
 
           return (
             <div
-              key={index}
+              key={item.sampling_id}
               className="bg-[#EDF2FF] border border-gray-400 rounded-lg p-4 mb-3 text-sm text-gray-700"
             >
               <p className="mb-1">
@@ -52,8 +56,8 @@ const FoodSamplingHistory: React.FC<FoodSamplingHistoryProps> = ({ pondId }) => 
               </p>
             </div>
           );
-        })
-      )}
+        });
+      })()}
     </div>
   );
 };

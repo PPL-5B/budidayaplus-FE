@@ -22,7 +22,7 @@ const FoodSamplingTableColumns: React.FC<FoodSamplingTableColumnsProps> = ({ dat
 
           return (
             <div
-              key={index}
+              key={item.sampling_id}
               className="bg-white border border-gray-400 rounded-lg p-4 mb-3 text-sm text-gray-700"
             >
               <p className="mb-1">

@@ -41,40 +41,48 @@ const FoodSamplingDashboard: React.FC<FoodSamplingDashboardProps> = ({ pondId, c
 
         <h2 className="text-lg font-bold text-black mb-4">Dasbor Jumlah Makanan Terbaru</h2>
 
-        {isLoading ? (
-          <LoadingData />
-        ) : latestSampling ? (
-          <div className="overflow-hidden rounded-xl border border-[#2154C5] bg-[#EDF2FF]">
-            <table className="w-full text-center">
-              <thead className="bg-[#2154C5] text-white text-sm">
-                <tr>
-                  <th className="py-3 px-4 font-semibold">Parameter</th>
-                  <th className="py-3 px-4 font-semibold">Nilai Target</th>
-                  <th className="py-3 px-4 font-semibold">Nilai Aktual</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="text-gray-800 text-sm font-medium">
-                  <td className="py-4 px-4">Kuantitas</td>
-                  <td className="py-4 px-4">{latestSampling.target_food_quantity} gram</td>
-                  <td
-                    className={`py-4 px-4 ${
-                      latestSampling.food_quantity < latestSampling.target_food_quantity
-                        ? 'text-red-600 font-semibold'
-                        : ''
-                    }`}
-                  >
-                    {latestSampling.food_quantity} gram
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="mt-6">
-            <EmptyData />
-          </div>
-        )}
+        {(() => {
+          if (isLoading) {
+            return <LoadingData />;
+          }
+
+          if (latestSampling) {
+            return (
+              <div className="overflow-hidden rounded-xl border border-[#2154C5] bg-[#EDF2FF]">
+                <table className="w-full text-center">
+                  <thead className="bg-[#2154C5] text-white text-sm">
+                    <tr>
+                      <th className="py-3 px-4 font-semibold">Parameter</th>
+                      <th className="py-3 px-4 font-semibold">Nilai Target</th>
+                      <th className="py-3 px-4 font-semibold">Nilai Aktual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="text-gray-800 text-sm font-medium">
+                      <td className="py-4 px-4">Kuantitas</td>
+                      <td className="py-4 px-4">{latestSampling.target_food_quantity} gram</td>
+                      {(() => {
+                        const isBelowTarget = latestSampling.food_quantity < latestSampling.target_food_quantity;
+                        const cellClass = `py-4 px-4 ${isBelowTarget ? 'text-red-600 font-semibold' : ''}`;
+                        return (
+                          <td className={cellClass}>
+                            {latestSampling.food_quantity} gram
+                          </td>
+                        );
+                      })()}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            );
+          }
+
+          return (
+            <div className="mt-6">
+              <EmptyData />
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
