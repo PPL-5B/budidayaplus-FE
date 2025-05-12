@@ -1,8 +1,9 @@
-import { Forum } from '@/types/forum';
+// lib/forum/useForumNavigation.ts
 import { useRouter } from 'next/navigation';
-export const ForumNavigation = () => {
-  const router = useRouter();
+import { Forum } from '@/types/forum';
 
+export const useForumNavigation = () => {
+  const router = useRouter();
 
   const goToDetail = (forum: Forum) => {
     if (typeof window !== 'undefined') {
@@ -10,7 +11,6 @@ export const ForumNavigation = () => {
       router.push(`/forum/${forum.id}`);
     }
   };
-
 
   return { goToDetail };
 };

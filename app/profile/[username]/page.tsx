@@ -17,8 +17,8 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
 
   if (!profile) {
     return (
-      <div className='mt-20 w-full flex justify-center'>
-        <div className='mt-20 w-[80%] text-center'>
+      <div className="min-h-screen bg-[#EAF0FF] flex flex-col items-center justify-center">
+        <div className="text-center">
           Profile not found
         </div>
       </div>
@@ -26,11 +26,11 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
   }
 
   return (
-    <div className='flex flex-col mb-20 py-8'>
+    <div className="min-h-screen bg-[#EAF0FF] flex flex-col mb-20 py-8">
       <ProfileComponent isUserSelf={isUserSelf} profile={profile} />
       <Team userRole={userRole} isUserSelf={isUserSelf} username={params.username} />
       <FAQ />
-      <div className='mt-8 flex justify-center'>
+      <div className="mt-8 flex justify-center">
         <Link
           href="/contact-us"
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
