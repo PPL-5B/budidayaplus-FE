@@ -5,7 +5,7 @@ interface DetailArtikelProps {
     date: string;
     synopsis: string;
     categories: string[];
-    reference?: string; 
+    references?: string; 
   };
 }
 
@@ -43,6 +43,9 @@ const DetailArtikel = ({ article }: DetailArtikelProps) => {
 
       {/* Isi Artikel */}
       <p className="text-gray-800 leading-relaxed">{article.synopsis}</p>
+      <p className="text-sm text-gray-500 mt-4">
+          <strong>Referensi:</strong> {article.references}
+        </p>
     </div>
   );
 };
