@@ -1,69 +1,79 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useLatestFishSampling } from "@/hooks/useFishSampling";
-import { FishSymbol } from "lucide-react";
+import React from 'react';
+import { ChevronLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useLatestFishSampling } from '@/hooks/useFishSampling';
+import { LoadingData } from '@/components/ui/loading-data';
+import { EmptyData } from '@/components/ui/empty-data';
+
+interface FishSamplingDashboardProps {
+  pondId: string;
+}
 
 const targetValues = {
-  fish_weight: 2.5, // kg
-  fish_length: 40, // cm
+  fish_weight: 0.15, // kg
+  fish_length: 17,   // cm
 };
 
-const FishSamplingDashboard = ({ pondId }: { pondId: string }) => {
-  const latestData = useLatestFishSampling(pondId);
+const FishSamplingDashboard: React.FC<FishSamplingDashboardProps> = ({ pondId }) => {
+  const router = useRouter();
+  const latestSampling = useLatestFishSampling(pondId);
 
-  if (!latestData) {
+  if (latestSampling === undefined) {
     return (
-      <div className="border border-gray-200 p-3 rounded-md text-gray-500 text-center w-fit mx-auto">
-        Data belum tersedia, silakan isi data terlebih dahulu.
+      <div className="w-full flex flex-col items-center bg-[#EDF2FF] pt-6">
+        <div className="w-[90%] max-w-2xl">
+          <LoadingData />
+        </div>
       </div>
     );
-  }  
-  
+  }
+
   return (
-    <div className="mt-10">
-      <h2 className="text-2xl font-semibold text-center flex items-center justify-center">
-        <FishSymbol className="w-10 h-10 text-[#2154C5] mr-2" /> Dashboard Sampling Ikan Terbaru
-      </h2>
-      <div className="flex justify-center mt-4">
-        
-        <table className="border-collapse border border-gray-300 w-[80%] text-center">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-2">Parameter</th>
-              <th className="border border-gray-300 px-4 py-2">Nilai Aktual</th>
-              <th className="border border-gray-300 px-4 py-2">Nilai Target</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-gray-300 px-4 py-2 flex items-center justify-center">
-                Berat Ikan (kg)
-              </td>
-              <td
-                className={`border border-gray-300 px-4 py-2 ${
-                  latestData.fish_weight < targetValues.fish_weight ? "text-red-500" : ""
-                }`}
-              >
-                {latestData.fish_weight ?? "N/A"}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">{targetValues.fish_weight}</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-300 px-4 py-2 flex items-center justify-center">
-                Panjang Ikan (cm)
-              </td>
-              <td
-                className={`border border-gray-300 px-4 py-2 ${
-                  latestData.fish_length < targetValues.fish_length ? "text-red-500" : ""
-                }`}
-              >
-                {latestData.fish_length ?? "N/A"}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">{targetValues.fish_length}</td>
-            </tr>
-          </tbody>
-        </table>
+    <div className="w-full flex flex-col items-center bg-[#EDF2FF] pt-6">
+      <div className="w-[90%] max-w-2xl">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-[#2154C5] mb-4 focus:outline-none"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          <span className="text-[#2154C5] font-bold text-base">Lihat Riwayat Ukuran Ikan</span>
+        </button>
+
+        <h2 className="text-lg font-bold text-black mb-4">
+          Dasbor Ukuran Ikan Terbaru
+        </h2>
+
+        {latestSampling ? (
+          <div className="overflow-hidden rounded-xl border border-[#2154C5] bg-[#EDF2FF]">
+            <table className="w-full text-center">
+              <thead className="bg-[#2154C5] text-white text-sm">
+                <tr>
+                  <th className="py-3 px-4 font-semibold">Parameter</th>
+                  <th className="py-3 px-4 font-semibold">Nilai Target</th>
+                  <th className="py-3 px-4 font-semibold">Nilai Aktual</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm text-gray-800 font-medium">
+                <tr>
+                  <td className="py-4 px-4">Berat Ikan (kg)</td>
+                  <td className="py-4 px-4">{targetValues.fish_weight}</td>
+                  <td className="py-4 px-4">{latestSampling.fish_weight ?? 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-4">Panjang Ikan (cm)</td>
+                  <td className="py-4 px-4">{targetValues.fish_length}</td>
+                  <td className="py-4 px-4">{latestSampling.fish_length ?? 'N/A'}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="mt-6">
+            <EmptyData />
+          </div>
+        )}
       </div>
     </div>
   );
