@@ -26,7 +26,7 @@ interface DetailArtikelProps {
         <div className="flex flex-wrap gap-2 mb-4">
           {article.categories.map((cat, i) => (
             <span
-              key={i}
+              key={cat}
               className={`text-white text-xs px-2 py-1 rounded ${
                 {
                   "Kisah Inspiratif": "bg-green-600",

@@ -4,7 +4,6 @@ import { fetchPonds } from '@/lib/pond';
 import { getLatestCycle } from '@/lib/cycle';
 import { Pond } from '@/types/pond'
 import React from 'react'
-import DaftarArtikel from "@/components/artikel/DaftarArtikel";
 
 const PondListPage = async () => {
   const ponds: Pond[] = await fetchPonds();
@@ -29,10 +28,6 @@ const PondListPage = async () => {
               <p className='text-lg text-start'>Tidak ada kolam</p>
             )
           }
-        </div>
-
-        <div className="w-full mt-20">
-          <DaftarArtikel />
         </div>
       </div>
     </div>
