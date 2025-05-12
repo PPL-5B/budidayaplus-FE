@@ -1,127 +1,117 @@
-import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import FishSamplingDashboard from "../FishSamplingDashboard";
-import { useLatestFishSampling } from "@/hooks/useFishSampling";
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import FishSamplingDashboard from '@/components/fish-sampling/FishSamplingDashboard';
+import { useLatestFishSampling } from '@/hooks/useFishSampling';
+import { useRouter } from 'next/navigation';
 
-// Mock `useLatestFishSampling` hook
-jest.mock("@/hooks/useFishSampling", () => ({
-  useLatestFishSampling: jest.fn(),
+// Mock the hooks and components
+jest.mock('@/hooks/useFishSampling');
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+}));
+jest.mock('@/components/ui/loading-data', () => ({
+  LoadingData: () => <div data-testid="loading-data">Loading...</div>,
+}));
+jest.mock('@/components/ui/empty-data', () => ({
+  EmptyData: () => <div data-testid="empty-data">No data available</div>,
 }));
 
-describe("FishSamplingDashboard", () => {
-  const pondId = "pond-123";
+const mockUseLatestFishSampling = useLatestFishSampling as jest.Mock;
+const mockUseRouter = useRouter as jest.Mock;
+
+describe('FishSamplingDashboard', () => {
+  const mockRouter = {
+    back: jest.fn(),
+  };
 
   beforeEach(() => {
+    mockUseRouter.mockReturnValue(mockRouter);
     jest.clearAllMocks();
   });
 
-  test("renders dashboard title and table headers", () => {
-    (useLatestFishSampling as jest.Mock).mockReturnValue(null);
+  it('renders loading state when data is undefined', () => {
+    mockUseLatestFishSampling.mockReturnValue(undefined);
 
-    render(<FishSamplingDashboard pondId={pondId} />);
-
-    expect(screen.getByText(/dashboard sampling ikan terbaru/i)).toBeInTheDocument();
-    expect(screen.getByText(/parameter/i)).toBeInTheDocument();
-    expect(screen.getByText(/nilai aktual/i)).toBeInTheDocument();
-    expect(screen.getByText(/nilai target/i)).toBeInTheDocument();
+    render(<FishSamplingDashboard pondId="pond-1" />);
+    
+    expect(screen.getByTestId('loading-data')).toBeInTheDocument();
   });
 
-  test("displays fish sampling data correctly", async () => {
-    (useLatestFishSampling as jest.Mock).mockReturnValue({
-      fish_weight: 2.8,
-      fish_length: 42,
-    });
+  it('renders empty state when no sampling data exists', () => {
+    mockUseLatestFishSampling.mockReturnValue(null);
 
-    render(<FishSamplingDashboard pondId={pondId} />);
-
-    await waitFor(() => {
-      expect(screen.getByText("2.8")).toBeInTheDocument();
-      expect(screen.getByText("42")).toBeInTheDocument();
-    });
-
-    // Verifying target values
-    expect(screen.getByText("2.5")).toBeInTheDocument();
-    expect(screen.getByText("40")).toBeInTheDocument();
+    render(<FishSamplingDashboard pondId="pond-1" />);
+    
+    expect(screen.getByTestId('empty-data')).toBeInTheDocument();
+    expect(screen.getByText('Dasbor Ukuran Ikan Terbaru')).toBeInTheDocument();
   });
 
-  test("handles missing fish sampling data", async () => {
-    (useLatestFishSampling as jest.Mock).mockReturnValue({
-      fish_weight: null,
-      fish_length: undefined,
-    });
+  it('renders dashboard with latest sampling data', () => {
+    const mockSampling = {
+      fish_weight: 0.18,
+      fish_length: 19,
+    };
+    mockUseLatestFishSampling.mockReturnValue(mockSampling);
 
-    render(<FishSamplingDashboard pondId={pondId} />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText("N/A").length).toBeGreaterThanOrEqual(1);
-    });
+    render(<FishSamplingDashboard pondId="pond-1" />);
+    
+    // Check header and back button
+    expect(screen.getByText('Dasbor Ukuran Ikan Terbaru')).toBeInTheDocument();
+    expect(screen.getByText('Lihat Riwayat Ukuran Ikan')).toBeInTheDocument();
+    
+    // Check table headers
+    expect(screen.getByText('Parameter')).toBeInTheDocument();
+    expect(screen.getByText('Nilai Target')).toBeInTheDocument();
+    expect(screen.getByText('Nilai Aktual')).toBeInTheDocument();
+    
+    // Check weight row
+    expect(screen.getByText('Berat Ikan (kg)')).toBeInTheDocument();
+    expect(screen.getByText('0.15')).toBeInTheDocument(); // Target
+    expect(screen.getByText('0.18')).toBeInTheDocument(); // Actual
+    
+    // Check length row
+    expect(screen.getByText('Panjang Ikan (cm)')).toBeInTheDocument();
+    expect(screen.getByText('17')).toBeInTheDocument(); // Target
+    expect(screen.getByText('19')).toBeInTheDocument(); // Actual
   });
 
-  test("renders the Waves icon in the title", () => {
-    (useLatestFishSampling as jest.Mock).mockReturnValue(null);
-
-    const { container } = render(<FishSamplingDashboard pondId={pondId} />);
-    expect(container.querySelector("svg")).toBeInTheDocument();
-  });
-
-  test("applies red text style when fish weight is below target", async () => {
-    (useLatestFishSampling as jest.Mock).mockReturnValue({
-      fish_weight: 2.0, // Below target 2.5
-      fish_length: 42,
-    });
-
-    render(<FishSamplingDashboard pondId={pondId} />);
-
-    await waitFor(() => {
-      const weightCell = screen.getByText("2.0");
-      expect(weightCell).toHaveClass("text-red-500");
-    });
-  });
-
-  test("applies red text style when fish length is below target", async () => {
-    (useLatestFishSampling as jest.Mock).mockReturnValue({
-      fish_weight: 2.8,
-      fish_length: 35, // Below target 40
-    });
-
-    render(<FishSamplingDashboard pondId={pondId} />);
-
-    await waitFor(() => {
-      const lengthCell = screen.getByText("35");
-      expect(lengthCell).toHaveClass("text-red-500");
-    });
-  });
-
-  test("shows 'Data belum tersedia' when fish sampling data is empty", async () => {
-    (useLatestFishSampling as jest.Mock).mockReturnValue({
+  it('renders N/A when sampling data has null values', () => {
+    const mockSampling = {
       fish_weight: null,
       fish_length: null,
-    });
-  
-    render(<FishSamplingDashboard pondId={pondId} />);
-  
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Data belum tersedia, silakan isi data terlebih dahulu/i)
-      ).toBeInTheDocument();
-    });
+    };
+    mockUseLatestFishSampling.mockReturnValue(mockSampling);
+
+    render(<FishSamplingDashboard pondId="pond-1" />);
+    
+    expect(screen.getAllByText('N/A')).toHaveLength(2);
   });
 
-  test("does not apply red text when fish weight and length meet or exceed target", async () => {
-    (useLatestFishSampling as jest.Mock).mockReturnValue({
-      fish_weight: 2.5, 
-      fish_length: 40, 
-    });
+  it('navigates back when back button is clicked', () => {
+    const mockSampling = {
+      fish_weight: 0.18,
+      fish_length: 19,
+    };
+    mockUseLatestFishSampling.mockReturnValue(mockSampling);
 
-    render(<FishSamplingDashboard pondId={pondId} />);
+    render(<FishSamplingDashboard pondId="pond-1" />);
+    
+    fireEvent.click(screen.getByText('Lihat Riwayat Ukuran Ikan'));
+    expect(mockRouter.back).toHaveBeenCalled();
+  });
 
-    await waitFor(() => {
-      const weightCell = screen.getByText("2.5");
-      const lengthCell = screen.getByText("40");
+  it('matches target values with the constants', () => {
+    const mockSampling = {
+      fish_weight: 0.18,
+      fish_length: 19,
+    };
+    mockUseLatestFishSampling.mockReturnValue(mockSampling);
 
-      expect(weightCell).not.toHaveClass("text-red-500");
-      expect(lengthCell).not.toHaveClass("text-red-500");
-    });
+    render(<FishSamplingDashboard pondId="pond-1" />);
+    
+    // Verify target values from the component's constants
+    expect(screen.getByText('0.15')).toBeInTheDocument(); // fish_weight target
+    expect(screen.getByText('17')).toBeInTheDocument(); // fish_length target
   });
 });
