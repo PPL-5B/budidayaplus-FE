@@ -16,7 +16,7 @@ const PondCard: React.FC<PondCardProps> = ({ pond }) => {
 
   return (
     <div>
-      <Card className="bg-[#EAF0FF] border border-[#ccc] rounded-lg">
+      <Card className="bg-[#EAF0FF] border border-black rounded-lg">
         <CardHeader className="pb-2">
           <CardTitle className="text-blue-700 text-lg font-bold">
             Kolam {pond.name.toUpperCase()}
