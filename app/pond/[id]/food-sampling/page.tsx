@@ -6,10 +6,10 @@ import React from 'react';
 const FoodSamplingHistoryPage = async ({ params }: { params: { id: string } }) => {
   const cycle = await getLatestCycle()
   return (
-    <div className='w-full pb-20 py-10'>
+    <div className='w-full pb-10 pt-6 bg-[#EDF2FF]'>
       <FoodSamplingDashboard pondId={params.id} cycleId={cycle?.id ?? ""} />
       
-      <div className="mt-10">
+      <div className="mt-10 bg-[#EDF2FF]">
         <FoodSamplingHistory pondId={params.id} />
       </div>
     </div>

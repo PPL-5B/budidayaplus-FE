@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className={`${inter.className} bg-zinc-50 h-full`}>
         {/* Main container with max width */}
-        <div className="mx-auto max-w-[390px] h-full bg-white relative">
+        <div className="mx-auto max-w-[390px] h-full bg-[#EDF2FF] relative">
           
           {/* Scrollable content area */}
           <main className="pb-20 min-h-[calc(100vh-5rem)] overflow-y-auto">
