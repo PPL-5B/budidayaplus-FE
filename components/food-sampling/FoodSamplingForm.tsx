@@ -117,8 +117,6 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
       {showPopup && (
         <FoodSamplingWarningPopup
           onClose={() => setShowPopup(false)}
-          onShowDetail={() => setShowDetail(true)}
-          showDetail={showDetail}
         />
       )}
     </div>
