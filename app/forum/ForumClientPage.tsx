@@ -12,7 +12,7 @@ const ForumPage: React.FC = () => {
   const [refreshForums, setRefreshForums] = useState(0);
   const [updatedForum, setUpdatedForum] = useState<Forum | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTag, setSelectedTag] = useState(''); // 🔥 filter tag
+  const [selectedTag, setSelectedTag] = useState(''); 
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -60,22 +60,6 @@ const ForumPage: React.FC = () => {
         <AddForum onForumAdded={handleForumAdded} />
       </div>
 
-<<<<<<< HEAD
-      {/*Search Box */}
-    <div className="mb-5">
-      <div className="flex items-center w-[255px] h-[38px] rounded-full bg-white px-4 shadow-sm">
-        <svg
-          className="w-[16px] h-[16px] text-[#979797]"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 3.5a7.5 7.5 0 0013.65 13.65z"
-=======
       {/* 🔍 Search + Filter */}
       <div className="flex gap-4 mb-5">
         {/* Search Box */}
@@ -99,7 +83,6 @@ const ForumPage: React.FC = () => {
             className="ml-3 w-full outline-none text-[#979797] placeholder:text-[#979797] text-[16px] capitalize font-normal bg-transparent"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
->>>>>>> 8c28c6d86d4f957c3f319eae60f9c4a8629375f1
           />
         </div>
 
