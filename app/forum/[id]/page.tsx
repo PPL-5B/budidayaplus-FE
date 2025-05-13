@@ -80,9 +80,9 @@ const ForumDetailPage = () => {
           onReplyAdded={() => setRefreshReplies((r) => r + 1)}
         />
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2">Replies</h2>
+          <h2 className="text-lg font-semibold mb-2">Balasan</h2>
           {replies.length === 0 ? (
-            <p className="text-gray-500">No replies yet.</p>
+            <p className="text-gray-500">Belum ada balasan.</p>
           ) : (
             <ul className="space-y-6 pb-28"> {/* Tambahkan padding bottom besar di sini */}
               {replies.map((reply) => (
