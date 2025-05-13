@@ -14,12 +14,13 @@ interface ForumCardProps {
   forum: Forum;
   onDeleteSuccess?: (id: string) => void;
   onVoteSuccess?: (updatedForum: Forum) => void;
+  onUpdateSuccess?: (updatedForum: Forum) => void;
 }
 
 const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuccess }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [tempDesc, setTempDesc] = useState(forum.description);
   const [desc, setDesc] = useState(forum.description);
+  const [title, setTitle] = useState(forum.title);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { goToDetail } = useForumNavigation();
@@ -27,7 +28,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
 
   const {
     upvotes,
-    downvotes,
     userVote,
     isLoading,
     isInitialized,
@@ -40,9 +40,10 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   const handleSave = () => {
     setDesc(tempDesc);
     setIsEditing(false);
-    onVoteSuccess?.({
+    onUpdateSuccess?.({
       ...forum,
-      description: tempDesc,
+      description: updatedDesc,
+      title: updatedTitle,
     });
   };
 
@@ -50,7 +51,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
     goToDetail(forum);
   };
 
-  const handleVote = async (voteType: 'upvote' | 'downvote') => {
+  const handleVote = async (voteType: 'upvote') => {
     try {
       if (voteType === 'upvote') {
         userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
@@ -59,7 +60,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
       onVoteSuccess?.({
         ...forum,
         upvotes,
-        downvotes,
       });
     } catch (error) {
       console.error('Error voting:', error);
@@ -137,6 +137,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         onSuccess={() => onDeleteSuccess?.(forum.id)}
       />
     </div>
+  );
   );
 };
 
