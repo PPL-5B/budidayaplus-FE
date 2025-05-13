@@ -33,7 +33,7 @@ export async function updateForum(
       const errorData = await res.json();
       return { 
         success: false, 
-        message: errorData.error || 'Gagal update forum' 
+        message: errorData.error ?? 'Gagal update forum' 
       };
     }
 

@@ -8,7 +8,7 @@ import ForumCardFooter from './ForumCardFooter';
 import { useVote } from '@/hooks/useVote';
 import { useUser } from '@/hooks/useUser';
 import { useForumNavigation } from '@/lib/forum/forumNavigation';
-import { cn } from '@/lib/utils';
+import { cn, truncateText } from '@/lib/utils';
 
 interface ForumCardProps {
   forum: Forum;
@@ -17,10 +17,17 @@ interface ForumCardProps {
   onUpdateSuccess?: (updatedForum: Forum) => void;
 }
 
-const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuccess }) => {
+const ForumCard: React.FC<ForumCardProps> = ({
+  forum,
+  onDeleteSuccess,
+  onVoteSuccess,
+  onUpdateSuccess,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [desc, setDesc] = useState(forum.description);
   const [title, setTitle] = useState(forum.title);
+  const [tempDesc, setTempDesc] = useState(forum.description);
+  const [tempTitle, setTempTitle] = useState(forum.title);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { goToDetail } = useForumNavigation();
@@ -39,11 +46,12 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
 
   const handleSave = () => {
     setDesc(tempDesc);
+    setTitle(tempTitle);
     setIsEditing(false);
     onUpdateSuccess?.({
       ...forum,
-      description: updatedDesc,
-      title: updatedTitle,
+      description: tempDesc,
+      title: tempTitle,
     });
   };
 
@@ -74,7 +82,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
     <div className="relative w-full max-w-[338px] bg-white rounded-[10px] shadow-md p-4 transition-all duration-200 overflow-hidden">
       {/* Header */}
       <ForumCardHeader
-        title={forum.title}
+        title={title}
         timestamp={forum.timestamp}
         author={forum.user.first_name}
       />
@@ -82,6 +90,13 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
       {/* Description */}
       {isEditing ? (
         <>
+          <input
+            type="text"
+            value={tempTitle}
+            onChange={(e) => setTempTitle(e.target.value)}
+            className="w-full border p-1 rounded text-[12px] mb-1"
+            placeholder="Edit judul"
+          />
           <textarea
             className="w-full border p-2 rounded text-[12px]"
             rows={2}
@@ -97,6 +112,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
             </button>
             <button
               onClick={() => {
+                setTempTitle(title);
                 setTempDesc(desc);
                 setIsEditing(false);
               }}
@@ -107,14 +123,13 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
           </div>
         </>
       ) : (
-        <p className="text-[12px] text-[#646464] line-clamp-2 mb-2">{desc}</p>
+        <p className="text-[14px] font-semibold text-[#646464] whitespace-pre-line mb-2">
+          {truncateText(desc, 100)} {/* Contoh: batas deskripsi 150 karakter */}
+        </p>
       )}
 
       {/* Footer */}
-      <div className={cn(
-        'mt-2',
-        isOwner ? 'w-[166px]' : 'w-[140px]'
-      )}>
+      <div className={cn('mt-2', isOwner ? 'w-[166px]' : 'w-[140px]')}>
         <ForumCardFooter
           onViewDetails={handleViewDetails}
           onEdit={() => setIsEditing(true)}
@@ -122,7 +137,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
           isEditing={isEditing}
           tag={forum.tag}
           upvotes={upvotes}
-          userVote={userVote === 'upvote'? userVote : null}
+          userVote={userVote === 'upvote' ? userVote : null}
           handleVote={handleVote}
           isLoading={isLoading}
           isOwner={isOwner}
@@ -137,7 +152,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         onSuccess={() => onDeleteSuccess?.(forum.id)}
       />
     </div>
-  );
   );
 };
 
