@@ -80,38 +80,38 @@ const ForumDetailPage = () => {
           onReplyAdded={() => setRefreshReplies((r) => r + 1)}
         />
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2">Balasan</h2>
+          <h2 className="text-lg font-semibold mb-2">Daftar Balasan</h2>
           {replies.length === 0 ? (
             <p className="text-gray-500">Belum ada balasan.</p>
           ) : (
-            <ul className="space-y-6 pb-28"> {/* Tambahkan padding bottom besar di sini */}
+            <ul className="space-y-4 pb-28">
               {replies.map((reply) => (
                 <li
                   key={reply.id}
-                  className="bg-white border border-blue-500 rounded-2xl p-6 shadow-sm"
+                  className="bg-white border border-blue-100 rounded-xl p-4 shadow-sm"
                 >
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white font-bold text-sm">
+                      {reply.user.first_name.charAt(0).toUpperCase()}
+                    </div>
                     <div className="flex flex-col">
-                      <span className="font-semibold text-base">
-                        {reply.user.first_name} {reply.user.last_name}
+                      <span className="font-medium text-sm">
+                        {reply.user.first_name} 
                       </span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs text-gray-500">
                         {reply.user.phone_number}
                       </span>
                     </div>
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 text-white font-bold">
-                      {reply.user.first_name.charAt(0).toUpperCase()}
-                    </div>
                   </div>
-                  <div className="text-sm text-gray-700 mb-1">
-                    <span className="font-semibold">Tanggal Pembuatan:</span> {new Date(reply.timestamp).toLocaleDateString()}
+                  
+                  <div className="text-sm text-gray-700 mb-3">
+                    <span className="font-medium">Deskripsi Balasan:</span><br />
+                    <p className="mt-1">{reply.description}</p>
                   </div>
-                  <div className="text-sm text-gray-700 mb-1">
-                    <span className="font-semibold">Jam Pembuatan:</span> {new Date(reply.timestamp).toLocaleTimeString()}
-                  </div>
-                  <div className="text-sm text-gray-700 mt-3">
-                    <span className="font-semibold">Deskripsi Reply:</span><br />
-                    {reply.description}
+                  
+                  <div className="flex justify-between text-xs text-gray-500 border-t pt-2">
+                    <span>Dibuat: {new Date(reply.timestamp).toLocaleDateString('id-ID')}</span>
+                    <span>{new Date(reply.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                 </li>
               ))}
