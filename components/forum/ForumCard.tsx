@@ -8,6 +8,7 @@ import ForumCardFooter from './ForumCardFooter';
 import { useVote } from '@/hooks/useVote';
 import { useUser } from '@/hooks/useUser';
 import { useForumNavigation } from '@/lib/forum/forumNavigation';
+import EditForumForm from '@/components/forum/EditForum';
 import { cn, truncateText } from '@/lib/utils';
 
 interface ForumCardProps {
@@ -17,17 +18,10 @@ interface ForumCardProps {
   onUpdateSuccess?: (updatedForum: Forum) => void;
 }
 
-const ForumCard: React.FC<ForumCardProps> = ({
-  forum,
-  onDeleteSuccess,
-  onVoteSuccess,
-  onUpdateSuccess,
-}) => {
+const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuccess, onUpdateSuccess }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [desc, setDesc] = useState(forum.description);
   const [title, setTitle] = useState(forum.title);
-  const [tempDesc, setTempDesc] = useState(forum.description);
-  const [tempTitle, setTempTitle] = useState(forum.title);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { goToDetail } = useForumNavigation();
@@ -44,14 +38,14 @@ const ForumCard: React.FC<ForumCardProps> = ({
 
   const isOwner = !!(user && forum.user.id === user.id);
 
-  const handleSave = () => {
-    setDesc(tempDesc);
-    setTitle(tempTitle);
+  const handleUpdateSuccess = (updatedDesc: string, updatedTitle: string) => {
+    setDesc(updatedDesc);
+    setTitle(updatedTitle);
     setIsEditing(false);
     onUpdateSuccess?.({
       ...forum,
-      description: tempDesc,
-      title: tempTitle,
+      description: updatedDesc,
+      title: updatedTitle,
     });
   };
 
@@ -59,12 +53,9 @@ const ForumCard: React.FC<ForumCardProps> = ({
     goToDetail(forum);
   };
 
-  const handleVote = async (voteType: 'upvote') => {
+  const handleVote = async () => {
     try {
-      if (voteType === 'upvote') {
-        userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
-      }
-
+      userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
       onVoteSuccess?.({
         ...forum,
         upvotes,
@@ -80,56 +71,31 @@ const ForumCard: React.FC<ForumCardProps> = ({
 
   return (
     <div className="relative w-full max-w-[338px] bg-white rounded-[10px] shadow-md p-4 transition-all duration-200 overflow-hidden">
-      {/* Header */}
       <ForumCardHeader
         title={title}
         timestamp={forum.timestamp}
         author={forum.user.first_name}
+        tag={forum.tag}
       />
 
-      {/* Description */}
       {isEditing ? (
-        <>
-          <input
-            type="text"
-            value={tempTitle}
-            onChange={(e) => setTempTitle(e.target.value)}
-            className="w-full border p-1 rounded text-[12px] mb-1"
-            placeholder="Edit judul"
-          />
-          <textarea
-            className="w-full border p-2 rounded text-[12px]"
-            rows={2}
-            value={tempDesc}
-            onChange={(e) => setTempDesc(e.target.value)}
-          />
-          <div className="flex justify-end gap-2 mt-1">
-            <button
-              onClick={handleSave}
-              className="px-3 py-1 bg-green-600 text-white rounded text-[10px] hover:bg-green-700"
-            >
-              Simpan
-            </button>
-            <button
-              onClick={() => {
-                setTempTitle(title);
-                setTempDesc(desc);
-                setIsEditing(false);
-              }}
-              className="px-3 py-1 bg-gray-300 text-black rounded text-[10px] hover:bg-gray-400"
-            >
-              Batal
-            </button>
-          </div>
-        </>
+        <EditForumForm
+          forumId={forum.id}
+          initialTitle={title}
+          initialDesc={desc}
+          onUpdateSuccess={handleUpdateSuccess}
+          onCancel={() => setIsEditing(false)}
+        />
       ) : (
         <p className="text-[14px] font-semibold text-[#646464] whitespace-pre-line mb-2">
           {truncateText(desc, 100)} {/* Contoh: batas deskripsi 150 karakter */}
         </p>
       )}
 
-      {/* Footer */}
-      <div className={cn('mt-2', isOwner ? 'w-[166px]' : 'w-[140px]')}>
+      <div className={cn(
+        'mt-2',
+        isOwner ? 'w-[166px]' : 'w-[140px]'
+      )}>
         <ForumCardFooter
           onViewDetails={handleViewDetails}
           onEdit={() => setIsEditing(true)}
@@ -144,7 +110,6 @@ const ForumCard: React.FC<ForumCardProps> = ({
         />
       </div>
 
-      {/* Hapus Dialog */}
       <DeleteForumContainer
         forumId={forum.id}
         isOpen={isDeleteOpen}
@@ -156,3 +121,4 @@ const ForumCard: React.FC<ForumCardProps> = ({
 };
 
 export default ForumCard;
+

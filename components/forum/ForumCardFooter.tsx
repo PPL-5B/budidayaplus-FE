@@ -3,14 +3,12 @@
 import React from 'react';
 import { ThumbsUp, Trash2, Pencil } from 'lucide-react';
 import ActionButton from '../ui/action-button';
-import ForumTag from './ForumTag';
 
 interface ForumCardFooterProps {
   onViewDetails: () => void;
   onEdit: () => void;
   onDelete: () => void;
   isEditing: boolean;
-  tag: string;
   upvotes: number;
   userVote: 'upvote' | null;
   handleVote: (type: 'upvote') => void;
@@ -23,7 +21,6 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
   onEdit,
   onDelete,
   isEditing,
-  tag,
   upvotes,
   userVote,
   handleVote,
@@ -32,8 +29,6 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-2 mt-3">
-      <ForumTag tag={tag} />
-
       {/* Lihat Detail + Upvote */}
       <div className="flex items-center gap-3">
         <button
@@ -43,16 +38,23 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
           Lihat Detail Forum
         </button>
 
+        {/* Upvote */}
         <button
           onClick={() => handleVote('upvote')}
           disabled={isLoading}
-          className={`flex items-center gap-1 px-2 py-[2px] rounded-full text-[10px] transition ${
+          className={`flex items-center gap-1 px-2 py-[2px] rounded-full text-[8px] transition ${
             userVote === 'upvote'
               ? 'bg-green-100 text-green-600'
               : 'bg-gray-100 text-gray-600 hover:bg-green-200 hover:text-green-600'
           }`}
         >
-          <ThumbsUp className="w-3 h-3" />
+          <ThumbsUp
+            className={`w-3 h-3 ${
+              userVote === 'upvote'
+                ? 'text-green-600'
+                : 'text-gray-600 hover:text-green-600'
+            }`}
+          />
           {upvotes}
         </button>
       </div>
