@@ -28,4 +28,3 @@ const FoodSamplingHistory: React.FC<FoodSamplingHistoryProps> = async ({ pondId 
 };
 
 export default FoodSamplingHistory;
-

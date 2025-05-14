@@ -1,153 +1,162 @@
-import {fireEvent, render, screen, waitFor } from '@testing-library/react';
-import FoodSamplingForm from '../FoodSamplingForm';
-import '@testing-library/jest-dom';
-import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import FoodSamplingForm from '@/components/food-sampling/FoodSamplingForm';
 import { addFoodSampling } from '@/lib/food-sampling';
+
+beforeAll(() => {
+  Object.defineProperty(window, 'location', {
+    value: {
+      reload: jest.fn(),
+    },
+    writable: true,
+  });
+});
 
 jest.mock('@/lib/food-sampling', () => ({
   addFoodSampling: jest.fn(),
 }));
 
-describe('FoodSamplingForm Component', () => {
+jest.mock('@/components/food-sampling/FoodSamplingWarningPopUp', () => ({
+  __esModule: true,
+  default: ({ onClose, onShowDetail, showDetail }: any) => (
+    <div data-testid="warning-popup">
+      Warning Popup
+      <button onClick={onClose}>Close Popup</button>
+      <button onClick={onShowDetail}>Show Details</button>
+      {showDetail && <div>Detail Content</div>}
+    </div>
+  ),
+}));
+
+describe('FoodSamplingForm', () => {
+  const mockSetIsModalOpen = jest.fn();
+  const props = {
+    pondId: 'pond1',
+    cycleId: 'cycle1',
+    setIsModalOpen: mockSetIsModalOpen,
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
+    process.env.NEXT_PUBLIC_FOOD_QUANTITY_THRESHOLD = '1000';
   });
 
-  test('Komponen dapat dirender tanpa error', () => {
-    render(<FoodSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
-    expect(screen.getByLabelText(/Kuantitas Makanan/i)).toBeInTheDocument();
+  it('renders the form correctly', () => {
+    render(<FoodSamplingForm {...props} />);
+    
+    expect(screen.getByText('Tambah Data Jumlah Makanan')).toBeInTheDocument();
+    expect(screen.getByLabelText('Kuantitas Makanan')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
-  test("Menampilkan pop up jika kuantitas makanan lebih dari 1000", async () => {
-    render(<FoodSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '1200' } });
-
-    const submitButton = screen.getByText(/Simpan/i);
-    fireEvent.click(submitButton);
-
-    expect(screen.getByText(/Indikator Tidak Sehat!/i)).toBeInTheDocument();
-  });
-
-  test("Menampilkan teks detail setelah tombol 'Lihat Detail' diklik", async () => {
-    render(<FoodSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '1001' } });
-
-    const submitButton = screen.getByText(/Simpan/i);
-    fireEvent.click(submitButton);
-
-    expect(screen.getByTestId('popup-warning')).toBeInTheDocument();
-
-    const detailButton = screen.getByTestId('detail-button');
-    fireEvent.click(detailButton);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Maksimal kuantitas makanan adalah 1000!/i)).toBeInTheDocument();
-    });
-  });
-
-  test('Menutup pop up ketika tombol "Tutup" diklik', async () => {
-    render(<FoodSamplingForm pondId="1" cycleId="1" setIsModalOpen={() => {}} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '1200' } });
-
-    const submitButton = screen.getByText(/Simpan/i);
-    fireEvent.click(submitButton);
-
-    const closeButton = screen.getByTestId('close-button');
-    fireEvent.click(closeButton);
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('popup-warning')).not.toBeInTheDocument();
-    });
-  });
-
-  test('Popup tidak muncul saat kuantitas makanan kurang dari 1000', async () => {
-    render(<FoodSamplingForm pondId="123" cycleId="456" setIsModalOpen={jest.fn()} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '500' } });
-
-    const submitButton = screen.getByText(/Simpan/i);
-    fireEvent.click(submitButton);
-
-    expect(screen.queryByTestId('popup-warning')).not.toBeInTheDocument();
-  });
-
-  test('Menampilkan error saat gagal menyimpan data', async () => {
-    (addFoodSampling as jest.Mock).mockRejectedValueOnce(new Error('Gagal menyimpan'));
-
-    render(<FoodSamplingForm pondId="1" cycleId="1" setIsModalOpen={jest.fn()} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '500' } });
-
-    const submitButton = screen.getByText(/Simpan/i);
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('error-message')).toHaveTextContent('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
-    });
-  });
-
-  test('Form di-reset setelah submit berhasil', async () => {
+  it('submits the form successfully', async () => {
     (addFoodSampling as jest.Mock).mockResolvedValueOnce({ success: true });
-
-    render(<FoodSamplingForm pondId="123" cycleId="456" setIsModalOpen={jest.fn()} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '500' } });
-
-    fireEvent.click(screen.getByText(/Simpan/i));
-
+    
+    render(<FoodSamplingForm {...props} />);
+    
+    fireEvent.change(screen.getByLabelText('Kuantitas Makanan'), {
+      target: { value: '500' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    
     await waitFor(() => {
-      expect(input).toHaveValue(0); 
+      expect(addFoodSampling).toHaveBeenCalledWith(
+        { food_quantity: 500 },
+        'pond1',
+        'cycle1'
+      );
+      expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
     });
   });
 
-  test('Form tidak dapat di-submit dengan kuantitas makanan yang tidak valid', async () => {
-    render(<FoodSamplingForm pondId="1" cycleId="1" setIsModalOpen={jest.fn()} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '1200' } });
-
-    const submitButton = screen.getByText(/Simpan/i);
-    fireEvent.click(submitButton);
-
-    expect(screen.getByText(/Indikator Tidak Sehat!/i)).toBeInTheDocument();
-  });
-
-  test('Menampilkan error jika API gagal', async () => {
-    (addFoodSampling as jest.Mock).mockRejectedValueOnce(new Error('Gagal menyimpan sample makanan'));
-
-    render(<FoodSamplingForm pondId="123" cycleId="456" setIsModalOpen={jest.fn()} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '500' } });
-
-    fireEvent.click(screen.getByText(/Simpan/i));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('error-message')).toHaveTextContent('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
-    });
-  });
-
-  test('Memastikan error message muncul saat API gagal menyimpan data', async () => {
+  it('shows error message when submission fails', async () => {
+    const originalError = console.error;
+    console.error = jest.fn();
+    
     (addFoodSampling as jest.Mock).mockResolvedValueOnce({ success: false });
-
-    render(<FoodSamplingForm pondId="123" cycleId="456" setIsModalOpen={jest.fn()} />);
-
-    const input = screen.getByLabelText(/Kuantitas Makanan/i);
-    fireEvent.change(input, { target: { value: '500' } });
-
-    fireEvent.click(screen.getByText(/Simpan/i));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('error-message')).toHaveTextContent('Gagal menyimpan sample makanan');
+    
+    render(<FoodSamplingForm {...props} />);
+    
+    fireEvent.change(screen.getByLabelText('Kuantitas Makanan'), {
+      target: { value: '500' },
     });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('Gagal menyimpan sample makanan')).toBeInTheDocument();
+    });
+    
+    console.error = originalError;
+  });
+
+  it('shows error message when API throws an error', async () => {
+    const originalError = console.error;
+    console.error = jest.fn();
+    
+    (addFoodSampling as jest.Mock).mockRejectedValueOnce(new Error('API Error'));
+    
+    render(<FoodSamplingForm {...props} />);
+    
+    fireEvent.change(screen.getByLabelText('Kuantitas Makanan'), {
+      target: { value: '500' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.')).toBeInTheDocument();
+    });
+    
+    console.error = originalError;
+  });
+
+  it('shows warning popup when food quantity exceeds threshold', async () => {
+    render(<FoodSamplingForm {...props} />);
+    
+    fireEvent.change(screen.getByLabelText('Kuantitas Makanan'), {
+      target: { value: '1001' },
+    });
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('warning-popup')).toBeInTheDocument();
+    });
+    
+    fireEvent.click(screen.getByText('Close Popup'));
+    expect(screen.queryByTestId('warning-popup')).not.toBeInTheDocument();
+  });
+
+  it('prevents submission when food quantity exceeds threshold', async () => {
+    render(<FoodSamplingForm {...props} />);
+    
+    fireEvent.change(screen.getByLabelText('Kuantitas Makanan'), {
+      target: { value: '1001' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    
+    await waitFor(() => {
+      expect(addFoodSampling).not.toHaveBeenCalled();
+      expect(screen.getByTestId('warning-popup')).toBeInTheDocument();
+    });
+  });
+
+  it('closes the modal when X button is clicked', () => {
+    render(<FoodSamplingForm {...props} />);
+    
+    fireEvent.click(screen.getByLabelText('Tutup'));
+    
+    expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
+  });
+
+  it('handles popup detail toggle', async () => {
+    render(<FoodSamplingForm {...props} />);
+    
+    fireEvent.change(screen.getByLabelText('Kuantitas Makanan'), {
+      target: { value: '1001' },
+    });
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('warning-popup')).toBeInTheDocument();
+    });
+    
+    fireEvent.click(screen.getByText('Show Details'));
+    expect(screen.getByText('Detail Content')).toBeInTheDocument();
   });
 });

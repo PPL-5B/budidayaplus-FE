@@ -5,7 +5,6 @@ import { getFoodSamplingHistory } from '@/lib/food-sampling';
 import { ColumnDef } from '@tanstack/react-table';
 import { FoodSampling } from '@/types/food-sampling';
 
-// Mock the imported functions and components
 jest.mock('@/lib/food-sampling');
 jest.mock('@/components/ui/data-table', () => ({
   DataTable: ({ columns, data }: { 
@@ -26,7 +25,6 @@ jest.mock('@/components/ui/data-table', () => ({
 
 const mockedGetFoodSamplingHistory = getFoodSamplingHistory as jest.Mock;
 
-// Mock data
 const mockHistoryData = {
   food_samplings: [
     {
