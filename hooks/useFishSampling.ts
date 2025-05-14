@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react"
-import { useCycle } from "@/hooks/useCycle"
-import { FishSampling } from "@/types/fish-sampling"
-import { fetchLatestFishSampling } from "@/lib/fish-sampling"
+import { useEffect, useState } from 'react';
+import { fetchLatestFishSampling } from '@/lib/fish-sampling';
+import { FishSampling } from '@/types/fish-sampling';
+import { useCycle } from '@/hooks/useCycle'; 
 
-export const useLatestFishSampling = (pondId: string) => {
-    const [fishSampling, setFishSampling] = useState<FishSampling|undefined>(undefined)
-    const cycle = useCycle()
+export function useLatestFishSampling(pondId: string) {
+  const [data, setData] = useState<FishSampling | null | undefined>(undefined);
+  const cycle = useCycle();
 
-    useEffect(() => {
-        const fetchFishSampling = async () => {
-            if (cycle) {
-                const fishSampling = await fetchLatestFishSampling(pondId, cycle.id)
-                setFishSampling(fishSampling)
-            }
-        }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!pondId || !cycle) return;
 
-        fetchFishSampling()
+      try {
+        const res = await fetchLatestFishSampling(pondId, cycle.id);
+        setData(res ?? null);
+      } catch {
+        setData(null);
+      }
+    };
 
-        return () => {
-            setFishSampling(undefined)
-        }
-    }, [cycle])
+    fetchData();
+  }, [pondId, cycle]);
 
-    return fishSampling
+  return data;
 }

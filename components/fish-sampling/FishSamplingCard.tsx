@@ -15,16 +15,22 @@ const FishSamplingCard: React.FC<FishSamplingCardProps> = async ({ pondId, cycle
 
   return (
     <div {...props}>
-      <p className='text-2xl font-medium'> Sampling Ikan </p>
+      <p className='text-2xl font-medium'> Ukuran Ikan </p>
       <div className="flex flex-col space-y-2">
         {cycleId && (
           <>
             {/* Row untuk tombol Sample & Riwayat */}
-            <div className="flex items-center space-x-2">
+            <div className="flex gap-1 items-center mt-2">
               <AddFishSampling pondId={pondId} cycleId={cycleId} fishSampling={fishSampling} />
-              <Button size="sm" variant="outline" asChild>
-                <Link href={`/pond/${pondId}/fish-sampling`}>
-                  Lihat Riwayat <History size={16} className="ml-2" />
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="border-[#2154C5] text-[#2154C5] font-semibold hover:bg-[#F1F5FF] px-4 py-2"
+              >
+                <Link href={`/pond/${pondId}/fish-sampling`} className="flex items-center gap-2">
+                  <History size={16} className="text-[#2154C5]" />
+                  Lihat Riwayat
                 </Link>
               </Button>
             </div>

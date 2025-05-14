@@ -43,8 +43,8 @@ const ForumPage: React.FC = () => {
     <div className="h-screen overflow-y-auto px-6 py-4 bg-[#EAF0FF] flex flex-col gap-4">
       {/* Tombol kembali */}
       <button
-        onClick={() => router.push('/')}
-        className="text-blue-600 text-sm flex items-center gap-1"
+        onClick={() => router.push('/community')}
+        className="flex items-center text-sm text-blue-600 hover:underline mb-3"
       >
         <ChevronLeft size={16} />
         Kembali
