@@ -32,7 +32,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
       {/* Lihat Detail + Upvote */}
       <div className="flex items-center left-2 gap-2">
         <button
-          className="text-blue-600 text-[11px] underline"
+          className="text-blue-600 text-[12px] underline whitespace-nowrap"
           onClick={onViewDetails}
         >
           Lihat Detail Forum
@@ -82,7 +82,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
           <ActionButton
             label="Ubah"
             color="green"
-            icon={<Pencil size={8} strokeWidth={2} />}
+            icon={<Pencil size={12} strokeWidth={2} />}
             onClick={onEdit}
           />
         </div>

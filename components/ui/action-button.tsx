@@ -21,8 +21,8 @@ const COLOR_MAP = {
 };
 
 const SIZE_MAP = {
-  sm: 'w-[60px] h-[20px] text-[10px]',
-  md: 'w-[80px] h-[30px] text-[10px]',
+  sm: 'py-2 px-2 w-[80px] h-[25px] text-[10px]',
+  md: 'w-[100px] h-[30px] text-[10px]',
 };
 
 const ActionButton: React.FC<ActionButtonProps> = ({
@@ -40,13 +40,17 @@ const ActionButton: React.FC<ActionButtonProps> = ({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        'flex items-center justify-center gap-1 rounded font-bold text-white transition disabled:opacity-50 disabled:cursor-not-allowed',
+        'flex items-center justify-center gap-1 rounded font-semibold text-white transition disabled:opacity-50 disabled:cursor-not-allowed',
         COLOR_MAP[color],
         SIZE_MAP[size],
         className
       )}
     >
-      {icon && <span className="w-[8px] h-[8px] flex items-center justify-center">{icon}</span>}
+      {icon && (
+      <span className="flex items-center mr-1 -ml-1">
+        {icon}
+      </span>)}
+
       {label}
     </button>
   );
