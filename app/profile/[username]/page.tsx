@@ -34,7 +34,6 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
       <ProfileComponent isUserSelf={isUserSelf} profile={profile} />
       <Team userRole={userRole} isUserSelf={isUserSelf} username={params.username} />
       <FAQ />
-
       <div className="mt-12 px-6">
         <h2 className="text-2xl font-bold text-left mb-4">Hubungi Kami</h2>
 
