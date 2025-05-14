@@ -44,7 +44,7 @@ const EditForumForm: React.FC<EditForumFormProps> = ({
       if (result.success) {
         onUpdateSuccess(desc.trim(), title.trim());
       } else {
-        setError(result.message || 'Gagal menyimpan perubahan');
+        setError(result.message ?? 'Gagal menyimpan perubahan');
       }
     } catch (err) {
       setError('Terjadi kesalahan saat menyimpan');

@@ -9,29 +9,16 @@ import { useVote } from '@/hooks/useVote';
 import { useUser } from '@/hooks/useUser';
 import { useForumNavigation } from '@/lib/forum/forumNavigation';
 import EditForumForm from '@/components/forum/EditForum';
+import { cn, truncateText } from '@/lib/utils';
 
 interface ForumCardProps {
-  forum: Omit<Forum, 'timestamp'> & {
-    timestamp: Date | string; 
-  };
+  forum: Forum;
   onDeleteSuccess?: (id: string) => void;
   onVoteSuccess?: (updatedForum: Forum) => void;
   onUpdateSuccess?: (updatedForum: Forum) => void;
 }
 
-const ForumCard: React.FC<ForumCardProps> = ({
-  forum: originalForum,
-  onDeleteSuccess,
-  onVoteSuccess,
-  onUpdateSuccess,
-}) => {
-  const forum = {
-    ...originalForum,
-    timestamp: originalForum.timestamp instanceof Date 
-      ? originalForum.timestamp 
-      : new Date(originalForum.timestamp)
-  };
-
+const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuccess, onUpdateSuccess }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [desc, setDesc] = useState(forum.description);
   const [title, setTitle] = useState(forum.title);
@@ -48,6 +35,8 @@ const ForumCard: React.FC<ForumCardProps> = ({
     handleUpvote,
     handleCancelVote,
   } = useVote(forum.id);
+
+  const isOwner = !!(user && forum.user.id === user.id);
 
   const handleUpdateSuccess = (updatedDesc: string, updatedTitle: string) => {
     setDesc(updatedDesc);
@@ -70,7 +59,7 @@ const ForumCard: React.FC<ForumCardProps> = ({
       if (voteType === 'upvote') {
         userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
       } 
-
+      
       onVoteSuccess?.({
         ...forum,
         upvotes,
@@ -81,67 +70,55 @@ const ForumCard: React.FC<ForumCardProps> = ({
   };
 
   if (!isInitialized) {
-    return (
-      <div className="w-full border rounded-lg p-4 shadow-md bg-white text-sm text-gray-500">
-        Loading...
-      </div>
-    );
+    return <div className="w-full rounded-lg p-4 shadow-md bg-white">Loading...</div>;
   }
 
   return (
-    <div className="relative w-full max-w-[338px] h-[150px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
-      <ForumCardHeader title={forum.title} timestamp={forum.timestamp} />
-      {isEditing ? (
-        <>
-          <textarea
-            className="w-full border p-2 rounded text-[12px] mt-2"
-            rows={2}
-            value={tempDesc}
-            onChange={(e) => setTempDesc(e.target.value)}
-          />
-          <div className="flex justify-end gap-2 mt-2">
-            <button
-              onClick={handleSave}
-              className="px-3 py-1 bg-blue-600 text-white rounded text-[10px] hover:bg-green-700"
-            >
-              Simpan
-            </button>
-            <button
-              onClick={() => {
-                setTempDesc(desc);
-                setIsEditing(false);
-              }}
-              className="px-3 py-1 bg-gray-300 text-black rounded text-[10px] hover:bg-gray-400"
-            >
-              Batal
-            </button>
-          </div>
-        </>
-      ) : (
-        <p className="text-[12px] text-[#646464] line-clamp-2 mt-2">{desc}</p>
-      )}
-  
-      <ForumCardFooter
-        onViewDetails={handleViewDetails}
-        userInitial={forum?.user?.first_name?.charAt(0) ?? '?'}
-        onEdit={() => setIsEditing(true)}
-        onDelete={() => setIsDeleteOpen(true)}
-        isEditing={isEditing}
+
+    <div className="relative w-full max-w-[338px] bg-white rounded-[10px] shadow-md p-4 transition-all duration-200 overflow-hidden">
+      <ForumCardHeader
+        title={title}
+        timestamp={forum.timestamp}
+        author={forum.user.first_name}
         tag={forum.tag}
-        upvotes={upvotes}
-        userVote={userVote === 'upvote' ? userVote : null}
-        handleVote={handleVote}
-        isLoading={isLoading}
-        isOwner={isOwner}
       />
-  
+
+      {isEditing ? (
+        <EditForumForm
+          forumId={forum.id}
+          initialTitle={title}
+          initialDesc={desc}
+          onUpdateSuccess={handleUpdateSuccess}
+          onCancel={() => setIsEditing(false)}
+        />
+      ) : (
+        <p className="text-[14px] font-semibold text-[#646464] whitespace-pre-line mb-2">
+          {truncateText(desc, 100)} {/* Contoh: batas deskripsi 150 karakter */}
+        </p>
+      )}
+
+      <div className={cn(
+        'mt-2',
+        isOwner ? 'w-[166px]' : 'w-[140px]'
+      )}>
+        <ForumCardFooter
+          onViewDetails={handleViewDetails}
+          onEdit={() => setIsEditing(true)}
+          onDelete={() => setIsDeleteOpen(true)}
+          isEditing={isEditing}
+          tag={forum.tag}
+          upvotes={upvotes}
+          userVote={userVote === 'upvote' ? userVote : null}
+          handleVote={handleVote}
+          isLoading={isLoading}
+          isOwner={isOwner}
+        />
+      </div>
       <DeleteForumContainer
         forumId={forum.id}
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
-        onSuccess={() => {
-          onDeleteSuccess?.(forum.id);
-        }}
+        onSuccess={() => onDeleteSuccess?.(forum.id)}
       />
     </div>
   );  
