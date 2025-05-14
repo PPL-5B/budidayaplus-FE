@@ -42,12 +42,10 @@ const ForumCard: React.FC<ForumCardProps> = ({
 
   const {
     upvotes,
-    downvotes,
     userVote,
     isLoading,
     isInitialized,
     handleUpvote,
-    handleDownvote,
     handleCancelVote,
   } = useVote(forum.id);
 
@@ -62,24 +60,20 @@ const ForumCard: React.FC<ForumCardProps> = ({
     });
   };
 
-  const isOwner = !!(user && forum?.user?.id === user.id);
-
+  const isOwner = !!(user && forum.user.id === user.id);
   const handleViewDetails = () => {
     goToDetail(forum);
   };
 
-  const handleVote = async (voteType: 'upvote' | 'downvote') => {
+  const handleVote = async (voteType: 'upvote') => {
     try {
       if (voteType === 'upvote') {
         userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
-      } else {
-        userVote === 'downvote' ? await handleCancelVote() : await handleDownvote();
-      }
+      } 
 
       onVoteSuccess?.({
         ...forum,
         upvotes,
-        downvotes,
       });
     } catch (error) {
       console.error('Error voting:', error);
@@ -95,28 +89,38 @@ const ForumCard: React.FC<ForumCardProps> = ({
   }
 
   return (
-    <div className="relative w-full max-w-[338px] min-h-[150px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
-      <ForumCardHeader
-        title={title}
-        timestamp={forum.timestamp} 
-      />
-
+    <div className="relative w-full max-w-[338px] h-[150px] bg-white rounded-[10px] border-l border-r border-t-2 border-b-4 border-[#2254C5] p-3 shadow-sm hover:shadow-md transition-all duration-200">
+      <ForumCardHeader title={forum.title} timestamp={forum.timestamp} />
       {isEditing ? (
-        <div className="mb-8">
-          <EditForumForm
-            forumId={forum.id}
-            initialTitle={title}
-            initialDesc={desc}
-            onUpdateSuccess={handleUpdateSuccess}
-            onCancel={() => setIsEditing(false)}
+        <>
+          <textarea
+            className="w-full border p-2 rounded text-[12px] mt-2"
+            rows={2}
+            value={tempDesc}
+            onChange={(e) => setTempDesc(e.target.value)}
           />
-        </div>
+          <div className="flex justify-end gap-2 mt-2">
+            <button
+              onClick={handleSave}
+              className="px-3 py-1 bg-blue-600 text-white rounded text-[10px] hover:bg-green-700"
+            >
+              Simpan
+            </button>
+            <button
+              onClick={() => {
+                setTempDesc(desc);
+                setIsEditing(false);
+              }}
+              className="px-3 py-1 bg-gray-300 text-black rounded text-[10px] hover:bg-gray-400"
+            >
+              Batal
+            </button>
+          </div>
+        </>
       ) : (
-        <p className="text-[12px] text-[#646464] whitespace-pre-line mb-2">
-          {desc}
-        </p>
+        <p className="text-[12px] text-[#646464] line-clamp-2 mt-2">{desc}</p>
       )}
-
+  
       <ForumCardFooter
         onViewDetails={handleViewDetails}
         userInitial={forum?.user?.first_name?.charAt(0) ?? '?'}
@@ -125,13 +129,12 @@ const ForumCard: React.FC<ForumCardProps> = ({
         isEditing={isEditing}
         tag={forum.tag}
         upvotes={upvotes}
-        downvotes={downvotes}
-        userVote={userVote === 'upvote' || userVote === 'downvote' ? userVote : null}
+        userVote={userVote === 'upvote' ? userVote : null}
         handleVote={handleVote}
         isLoading={isLoading}
         isOwner={isOwner}
       />
-
+  
       <DeleteForumContainer
         forumId={forum.id}
         isOpen={isDeleteOpen}
@@ -141,7 +144,7 @@ const ForumCard: React.FC<ForumCardProps> = ({
         }}
       />
     </div>
-  );
+  );  
 };
 
 export default ForumCard;

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ThumbsUp } from 'lucide-react';
 
 interface ForumCardFooterProps {
   onViewDetails: () => void;
@@ -11,9 +11,8 @@ interface ForumCardFooterProps {
   userInitial: string;
   tag: string;
   upvotes: number;
-  downvotes: number;
-  userVote: 'upvote' | 'downvote' | null;
-  handleVote: (type: 'upvote' | 'downvote') => void;
+  userVote: 'upvote' | null;
+  handleVote: (type: 'upvote') => void;
   isLoading: boolean;
   isOwner: boolean;
 }
@@ -26,7 +25,6 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
   userInitial,
   tag,
   upvotes,
-  downvotes,
   userVote,
   handleVote,
   isOwner,
@@ -58,6 +56,17 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
                 ? 'bg-green-100 text-green-600'
                 : 'bg-gray-100 text-gray-600 hover:bg-green-200 hover:text-green-600'
             }`}
+          />
+          {upvotes}
+        </button>
+      </div>
+
+      {/* RIGHT SIDE: Edit + Hapus */}
+      {!isEditing && isOwner && (
+        <div className="absolute bottom-2 right-3 flex gap-2">
+          <button
+            onClick={onEdit}
+            className="text-[10px] text-blue-500 hover:underline"
           >
             <ThumbsUp
               className={`w-3 h-3 ${
@@ -112,7 +121,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
       <div className="absolute top-2 right-3 w-10 h-10 rounded-full bg-[#2254C5] flex items-center justify-center text-white text-[12px] font-bold">
         {userInitial}
       </div>
-    </>
+    </div>
   );
 };
 
