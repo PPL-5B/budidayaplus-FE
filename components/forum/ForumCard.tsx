@@ -45,7 +45,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   };
 
   const isOwner = !!(user && forum.user.id === user.id);
-
   const handleViewDetails = () => {
     goToDetail(forum);
   };
@@ -119,7 +118,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         isLoading={isLoading}
         isOwner={isOwner}
       />
-
+  
       <DeleteForumContainer
         forumId={forum.id}
         isOpen={isDeleteOpen}

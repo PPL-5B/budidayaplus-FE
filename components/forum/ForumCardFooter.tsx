@@ -112,7 +112,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
       <div className="absolute top-2 right-3 w-10 h-10 rounded-full bg-[#2254C5] flex items-center justify-center text-white text-[12px] font-bold">
         {userInitial}
       </div>
-    </>
+    </div>
   );
 };
 

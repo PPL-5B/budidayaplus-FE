@@ -10,7 +10,7 @@ jest.mock('@/hooks/use-toast', () => ({
 
 const updateProfileMock = jest.fn();
 jest.mock('@/lib/profile', () => ({
-  updateProfile: (...args: unknown[]) => updateProfileMock(...args),
+  updateProfile: (...args: any) => updateProfileMock(...args),
 }));
 
 describe('UpdateProfileForm', () => {
@@ -76,12 +76,8 @@ describe('UpdateProfileForm', () => {
   });
 
   it('submit button is disabled while submitting (loading state)', async () => {
-    let resolveSubmit: (value: boolean) => void = () => {};
-    updateProfileMock.mockImplementation(
-      () => new Promise((resolve) => {
-        resolveSubmit = resolve;
-      })
-    );
+    let resolveSubmit: any;
+    updateProfileMock.mockImplementation(() => new Promise((resolve) => { resolveSubmit = resolve }));
 
     render(<UpdateProfileForm profile={mockProfile} setIsModalOpen={setIsModalOpenMock} />);
 
