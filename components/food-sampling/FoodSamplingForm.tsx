@@ -24,7 +24,6 @@ const FOOD_QUANTITY_THRESHOLD = parseInt(process.env.NEXT_PUBLIC_FOOD_QUANTITY_T
 
 const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, setIsModalOpen }) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [showDetail, setShowDetail] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
@@ -117,8 +116,6 @@ const FoodSamplingForm: React.FC<FoodSamplingFormProps> = ({ pondId, cycleId, se
       {showPopup && (
         <FoodSamplingWarningPopup
           onClose={() => setShowPopup(false)}
-          onShowDetail={() => setShowDetail(true)}
-          showDetail={showDetail}
         />
       )}
     </div>

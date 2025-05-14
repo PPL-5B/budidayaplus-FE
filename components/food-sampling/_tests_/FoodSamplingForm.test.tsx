@@ -145,18 +145,5 @@ describe('FoodSamplingForm', () => {
     expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
   });
 
-  it('handles popup detail toggle', async () => {
-    render(<FoodSamplingForm {...props} />);
-    
-    fireEvent.change(screen.getByLabelText('Kuantitas Makanan'), {
-      target: { value: '1001' },
-    });
-    
-    await waitFor(() => {
-      expect(screen.getByTestId('warning-popup')).toBeInTheDocument();
-    });
-    
-    fireEvent.click(screen.getByText('Show Details'));
-    expect(screen.getByText('Detail Content')).toBeInTheDocument();
-  });
+
 });

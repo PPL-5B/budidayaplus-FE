@@ -1,28 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FoodSamplingHistory from '@/components/food-sampling/FoodSamplingHistory';
 import { getFoodSamplingHistory } from '@/lib/food-sampling';
-import { ColumnDef } from '@tanstack/react-table';
-import { FoodSampling } from '@/types/food-sampling';
+import React from 'react';
 
 jest.mock('@/lib/food-sampling');
-jest.mock('@/components/ui/data-table', () => ({
-  DataTable: ({ columns, data }: { 
-    columns: ColumnDef<FoodSampling>[];
-    data: FoodSampling[] 
-  }) => (
-    <div data-testid="data-table">
-      <div data-testid="column-count">{columns.length}</div>
-      <div data-testid="row-count">{data.length}</div>
-      {data.map((item, index) => (
-        <div key={item.sampling_id} data-testid={`row-${index}`}>
-          {JSON.stringify(item)}
-        </div>
-      ))}
-    </div>
-  )
-}));
-
 const mockedGetFoodSamplingHistory = getFoodSamplingHistory as jest.Mock;
 
 const mockHistoryData = {
@@ -34,6 +16,10 @@ const mockHistoryData = {
       food_quantity: 500,
       target_food_quantity: 800,
       recorded_at: new Date('2023-05-15T12:00:00Z'),
+      reporter: {
+        first_name: 'Rani',
+        last_name: 'Wijaya',
+      },
     },
     {
       sampling_id: '124',
@@ -42,8 +28,12 @@ const mockHistoryData = {
       food_quantity: 700,
       target_food_quantity: 800,
       recorded_at: new Date('2023-05-16T12:00:00Z'),
-    }
-  ]
+      reporter: {
+        first_name: 'Andi',
+        last_name: 'Sutrisno',
+      },
+    },
+  ],
 };
 
 describe('FoodSamplingHistory', () => {
@@ -51,55 +41,47 @@ describe('FoodSamplingHistory', () => {
     jest.clearAllMocks();
   });
 
-  test('renders title and History icon', async () => {
+  test('renders food sampling history (positive case)', async () => {
     mockedGetFoodSamplingHistory.mockResolvedValueOnce(mockHistoryData);
-   
-    render(await FoodSamplingHistory({ pondId: 'pond-123' }));
-   
-    expect(screen.getByText('Riwayat Sampling Pakan')).toBeInTheDocument();
-   
-    const icon = document.querySelector('svg');
-    expect(icon).toBeInTheDocument();
+    render(<FoodSamplingHistory pondId="pond-123" />);
+    await waitFor(() => {
+      expect(screen.getByText(/Riwayat Jumlah Makanan/i)).toBeInTheDocument();
+      expect(screen.getByText(/Rani Wijaya/i)).toBeInTheDocument();
+      expect(screen.getByText(/Andi Sutrisno/i)).toBeInTheDocument();
+    });
   });
 
-  test('calls getFoodSamplingHistory with correct parameters', async () => {
+  test('displays formatted date and full name correctly (edge case)', async () => {
     mockedGetFoodSamplingHistory.mockResolvedValueOnce(mockHistoryData);
-   
-    render(await FoodSamplingHistory({ pondId: 'pond-123' }));
-   
-    expect(mockedGetFoodSamplingHistory).toHaveBeenCalledWith('pond-123');
+    render(<FoodSamplingHistory pondId="pond-123" />);
+    await waitFor(() => {
+      expect(screen.getByText(/Senin, 15 Mei 2023/i)).toBeInTheDocument();
+      expect(screen.getByText(/Selasa, 16 Mei 2023/i)).toBeInTheDocument();
+    });
   });
 
-  test('renders DataTable with correct data', async () => {
-    mockedGetFoodSamplingHistory.mockResolvedValueOnce(mockHistoryData);
-   
-    render(await FoodSamplingHistory({ pondId: 'pond-123' }));
-   
-    expect(screen.getByTestId('data-table')).toBeInTheDocument();
-    expect(screen.getByTestId('row-count')).toHaveTextContent('2');
-   
-    // Check if the first row data is passed correctly to DataTable
-    const firstRowElement = screen.getByTestId('row-0');
-    expect(firstRowElement).toHaveTextContent('123');
-    expect(firstRowElement).toHaveTextContent('500');
-    expect(firstRowElement).toHaveTextContent('800');
-  });
-
-  test('renders DataTable with empty array when no history', async () => {
+  test('renders empty data when history is empty (negative case)', async () => {
     mockedGetFoodSamplingHistory.mockResolvedValueOnce({ food_samplings: [] });
-   
-    render(await FoodSamplingHistory({ pondId: 'pond-123' }));
-   
-    expect(screen.getByTestId('data-table')).toBeInTheDocument();
-    expect(screen.getByTestId('row-count')).toHaveTextContent('0');
+    render(<FoodSamplingHistory pondId="pond-123" />);
+    await waitFor(() => {
+      expect(screen.getByText(/Belum Ada Data/i)).toBeInTheDocument();
+    });
   });
 
-  test('passes columns to DataTable', async () => {
+  test('renders empty data when food_samplings is undefined (edge case)', async () => {
+    mockedGetFoodSamplingHistory.mockResolvedValueOnce({});
+    render(<FoodSamplingHistory pondId="pond-123" />);
+    await waitFor(() => {
+      expect(screen.getByText(/Belum Ada Data/i)).toBeInTheDocument();
+    });
+  });
+
+  test('renders loading state initially', async () => {
     mockedGetFoodSamplingHistory.mockResolvedValueOnce(mockHistoryData);
-   
-    render(await FoodSamplingHistory({ pondId: 'pond-123' }));
-   
-    // This verifies that columns are passed to the DataTable component
-    expect(screen.getByTestId('column-count')).toBeInTheDocument();
+    render(<FoodSamplingHistory pondId="pond-123" />);
+    expect(screen.getByText(/Memuat Data Anda/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(/Memuat Data Anda/i)).not.toBeInTheDocument();
+    });
   });
 });
