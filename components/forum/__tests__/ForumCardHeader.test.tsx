@@ -40,4 +40,15 @@ describe('ForumCardHeader', () => {
     const expectedTitle = longTitle.slice(0, 10) + '...';
     expect(screen.getByText(expectedTitle)).toBeInTheDocument();
   });
+
+  it('displays the author name if provided', () => {
+  const title = 'Forum';
+  const timestamp = new Date('2025-04-21T10:00:00Z');
+  const author = 'Rana';
+
+  render(<ForumCardHeader title={title} timestamp={timestamp} author={author} />);
+
+  expect(screen.getByText(new RegExp(`Oleh ${author}`, 'i'))).toBeInTheDocument();
+});
+
 });

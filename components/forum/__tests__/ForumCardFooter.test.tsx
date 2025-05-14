@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ForumCardFooter from '../ForumCardFooter';
 import '@testing-library/jest-dom';
+import ForumCardFooter from '../ForumCardFooter';
 
 describe('ForumCardFooter', () => {
   const mockOnViewDetails = jest.fn();
@@ -14,10 +14,8 @@ describe('ForumCardFooter', () => {
     onEdit: mockOnEdit,
     onDelete: mockOnDelete,
     handleVote: mockHandleVote,
-    userInitial: 'J',
     tag: 'ikan',
     upvotes: 10,
-    downvotes: 2,
     userVote: null,
     isLoading: false,
   };
@@ -26,92 +24,54 @@ describe('ForumCardFooter', () => {
     jest.clearAllMocks();
   });
 
-  it('renders tag, user initial, Lihat Unggahan button, and votes', () => {
-    render(<ForumCardFooter {...baseProps} isEditing={false} />);
-
+  it('renders tag, upvote button, and detail link', () => {
+    render(<ForumCardFooter isOwner={true} {...baseProps} isEditing={false} />);
     expect(screen.getByText('ikan')).toBeInTheDocument();
-    expect(screen.getByText('J')).toBeInTheDocument();
-    expect(screen.getByText('Lihat Unggahan')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument(); // Upvotes
-    expect(screen.getByText('2')).toBeInTheDocument(); // Downvotes
+    expect(screen.getByText('Lihat Detail Forum')).toBeInTheDocument();
+    expect(screen.getByText('10')).toBeInTheDocument();
   });
 
-  it('calls onViewDetails when "Lihat Unggahan" button is clicked', () => {
-    render(<ForumCardFooter {...baseProps} isEditing={false} />);
-
-    fireEvent.click(screen.getByText('Lihat Unggahan'));
+  it('triggers onViewDetails when clicked', () => {
+    render(<ForumCardFooter isOwner={true} {...baseProps} isEditing={false} />);
+    fireEvent.click(screen.getByText('Lihat Detail Forum'));
     expect(mockOnViewDetails).toHaveBeenCalled();
   });
 
-  it('renders Edit and Hapus buttons when not editing', () => {
-    render(<ForumCardFooter {...baseProps} isEditing={false} />);
-
-    expect(screen.getByText('Edit')).toBeInTheDocument();
-    expect(screen.getByText('Hapus')).toBeInTheDocument();
-  });
-
-  it('calls onEdit when "Edit" button is clicked', () => {
-    render(<ForumCardFooter {...baseProps} isEditing={false} />);
-
-    fireEvent.click(screen.getByText('Edit'));
-    expect(mockOnEdit).toHaveBeenCalled();
-  });
-
-  it('calls onDelete when "Hapus" button is clicked', () => {
-    render(<ForumCardFooter {...baseProps} isEditing={false} />);
-
+  it('triggers onEdit and onDelete', () => {
+    render(<ForumCardFooter isOwner={true} {...baseProps} isEditing={false} />);
+    fireEvent.click(screen.getByText('Ubah'));
     fireEvent.click(screen.getByText('Hapus'));
+    expect(mockOnEdit).toHaveBeenCalled();
     expect(mockOnDelete).toHaveBeenCalled();
   });
 
-  it('does not render Edit and Hapus buttons when isEditing is true', () => {
-    render(<ForumCardFooter {...baseProps} isEditing={true} />);
-
-    expect(screen.queryByText('Edit')).toBeNull();
-    expect(screen.queryByText('Hapus')).toBeNull();
+  it('does not show edit/hapus when not owner', () => {
+    render(<ForumCardFooter isOwner={false} {...baseProps} isEditing={false} />);
+    expect(screen.queryByText('Ubah')).not.toBeInTheDocument();
+    expect(screen.queryByText('Hapus')).not.toBeInTheDocument();
   });
 
-  it('calls handleVote with "upvote" when upvote button is clicked', () => {
-    render(<ForumCardFooter {...baseProps} isEditing={false} />);
+  it('does not show edit/hapus when editing', () => {
+    render(<ForumCardFooter isOwner={true} {...baseProps} isEditing={true} />);
+    expect(screen.queryByText('Ubah')).not.toBeInTheDocument();
+    expect(screen.queryByText('Hapus')).not.toBeInTheDocument();
+  });
 
-    const upvoteButton = screen.getByRole('button', { name: /10/i });
-    fireEvent.click(upvoteButton);
+  it('calls handleVote when upvote clicked', () => {
+    render(<ForumCardFooter isOwner={false} {...baseProps} isEditing={false} />);
+    fireEvent.click(screen.getByText('10'));
     expect(mockHandleVote).toHaveBeenCalledWith('upvote');
   });
 
-  it('calls handleVote with "downvote" when downvote button is clicked', () => {
-    render(<ForumCardFooter {...baseProps} isEditing={false} />);
-
-    const downvoteButton = screen.getByRole('button', { name: /2/i });
-    fireEvent.click(downvoteButton);
-    expect(mockHandleVote).toHaveBeenCalledWith('downvote');
+  it('disables upvote button when loading', () => {
+    render(<ForumCardFooter isOwner={false} {...baseProps} isLoading={true} isEditing={false} />);
+    expect(screen.getByRole('button', { name: /10/i })).toBeDisabled();
   });
 
-  it('disables voting buttons when isLoading is true', () => {
-    render(<ForumCardFooter {...baseProps} isLoading={true} isEditing={false} />);
-
-    const upvoteButton = screen.getByRole('button', { name: /10/i });
-    const downvoteButton = screen.getByRole('button', { name: /2/i });
-
-    expect(upvoteButton).toBeDisabled();
-    expect(downvoteButton).toBeDisabled();
-  });
-
-  // ====== Tambahan untuk cover branch userVote ======
-
-  it('renders upvote button with green color when userVote is "upvote"', () => {
-    render(<ForumCardFooter {...baseProps} userVote="upvote" isEditing={false} />);
-
-    const upvoteButton = screen.getByRole('button', { name: /10/i });
-    expect(upvoteButton).toHaveClass('bg-green-100', { exact: false });
-    expect(upvoteButton).toHaveClass('text-green-600', { exact: false });
-  });
-
-  it('renders downvote button with red color when userVote is "downvote"', () => {
-    render(<ForumCardFooter {...baseProps} userVote="downvote" isEditing={false} />);
-
-    const downvoteButton = screen.getByRole('button', { name: /2/i });
-    expect(downvoteButton).toHaveClass('bg-red-100', { exact: false });
-    expect(downvoteButton).toHaveClass('text-red-600', { exact: false });
+  it('renders green style when user has upvoted', () => {
+    render(<ForumCardFooter isOwner={false} {...baseProps} userVote="upvote" isEditing={false} />);
+    const button = screen.getByRole('button', { name: /10/i });
+    expect(button).toHaveClass('bg-green-100');
+    expect(button).toHaveClass('text-green-600');
   });
 });

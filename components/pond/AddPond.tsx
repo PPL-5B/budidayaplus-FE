@@ -11,18 +11,21 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 const AddPond: React.FC<React.HTMLAttributes<HTMLDivElement>> = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   return (
-    <div {...props}>
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogTrigger asChild>
-          <Button className='flex bg-blue-500 hover:bg-blue-500'>
-            Tambah Kolam{' '}<IoIosAdd size={20} className='ml-1' />
-          </Button>
-        </DialogTrigger>
-        <DialogContent title='Tambah Kolam'>
-          <PondForm setIsModalOpen={setIsModalOpen} />
-        </DialogContent>
-      </Dialog>
-    </div>
+    <div className="flex justify-center">
+    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <DialogTrigger asChild>
+        <Button className="flex items-center gap-1 bg-[#2154C5] hover:bg-[#1a47a8] text-white px-6 py-3 shadow-md">
+          <span className="inline-flex items-center justify-center bg-white rounded-full p-0.25 -ml-1 mr-3">
+            <IoIosAdd size={20} className="text-[#2154C5]" />
+          </span>
+          Tambahkan Kolam
+        </Button>
+      </DialogTrigger>
+      <DialogContent title="Tambah Kolam">
+        <PondForm setIsModalOpen={setIsModalOpen} />
+      </DialogContent>
+    </Dialog>
+  </div>
   );
 };
 

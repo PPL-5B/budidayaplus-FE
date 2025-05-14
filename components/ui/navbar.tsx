@@ -2,15 +2,15 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useProfile } from '@/hooks/useProfile';
-
 // Import Heroicons
 import { CheckCircleIcon, UserIcon } from '@heroicons/react/24/solid';
 import { CheckCircleIcon as CheckCircleIconOutline, UserIcon as UserIconOutline } from '@heroicons/react/24/outline';
-import { Home, Fish } from 'lucide-react';
+import { Home, Fish, Users } from 'lucide-react';
 
 const menuItems = [
   { name: 'Beranda', href: '/', icon: Home, activeIcon: Home },
   { name: 'Kolam', href: '/pond', icon: Fish, activeIcon: Fish },
+  { name: 'Komunitas', href: '/community', icon: Users, activeIcon: Users },
   { name: 'Tugas', href: '/task', icon: CheckCircleIconOutline, activeIcon: CheckCircleIcon },
   { name: 'Profil', href: '/profile', icon: UserIconOutline, activeIcon: UserIcon },
 ];
@@ -29,9 +29,9 @@ const Navbar = () => {
     <div className="flex justify-center items-center gap-7 bg-[#EAF0FF] px-4 py-3 w-full h-full">
       {menuItems.map((item) => {
         const isActive = pathname === item.href ||
-          (item.href === '/profile' && pathname.startsWith('/profile'));
+          (item.href === '/profile' && pathname.startsWith('/profile')) ||
+          (item.href === '/community' && pathname.startsWith('/community'));
         const Icon = isActive ? item.activeIcon : item.icon;
-
         return (
           <button
             key={item.name}
@@ -41,7 +41,6 @@ const Navbar = () => {
           >
             {/* Icon */}
             <Icon className="w-6 h-6" />
-
             {/* Text */}
             <div className="text-xs font-medium mt-1">
               {item.name}
