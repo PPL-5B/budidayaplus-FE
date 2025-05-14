@@ -26,12 +26,10 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
 
   const {
     upvotes,
-    downvotes,
     userVote,
     isLoading,
     isInitialized,
     handleUpvote,
-    handleDownvote,
     handleCancelVote,
   } = useVote(forum.id);
 
@@ -49,18 +47,15 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
     goToDetail(forum);
   };
 
-  const handleVote = async (voteType: 'upvote' | 'downvote') => {
+  const handleVote = async (voteType: 'upvote') => {
     try {
       if (voteType === 'upvote') {
         userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
-      } else {
-        userVote === 'downvote' ? await handleCancelVote() : await handleDownvote();
-      }
+      } 
 
       onVoteSuccess?.({
         ...forum,
         upvotes,
-        downvotes,
       });
     } catch (error) {
       console.error('Error voting:', error);
@@ -112,8 +107,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         isEditing={isEditing}
         tag={forum.tag}
         upvotes={upvotes}
-        downvotes={downvotes}
-        userVote={userVote === 'upvote' || userVote === 'downvote' ? userVote : null}
+        userVote={userVote === 'upvote' ? userVote : null}
         handleVote={handleVote}
         isLoading={isLoading}
         isOwner={isOwner}

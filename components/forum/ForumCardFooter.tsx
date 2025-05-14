@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ThumbsUp } from 'lucide-react';
 
 interface ForumCardFooterProps {
   onViewDetails: () => void;
@@ -11,9 +11,8 @@ interface ForumCardFooterProps {
   userInitial: string;
   tag: string;
   upvotes: number;
-  downvotes: number;
-  userVote: 'upvote' | 'downvote' | null;
-  handleVote: (type: 'upvote' | 'downvote') => void;
+  userVote: 'upvote' | null;
+  handleVote: (type: 'upvote') => void;
   isLoading: boolean;
   isOwner: boolean;
 }
@@ -26,7 +25,6 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
   userInitial,
   tag,
   upvotes,
-  downvotes,
   userVote,
   handleVote,
   isOwner,
@@ -67,26 +65,6 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
             }`}
           />
           {upvotes}
-        </button>
-
-        {/* Downvote */}
-        <button
-          onClick={() => handleVote('downvote')}
-          disabled={isLoading}
-          className={`flex items-center gap-1 px-2 py-[2px] rounded-full text-[8px] transition ${
-            userVote === 'downvote'
-              ? 'bg-red-100 text-red-600'
-              : 'bg-gray-100 text-gray-600 hover:bg-red-200 hover:text-red-600'
-          }`}
-        >
-          <ThumbsDown
-            className={`w-3 h-3 ${
-              userVote === 'downvote'
-                ? 'text-red-600'
-                : 'text-gray-600 hover:text-red-600'
-            }`}
-          />
-          {downvotes}
         </button>
       </div>
 
