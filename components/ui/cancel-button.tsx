@@ -5,7 +5,7 @@ interface CancelButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 const CancelButton: React.FC<CancelButtonProps> = ({ children, ...props }) => (
   <button
     {...props}
-    className="px-4 py-2 rounded-md border border-gray-400 text-gray-600 hover:bg-gray-100 w-[30%]"
+    className="px-3 py-1.5 rounded-md border border-[#2254C5] text-[#2254C5] font-semibold text-[14px] hover:bg-[#2254C5] hover:text-white transition w-[30%]"
   >
     {children}
   </button>

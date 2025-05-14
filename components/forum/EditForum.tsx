@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { updateForum } from '@/lib/forum/updateForum';
+import ActionButton from '../ui/action-button';
 
 interface EditForumFormProps {
   forumId: string;
@@ -57,7 +58,7 @@ const EditForumForm: React.FC<EditForumFormProps> = ({
   return (
     <div className="flex flex-col gap-2 mb-8">
   <div>
-    <label className="block text-xs text-gray-700 mb-1">
+    <label className="block text-xs font-semibold text-gray-700 mb-1">
       Ubah Judul
     </label>
     <input 
@@ -75,7 +76,7 @@ const EditForumForm: React.FC<EditForumFormProps> = ({
   </div>
 
   <div>
-    <label className="block text-xs text-gray-700 mb-1">
+    <label className="block text-xs font-semibold text-gray-700 mb-1">
       Ubah Deskripsi
     </label>
     <textarea 
@@ -94,21 +95,24 @@ const EditForumForm: React.FC<EditForumFormProps> = ({
   {error && <p className="text-red-500 text-sm">{error}</p>}
 
   <div className="flex gap-2 justify-end">
-    <button 
+    <ActionButton
+      label="Batal"
+      color="gray"
       onClick={onCancel}
-      className="px-3 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300"
       disabled={isLoading}
-    >
-      Batal
-    </button>
-    <button 
+      size="sm"
+      className="bg-white border-2 border-[#2254C5] text-[#2254C5] hover:bg-[#2254C5] hover:text-white transition font-semibold"
+
+    />
+    <ActionButton
+      label={isLoading ? "Menyimpan..." : "Simpan"}
+      color="blue"
       onClick={handleSave}
-      className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
       disabled={isLoading}
-    >
-      {isLoading ? 'Menyimpan...' : 'Simpan'}
-    </button>
+      size="sm"
+    />
   </div>
+
 </div>
   );
 };
