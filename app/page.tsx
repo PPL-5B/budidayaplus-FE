@@ -4,6 +4,7 @@ import TaskByDateList from "@/components/tasks/TaskByDateList";
 import { formatDate } from "date-fns";
 import { id } from "date-fns/locale";
 import Image from "next/image";
+import AboutUs from "@/components/about-us/accordion";
 
 export default function Home() {
   return (
@@ -41,24 +42,7 @@ export default function Home() {
         <TaskByDateList />
       </div>
   
-      <div className="w-full flex justify-center mt-28">
-  <details className="w-full md:w-[60%] rounded-md bg-neutral-100 text-center group">
-    <summary className="px-4 py-3 text-lg text-black font-medium cursor-pointer list-none group-open:mb-4">
-      Tentang Kami
-    </summary>
-    <div className="px-4 pb-4 text-neutral-700 leading-relaxed">
-      <p>
-        Dikembangkan oleh <strong>PT Dimensi Kreasi Nusantara</strong> sejak tahun 2024,
-        aplikasi <strong>BudidayaPlus</strong> dirancang untuk membantu para peternak lele meningkatkan
-        produktivitas dan profit usaha mereka.
-      </p>
-      <p className="mt-2">
-        Kami berharap aplikasi ini menjadi solusi teknologi yang efektif, efisien, dan berdampak nyata bagi seluruh pengguna.
-      </p>
-      <p className="mt-4">Hormat kami, <br /> <strong>PT Dimensi Kreasi Nusantara</strong></p>
-    </div>
-   </details>
-   </div>
+      <AboutUs />
     </div>
 
   );
