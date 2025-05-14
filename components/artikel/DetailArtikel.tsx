@@ -16,15 +16,18 @@ interface DetailArtikelProps {
       <div className="p-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">{article.title}</h1>
   
+        {/* Info Penulis & Waktu Baca */}
+
         <div className="text-sm text-gray-600 mt-2 mb-4">
           <p>Oleh: {article.author}</p>
           <p>{article.date} ● {readingTime} menit untuk membaca</p>
         </div>
   
+        {/* Kategori */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {article.categories.map((cat) => (
+          {article.categories.map((cat, i) => (
             <span
-              key={cat}
+              key={i}
               className={`text-white text-xs px-2 py-1 rounded ${
                 {
                   "Kisah Inspiratif": "bg-green-600",
@@ -38,10 +41,12 @@ interface DetailArtikelProps {
           ))}
         </div>
   
+        {/* Isi Artikel */}
+
         <p className="text-gray-800">{article.synopsis}</p>
       </div>
     );
   };
   
   export default DetailArtikel;
-  
+

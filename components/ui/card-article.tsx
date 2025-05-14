@@ -1,4 +1,4 @@
-// components/ui/card-article.tsx
+
 import Link from "next/link";
 
 interface CardArticleProps {
@@ -49,5 +49,4 @@ export default function CardArticle({ id, title, author, date, synopsis, categor
     </div>
   );
 }
-
 
