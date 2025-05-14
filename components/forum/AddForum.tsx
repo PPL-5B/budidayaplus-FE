@@ -22,7 +22,7 @@ const AddForum: React.FC<AddForumProps> = ({
     <div data-testid="add-forum">
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
-          <button className="flex items-center justify-center gap-2 px-4 h-[30px] bg-white rounded-md shadow text-[#2254C5] font-bold text-[14px] whitespace-nowrap">
+          <button className="flex items-center justify-center gap-2 px-4 h-[30px] bg-white rounded-md shadow text-[#2254C5] font-semibold text-[14px] whitespace-nowrap">
             {/* SVG Icon */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
