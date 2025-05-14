@@ -101,7 +101,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
           onEdit={() => setIsEditing(true)}
           onDelete={() => setIsDeleteOpen(true)}
           isEditing={isEditing}
-          tag={forum.tag}
           upvotes={upvotes}
           userVote={userVote === 'upvote' ? userVote : null}
           handleVote={handleVote}
