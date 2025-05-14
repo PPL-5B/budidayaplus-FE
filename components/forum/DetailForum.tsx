@@ -28,7 +28,7 @@ const DetailForum: React.FC<{ forum: ForumDetailProps['forum'] }> = ({ forum }) 
         
         {/* Bubble inisial user */}
         <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#2254C5] flex items-center justify-center text-white text-[12px] font-bold">
-          {forum.user.first_name.charAt(0)}
+          {forum.user.first_name.charAt(0).toUpperCase()}
         </div>
 
         {/* Tombol kembali */}
@@ -42,11 +42,14 @@ const DetailForum: React.FC<{ forum: ForumDetailProps['forum'] }> = ({ forum }) 
 
         {/* Isi Detail */}
         <div className="text-[13px] text-[#333] space-y-1">
-          <p><strong>Username:</strong> {forum.user.first_name} {forum.user.last_name}</p>
+          <p><strong>Username:</strong> {forum.user.first_name}</p>
+          <p><strong>Email:</strong> {forum.user.last_name}</p>
           <p><strong>Tanggal Pembuatan:</strong> {tanggal}</p>
           <p><strong>Jam Pembuatan:</strong> {jam}</p>
           <p><strong>Deskripsi Forum:</strong></p>
-          <p className="text-[#646464] whitespace-pre-line">{forum.description}</p>
+          <p className="text-[15px] text-[#646464] whitespace-pre-line mt-2"> {/* Increased font size to 15px */}
+            {forum.description}
+          </p>
         </div>
       </div>
     </div>

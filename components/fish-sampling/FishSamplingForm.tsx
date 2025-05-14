@@ -2,10 +2,15 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { addFishSampling } from '@/lib/fish-sampling';
 import { Label } from '@/components/ui/label';
+import { X } from 'lucide-react';
+
+import { addFishSampling } from '@/lib/fish-sampling';
 import FishSamplingWarningPopup from './FishSamplingWarningPopUp';
 
 interface FishSamplingFormProps {
@@ -14,122 +19,133 @@ interface FishSamplingFormProps {
   cycleId: string;
 }
 
-interface FishSamplingInputForm {
-  fish_weight: number;
-  fish_length: number;
-}
+const FishSamplingSchema = z.object({
+  fish_weight: z
+    .number({ invalid_type_error: 'Berat harus berupa angka positif' })
+    .positive({ message: 'Berat harus berupa angka positif' }),
+  fish_length: z
+    .number({ invalid_type_error: 'Panjang harus berupa angka positif' })
+    .positive({ message: 'Panjang harus berupa angka positif' }),
+});
+
+type FishSamplingInputForm = z.infer<typeof FishSamplingSchema>;
 
 const FishSamplingForm: React.FC<FishSamplingFormProps> = ({ pondId, cycleId, setIsModalOpen }) => {
-  const [errors, setErrors] = useState<string[]>([]);
-  const [showDetail, setShowDetail] = useState(false);
-  const [fishWeight, setFishWeight] = useState<number | null>(null);
-  const [fishLength, setFishLength] = useState<number | null>(null);
+  const [customErrors, setCustomErrors] = useState<string[]>([]);
 
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
     reset,
-  } = useForm<FishSamplingInputForm>();
-
-  const handleInputChange = (field: "fish_weight" | "fish_length", value: string) => {
-    const numericValue = parseFloat(value);
-    if (field === "fish_weight") {
-      setFishWeight(numericValue);
-    } else {
-      setFishLength(numericValue);
-    }
-  };
+  } = useForm<FishSamplingInputForm>({
+    resolver: zodResolver(FishSamplingSchema),
+    defaultValues: {
+      fish_weight: 0,
+      fish_length: 0,
+    },
+  });
 
   const onSubmit = async (data: FishSamplingInputForm) => {
+    const newErrors: string[] = [];
+
+    if (data.fish_weight > 10) {
+      newErrors.push('Berat ikan lebih dari 10 kg, harap pastikan data benar.');
+    }
+
+    if (data.fish_length > 100) {
+      newErrors.push('Panjang ikan lebih dari 100 cm, harap pastikan data benar.');
+    }
+
+    if (newErrors.length > 0) {
+      setCustomErrors(newErrors);
+      return;
+    }
+
     try {
-      const newErrors: string[] = [];
-
-      if (data.fish_weight <= 0 || data.fish_length <= 0) {
-        newErrors.push("Berat dan panjang ikan harus lebih dari 0, harap pastikan data benar.");
-      }
-      if (data.fish_weight > 10 && data.fish_length > 100) {
-        newErrors.push("Berat dan panjang ikan terlalu besar, harap pastikan data benar.");
-      } else {
-        if (data.fish_weight > 10) {
-          newErrors.push("Berat ikan lebih dari 10 kg, harap pastikan data benar.");
-        }
-        if (data.fish_length > 100) {
-          newErrors.push("Panjang ikan lebih dari 100 cm, harap pastikan data benar.");
-        }
-      }
-
-      if (newErrors.length > 0) {
-        setErrors(newErrors);
-        return;
-      }
-
       const formData = new FormData();
-      formData.append("fish_weight", data.fish_weight.toString());
-      formData.append("fish_length", data.fish_length.toString());
+      formData.append('fish_weight', data.fish_weight.toString());
+      formData.append('fish_length', data.fish_length.toString());
 
       const res = await addFishSampling(pondId, cycleId, formData);
 
       if (!res.success) {
-        setErrors([`Gagal menyimpan sample ikan: ${res.message ?? ""}`]);
+        setCustomErrors([`Gagal menyimpan sample ikan: ${res.message ?? ''}`]);
         return;
       }
 
       reset();
       setIsModalOpen(false);
       window.location.reload();
-
     } catch (error) {
-      setErrors(["Gagal menyimpan sample ikan"]);
+      console.error('Error while saving fish sampling:', error);
+      setCustomErrors([
+        'Gagal menyimpan sample ikan. Silakan coba lagi atau hubungi administrator.',
+      ]);
     }
   };
 
   return (
-    <div>
-      {errors.length > 0 && (
+    <div className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-[#2154C5] font-semibold text-base">Tambah Ukuran Ikan</h2>
+        <button onClick={() => setIsModalOpen(false)} aria-label="Tutup">
+          <X className="text-[#2154C5] w-5 h-5" />
+        </button>
+      </div>
+
+      {customErrors.length > 0 && (
         <FishSamplingWarningPopup
-          onClose={() => setErrors([])}
-          onShowDetail={() => setShowDetail(!showDetail)}
-          showDetail={showDetail}
-          errorMessages={errors}
+          onClose={() => setCustomErrors([])}
+          errorMessages={customErrors}
         />
       )}
 
-      <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div>
-          <Label className="text-sm" htmlFor="fish_weight">Berat Ikan (kg)</Label>
+          <Label className="text-sm text-[#2154C5]" htmlFor="fish_weight">
+            Berat Ikan (kg)
+          </Label>
           <Input
-            {...register('fish_weight', { setValueAs: value => parseFloat(value) })}
+            id="fish_weight"
+            {...register('fish_weight', { valueAsNumber: true })}
             type="number"
-            placeholder="Berat Ikan (kg)"
             step={0.01}
-            className={`border border-gray-300 p-2 rounded ${
-              fishWeight !== null && fishWeight >= 10 ? "text-red-500 border-red-500" : ""
-            }`}
-            onChange={(e) => handleInputChange("fish_weight", e.target.value)}
+            className="mt-1 bg-[#E7E7E7]"
+            aria-invalid={!!errors.fish_weight}
           />
+          {errors.fish_weight && (
+            <p role="alert" className="text-red-500 text-sm mt-1">
+              {errors.fish_weight.message}
+            </p>
+          )}
         </div>
 
         <div>
-          <Label className="text-sm" htmlFor="fish_length">Panjang Ikan (cm)</Label>
+          <Label className="text-sm text-[#2154C5]" htmlFor="fish_length">
+            Panjang Ikan (cm)
+          </Label>
           <Input
-            {...register('fish_length', { setValueAs: value => parseFloat(value) })}
+            id="fish_length"
+            {...register('fish_length', { valueAsNumber: true })}
             type="number"
-            placeholder="Panjang Ikan (cm)"
             step={0.01}
-            className={`border border-gray-300 p-2 rounded ${
-              fishLength !== null && fishLength >= 100 ? "text-red-500 border-red-500" : ""
-            }`}
-            onChange={(e) => handleInputChange("fish_length", e.target.value)}
+            className="mt-1 bg-[#E7E7E7]"
+            aria-invalid={!!errors.fish_length}
           />
+          {errors.fish_length && (
+            <p role="alert" className="text-red-500 text-sm mt-1">
+              {errors.fish_length.message}
+            </p>
+          )}
         </div>
 
         <Button
-          className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 col-span-2"
+          className="w-full bg-[#2154C5] hover:bg-[#1A3F96] text-white font-medium rounded-md py-2"
           type="submit"
           disabled={isSubmitting}
         >
-          Simpan
+          Submit
         </Button>
       </form>
     </div>

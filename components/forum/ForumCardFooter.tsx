@@ -30,7 +30,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
   return (
     <div className="flex flex-col gap-2 mt-3">
       {/* Lihat Detail + Upvote */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center left-2 gap-2">
         <button
           className="text-blue-600 text-[12px] underline whitespace-nowrap"
           onClick={onViewDetails}
@@ -42,7 +42,7 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
         <button
           onClick={() => handleVote('upvote')}
           disabled={isLoading}
-          className={`flex items-center gap-1 px-2 py-[2px] rounded-full text-[8px] transition ${
+          className={`flex gap-1 px-2 py-[2px] rounded-full text-[8px] transition ${
             userVote === 'upvote'
               ? 'bg-green-100 text-green-600'
               : 'bg-gray-100 text-gray-600 hover:bg-green-200 hover:text-green-600'
@@ -51,13 +51,24 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
           <ThumbsUp
             className={`w-3 h-3 ${
               userVote === 'upvote'
-                ? 'text-green-600'
-                : 'text-gray-600 hover:text-green-600'
+                ? 'bg-green-100 text-green-600'
+                : 'bg-gray-100 text-gray-600 hover:bg-green-200 hover:text-green-600'
             }`}
           />
           {upvotes}
         </button>
       </div>
+
+      {/* RIGHT SIDE: Edit + Hapus */}
+      {!isEditing && isOwner && (
+        <div className="absolute bottom-2 right-3 flex gap-2">
+          <button
+            onClick={onEdit}
+            className="text-[10px] text-blue-500 hover:underline"
+          >
+          </button>
+        </div>
+      )}
 
       {/* Tombol Edit + Hapus (hanya untuk owner dan bukan saat editing) */}
       {!isEditing && isOwner && (
