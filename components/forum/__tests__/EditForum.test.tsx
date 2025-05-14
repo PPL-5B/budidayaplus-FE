@@ -3,151 +3,137 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import EditForumForm from '@/components/forum/EditForum';
 import '@testing-library/jest-dom';
 import { updateForum } from '@/lib/forum/updateForum';
-import { useRouter } from 'next/navigation';
-
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}));
 
 jest.mock('@/lib/forum/updateForum', () => ({
   updateForum: jest.fn(),
 }));
 
 describe('EditForumForm', () => {
-  const forumId = '123';
-  const mockPush = jest.fn();
+  const mockProps = {
+    forumId: '123',
+    initialTitle: 'Judul Awal',
+    initialDesc: 'Deskripsi Awal',
+    onUpdateSuccess: jest.fn(),
+    onCancel: jest.fn(),
+  };
 
   beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-    (global.fetch as jest.Mock) = jest.fn();
+    jest.clearAllMocks();
   });
 
-  it('menampilkan data deskripsi dari fetch', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ description: 'Deskripsi lama' }),
-    });
-
-    render(<EditForumForm forumId={forumId} />);
-
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText(/edit deskripsi/i)).toHaveValue('Deskripsi lama');
-    });
+  it('menampilkan data awal dengan benar', () => {
+    render(<EditForumForm {...mockProps} />);
+    
+    expect(screen.getByDisplayValue('Judul Awal')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Deskripsi Awal')).toBeInTheDocument();
   });
 
-  it('menangani error fetch dengan alert', async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    window.alert = jest.fn();
+  it('memperbarui judul dan deskripsi saat input diubah', () => {
+    render(<EditForumForm {...mockProps} />);
+    
+    const titleInput = screen.getByDisplayValue('Judul Awal');
+    const descInput = screen.getByDisplayValue('Deskripsi Awal');
 
-    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Gagal ambil'));
+    fireEvent.change(titleInput, { target: { value: 'Judul Baru' } });
+    fireEvent.change(descInput, { target: { value: 'Deskripsi Baru' } });
 
-    render(<EditForumForm forumId={forumId} />);
-
-    await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith('Gagal mengambil data forum');
-    });
+    expect(titleInput).toHaveValue('Judul Baru');
+    expect(descInput).toHaveValue('Deskripsi Baru');
   });
 
-  it('update forum sukses', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ description: 'desc lama' }),
-    });
+  it('menampilkan error ketika deskripsi kosong', () => {
+    render(<EditForumForm {...mockProps} />);
+    
+    const descInput = screen.getByDisplayValue('Deskripsi Awal');
+    fireEvent.change(descInput, { target: { value: '   ' } });
+    
+    const saveButton = screen.getByRole('button', { name: /simpan/i });
+    fireEvent.click(saveButton);
+
+    expect(screen.getByText('Deskripsi tidak boleh kosong')).toBeInTheDocument();
+    expect(mockProps.onUpdateSuccess).not.toHaveBeenCalled();
+  });
+
+  it('memanggil onCancel ketika tombol batal diklik', () => {
+    render(<EditForumForm {...mockProps} />);
+    
+    const cancelButton = screen.getByRole('button', { name: /batal/i });
+    fireEvent.click(cancelButton);
+
+    expect(mockProps.onCancel).toHaveBeenCalled();
+  });
+
+  it('memanggil onUpdateSuccess ketika update berhasil', async () => {
     (updateForum as jest.Mock).mockResolvedValue({ success: true });
-
-    render(<EditForumForm forumId={forumId} />);
-    const textarea = await screen.findByPlaceholderText(/edit deskripsi/i);
-    fireEvent.change(textarea, { target: { value: 'desc baru' } });
-
-    const button = screen.getByRole('button', { name: /simpan perubahan/i });
-    fireEvent.click(button);
+    
+    render(<EditForumForm {...mockProps} />);
+    
+    const saveButton = screen.getByRole('button', { name: /simpan/i });
+    fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(updateForum).toHaveBeenCalled();
-      expect(mockPush).toHaveBeenCalledWith('/forum?updated=true');
+      expect(updateForum).toHaveBeenCalledWith(
+        '123',
+        'Judul Awal',
+        'Deskripsi Awal'
+      );
+      expect(mockProps.onUpdateSuccess).toHaveBeenCalledWith(
+        'Deskripsi Awal',
+        'Judul Awal'
+      );
     });
   });
 
-  it('update forum gagal dengan message', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ description: 'desc awal' }),
+  it('menampilkan error ketika update gagal', async () => {
+    (updateForum as jest.Mock).mockResolvedValue({ 
+      success: false, 
+      message: 'Error message' 
     });
-    (updateForum as jest.Mock).mockResolvedValue({ success: false, message: 'gagal update' });
-    window.alert = jest.fn();
-
-    render(<EditForumForm forumId={forumId} />);
-    const button = await screen.findByRole('button', { name: /simpan perubahan/i });
-    fireEvent.click(button);
+    
+    render(<EditForumForm {...mockProps} />);
+    
+    const saveButton = screen.getByRole('button', { name: /simpan/i });
+    fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith('gagal update');
+      expect(screen.getByText('Error message')).toBeInTheDocument();
     });
   });
 
-  it('update forum gagal tanpa message', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ description: 'awal' }),
-    });
-    (updateForum as jest.Mock).mockResolvedValue({ success: false });
-    window.alert = jest.fn();
-
-    render(<EditForumForm forumId={forumId} />);
-    const button = await screen.findByRole('button', { name: /simpan perubahan/i });
-    fireEvent.click(button);
+  it('menampilkan error generic ketika terjadi exception', async () => {
+    (updateForum as jest.Mock).mockRejectedValue(new Error('Network error'));
+    console.error = jest.fn();
+    
+    render(<EditForumForm {...mockProps} />);
+    
+    const saveButton = screen.getByRole('button', { name: /simpan/i });
+    fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith('Gagal update forum');
+      expect(screen.getByText('Terjadi kesalahan saat menyimpan')).toBeInTheDocument();
+      expect(console.error).toHaveBeenCalledWith('Error:', expect.any(Error));
     });
   });
 
-  it('menampilkan loading state', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ description: 'init' }),
-    });
-
-    let resolveUpdate: (value: { success: boolean }) => void = () => {};
+  it('menampilkan loading state saat menyimpan', async () => {
+    let resolveUpdate: (value: any) => void;
     (updateForum as jest.Mock).mockImplementation(() => {
       return new Promise((resolve) => {
         resolveUpdate = resolve;
       });
     });
+    
+    render(<EditForumForm {...mockProps} />);
+    
+    const saveButton = screen.getByRole('button', { name: /simpan/i });
+    fireEvent.click(saveButton);
 
-    render(<EditForumForm forumId={forumId} />);
-    const button = await screen.findByRole('button', { name: /simpan perubahan/i });
-    fireEvent.click(button);
+    expect(screen.getByText('Menyimpan...')).toBeInTheDocument();
 
-    expect(button).toHaveTextContent('Menyimpan...');
-
-    resolveUpdate({ success: true });
-  });
-
-  it('menangani fetch response dengan res.ok === false', async () => {
-    window.alert = jest.fn();
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({}),
-    });
-
-    render(<EditForumForm forumId={forumId} />);
-
+    resolveUpdate!({ success: true });
+    
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith('Gagal mengambil data forum');
-    });
-  });
-
-  it('fallback ke deskripsi kosong jika data.description tidak ada', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({}), // <-- description undefined
-    });
-
-    render(<EditForumForm forumId={forumId} />);
-
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText(/edit deskripsi/i)).toHaveValue('');
+      expect(screen.queryByText('Menyimpan...')).not.toBeInTheDocument();
     });
   });
 });

@@ -8,17 +8,33 @@ import ForumCardFooter from './ForumCardFooter';
 import { useVote } from '@/hooks/useVote';
 import { useUser } from '@/hooks/useUser';
 import { useForumNavigation } from '@/lib/forum/forumNavigation';
+import EditForumForm from '@/components/forum/EditForum';
 
 interface ForumCardProps {
-  forum: Forum;
+  forum: Omit<Forum, 'timestamp'> & {
+    timestamp: Date | string; 
+  };
   onDeleteSuccess?: (id: string) => void;
   onVoteSuccess?: (updatedForum: Forum) => void;
+  onUpdateSuccess?: (updatedForum: Forum) => void;
 }
 
-const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuccess }) => {
+const ForumCard: React.FC<ForumCardProps> = ({
+  forum: originalForum,
+  onDeleteSuccess,
+  onVoteSuccess,
+  onUpdateSuccess,
+}) => {
+  const forum = {
+    ...originalForum,
+    timestamp: originalForum.timestamp instanceof Date 
+      ? originalForum.timestamp 
+      : new Date(originalForum.timestamp)
+  };
+
   const [isEditing, setIsEditing] = useState(false);
-  const [tempDesc, setTempDesc] = useState(forum.description);
   const [desc, setDesc] = useState(forum.description);
+  const [title, setTitle] = useState(forum.title);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { goToDetail } = useForumNavigation();
@@ -33,12 +49,14 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
     handleCancelVote,
   } = useVote(forum.id);
 
-  const handleSave = () => {
-    setDesc(tempDesc);
+  const handleUpdateSuccess = (updatedDesc: string, updatedTitle: string) => {
+    setDesc(updatedDesc);
+    setTitle(updatedTitle);
     setIsEditing(false);
-    onVoteSuccess?.({
+    onUpdateSuccess?.({
       ...forum,
-      description: tempDesc,
+      description: updatedDesc,
+      title: updatedTitle,
     });
   };
 
@@ -63,7 +81,11 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   };
 
   if (!isInitialized) {
-    return <div className="w-full border rounded-lg p-4 shadow-md bg-white">Loading...</div>;
+    return (
+      <div className="w-full border rounded-lg p-4 shadow-md bg-white text-sm text-gray-500">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -101,7 +123,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   
       <ForumCardFooter
         onViewDetails={handleViewDetails}
-        userInitial={forum.user.first_name.charAt(0)}
+        userInitial={forum?.user?.first_name?.charAt(0) ?? '?'}
         onEdit={() => setIsEditing(true)}
         onDelete={() => setIsDeleteOpen(true)}
         isEditing={isEditing}
