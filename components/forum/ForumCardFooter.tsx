@@ -51,13 +51,31 @@ const ForumCardFooter: React.FC<ForumCardFooterProps> = ({
           <ThumbsUp
             className={`w-3 h-3 ${
               userVote === 'upvote'
-                ? 'text-green-600'
-                : 'text-gray-600 hover:text-green-600'
+                ? 'bg-green-100 text-green-600'
+                : 'bg-gray-100 text-gray-600 hover:bg-green-200 hover:text-green-600'
             }`}
           />
           {upvotes}
         </button>
       </div>
+
+      {/* RIGHT SIDE: Edit + Hapus */}
+      {!isEditing && isOwner && (
+        <div className="absolute bottom-2 right-3 flex gap-2">
+          <button
+            onClick={onEdit}
+            className="text-[10px] text-blue-500 hover:underline"
+          >
+            <ThumbsUp
+              className={`w-3 h-3 ${
+                userVote === 'upvote'
+                  ? 'text-green-600'
+                  : 'text-gray-600 hover:text-green-600'
+              }`}
+            />
+            {upvotes}
+          </button>
+        </div>
 
       {/* Tombol Edit + Hapus (hanya untuk owner dan bukan saat editing) */}
       {!isEditing && isOwner && (
