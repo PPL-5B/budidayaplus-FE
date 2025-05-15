@@ -1,85 +1,102 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { getLatestFishDeath } from '@/lib/fish-death/addFishDeath';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Modal as DialogContent } from '@/components/ui/modal';
-import { Dialog, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { IoIosAdd } from 'react-icons/io';
-import FishDeathForm from './FishDeathForm';
+import { Modal as DialogContent } from '@/components/ui/modal';
+import { Dialog, DialogClose, DialogTrigger } from '@/components/ui/dialog';
+import { FishDeathForm } from '@/components/fish-death';
+import { FishDeath } from '@/types/fish-death';
+import { X } from 'lucide-react';
 
-interface AddFishDeathProps {
+interface AddFishDeathProps extends React.HTMLAttributes<HTMLDivElement> {
   pondId: string;
+  fishDeath?: FishDeath;
   cycleId: string;
 }
 
-const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, cycleId}) => {
+const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, fishDeath, cycleId, ...props }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [fishDeathCount, setFishDeathCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    const fetchLatestFishDeath = async () => {
-      try {
-        const latestData = await getLatestFishDeath(pondId, cycleId);
-        setFishDeathCount(latestData?.fish_death_count ?? 0);
-      } catch (error) {
-        console.error('❌ Gagal mengambil data kematian ikan:', error);
-        setFishDeathCount(0); // fallback supaya tetap bisa submit
-      }
-    };
-
-    fetchLatestFishDeath();
-  }, [pondId, cycleId]);
-
-  const handleClick = () => {
-    if (fishDeathCount && fishDeathCount > 0) {
-      setIsConfirmOpen(true);
-    } else {
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleConfirm = () => {
-    setIsConfirmOpen(false);
-    setIsModalOpen(true);
-  };
 
   return (
-    <>
-      {/* Tombol Sample selalu muncul */}
-      <Button variant="outline" size="sm" onClick={handleClick}>
-        Sample <IoIosAdd size={20} className="ml-1" />
-      </Button>
+    <div {...props}>
+      {fishDeath ? (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              size="sm"
+              data-testid="add-fish-death-button"
+              className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-4 py-2"
+            >
+              <IoIosAdd size={16} />
+              Tambahkan Data
+            </Button>
+          </DialogTrigger>
+          <DialogContent
+            title=""
+            className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto [&>button.absolute]:hidden"
+          >
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-[#2154C5] font-semibold text-base">
+                Timpa Data Kematian Ikan
+              </h2>
+              <DialogClose asChild>
+                <button aria-label="Close">
+                  <X className="w-5 h-5 text-[#2154C5]" />
+                </button>
+              </DialogClose>
+            </div>
+            <p className="text-sm text-[#2154C5] mb-6">
+              Apakah anda yakin untuk menimpa data Jumlah Ukuran yang sebelumnya?
+            </p>
+            <div className="flex justify-center gap-3">
+              <DialogClose asChild>
+                <Button
+                  variant="outline"
+                  className="border-[#2154C5] text-[#2154C5] font-semibold rounded-md px-4"
+                >
+                  Tidak
+                </Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button
+                  className="bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-6"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  Iya
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
+      ) : null}
 
-      {/* Dialog Konfirmasi jika mau timpa */}
-      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <DialogContent title="Timpa Data Kematian Ikan">
-          <p>Apakah Anda yakin ingin menimpa data kematian ikan sebelumnya?</p>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                className="bg-[#ff8585] hover:bg-[#ff8585] text-white rounded-xl"
-                onClick={handleConfirm}
-              >
-                Konfirmasi
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Form Input Kematian */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent title="Input Kematian Ikan">
+        {!fishDeath && (
+          <DialogTrigger asChild>
+            <Button
+              className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-4 py-2"
+              size="sm"
+              data-testid="add-fish-death-button"
+            >
+              <span className="flex items-center justify-center w-5 h-5 text-[#EAF0FF]">
+                <IoIosAdd size={14} />
+              </span>Tambahkan Data
+            </Button>
+          </DialogTrigger>
+        )}
+        <DialogContent
+          title=""
+          className="p-0 bg-transparent shadow-none border-none [&>button.absolute]:hidden"
+        >
           <FishDeathForm
+            setIsModalOpen={setIsModalOpen}
             pondId={pondId}
             cycleId={cycleId}
-            setIsModalOpen={setIsModalOpen}
           />
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 };
 
