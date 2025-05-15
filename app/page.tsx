@@ -5,16 +5,18 @@ import TaskByDateList from "@/components/tasks/TaskByDateList";
 import { formatDate } from "date-fns";
 import { id } from "date-fns/locale";
 import Image from "next/image";
+import { ChevronDown } from "lucide-react";
 
 
 export default function Home() {
   return (
     <div className="flex flex-col items-center w-full mb-20 py-8">
       <div className="flex justify-between items-center mb-3 w-[80%] font-medium text-neutral-600">
-        <div className="text-3xl">
-          <p>Welcome to</p>
-          <p className="text-[#2154C5] font-normal">BudidayaPlus</p>
+        <div className="leading-snug">
+          <h1 className="text-3xl font-bold text-neutral-800">Welcome to</h1>
+          <h2 className="text-3xl font-semibold text-[#2154C5]">BudidayaPlus</h2>
         </div>
+
         <Image
           className="w-32 h-32"
           src="/BudidayaPlus.svg"
@@ -24,41 +26,44 @@ export default function Home() {
         />
       </div>
 
-
-      <div className="flex gap-2 items-center justify-center w-full">
-        <div className="w-[80%] flex gap-2">
-          <div className="h-5 w-0.5 bg-[#ff8585]" />
-          <p className="text-start">
-            {formatDate(new Date(), "EEEE, dd MMMM yyyy", { locale: id })}
-          </p>
-        </div>
+    <div className="flex items-center justify-center w-full">
+      <div className="w-[80%] flex gap-2 items-center mb-1">
+        <div className="h-5 w-0.5 bg-[#ff8585]" />
+        <p className="text-start text-lg font-semibold text-neutral-700">
+          {formatDate(new Date(), "EEEE, dd MMMM yyyy", { locale: id })}
+        </p>
       </div>
+    </div>
 
       <Cycle />
 
       <div className="flex flex-col items-center w-full">
-        <p className="mt-10 py-10 pb-5 w-[80%] text-2xl font-medium text-neutral-60">
+        <h2 className="w-[80%] mt-10 mb-4 text-xl font-bold text-neutral-700">
           Tugas Hari Ini
-        </p>
+        </h2>
         <TaskByDateList />
-      </div>  
+      </div>
+ 
       <div className="w-full flex justify-center mt-28">
-  <details className="w-full md:w-[60%] rounded-md bg-neutral-100 text-center group">
-    <summary className="px-4 py-3 text-lg text-black font-medium cursor-pointer list-none group-open:mb-4">
-      Tentang Kami
-    </summary>
-    <div className="px-4 pb-4 text-neutral-700 leading-relaxed">
-      <p>
-        Dikembangkan oleh <strong>PT Dimensi Kreasi Nusantara</strong> sejak tahun 2024,
-        aplikasi <strong>BudidayaPlus</strong> dirancang untuk membantu para peternak lele meningkatkan
-        produktivitas dan profit usaha mereka.
-      </p>
-      <p className="mt-2">
-        Kami berharap aplikasi ini menjadi solusi teknologi yang efektif, efisien, dan berdampak nyata bagi seluruh pengguna.
-      </p>
-      <p className="mt-4">Hormat kami, <br /> <strong>PT Dimensi Kreasi Nusantara</strong></p>
-    </div>
-   </details>
+      <details className="w-full md:w-[60%] max-w-md mx-auto rounded-lg bg-white shadow-md border group transition-all duration-300">
+        <summary className="relative text-center px-4 py-3 text-lg font-semibold text-black cursor-pointer list-none group-open:mb-2">
+          Tentang Kami
+          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="px-4 pb-4 text-neutral-700 text-sm leading-relaxed text-center">
+          <p>
+            Dikembangkan oleh <strong>PT Dimensi Kreasi Nusantara</strong> sejak tahun 2024, aplikasi <strong>BudidayaPlus</strong> dirancang untuk membantu para peternak lele meningkatkan produktivitas dan profit usaha mereka.
+          </p>
+          <p className="mt-2">
+            Kami berharap aplikasi ini menjadi solusi teknologi yang efektif, efisien, dan berdampak nyata bagi seluruh pengguna.
+          </p>
+          <p className="mt-4">
+            Hormat kami, <br />
+            <strong>PT Dimensi Kreasi Nusantara</strong>
+          </p>
+        </div>
+      </details>
+
    </div>
     </div>
   );
