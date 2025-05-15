@@ -15,8 +15,59 @@ interface AddFishDeathProps extends React.HTMLAttributes<HTMLDivElement> {
   cycleId: string;
 }
 
+const ConfirmationDialog: React.FC<{
+  onConfirm: () => void;
+  onCancel: () => void;
+}> = ({ onConfirm, onCancel }) => (
+  <DialogContent
+    title=""
+    className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto [&>button.absolute]:hidden"
+  >
+    <div className="flex justify-between items-center mb-3">
+      <h2 className="text-[#2154C5] font-semibold text-base">
+        Tambahkan Data Kematian Ikan
+      </h2>
+      <DialogClose asChild>
+        <button aria-label="Close">
+          <X className="w-5 h-5 text-[#2154C5]" />
+        </button>
+      </DialogClose>
+    </div>
+    <p className="text-sm text-[#2154C5] mb-6">
+      Apakah anda yakin untuk menambah data Jumlah Kematian Ikan pada hari ini?
+    </p>
+    <div className="flex justify-center gap-3">
+      <DialogClose asChild>
+        <Button
+          variant="outline"
+          className="border-[#2154C5] text-[#2154C5] font-semibold rounded-md px-4"
+          onClick={onCancel}
+        >
+          Tidak
+        </Button>
+      </DialogClose>
+      <DialogClose asChild>
+        <Button
+          className="bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-6"
+          onClick={onConfirm}
+        >
+          Iya
+        </Button>
+      </DialogClose>
+    </div>
+  </DialogContent>
+);
+
 const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, fishDeath, cycleId, ...props }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleConfirm = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div {...props}>
@@ -32,42 +83,7 @@ const AddFishDeath: React.FC<AddFishDeathProps> = ({ pondId, fishDeath, cycleId,
               Tambahkan Data
             </Button>
           </DialogTrigger>
-          <DialogContent
-            title=""
-            className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto [&>button.absolute]:hidden"
-          >
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-[#2154C5] font-semibold text-base">
-                Timpa Data Kematian Ikan
-              </h2>
-              <DialogClose asChild>
-                <button aria-label="Close">
-                  <X className="w-5 h-5 text-[#2154C5]" />
-                </button>
-              </DialogClose>
-            </div>
-            <p className="text-sm text-[#2154C5] mb-6">
-              Apakah anda yakin untuk menimpa data Jumlah Ukuran yang sebelumnya?
-            </p>
-            <div className="flex justify-center gap-3">
-              <DialogClose asChild>
-                <Button
-                  variant="outline"
-                  className="border-[#2154C5] text-[#2154C5] font-semibold rounded-md px-4"
-                >
-                  Tidak
-                </Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button
-                  className="bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-6"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  Iya
-                </Button>
-              </DialogClose>
-            </div>
-          </DialogContent>
+          <ConfirmationDialog onConfirm={handleConfirm} onCancel={handleCancel} />
         </Dialog>
       ) : null}
 
