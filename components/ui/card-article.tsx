@@ -21,7 +21,7 @@ export default function CardArticle({ id, title, author, date, synopsis, categor
   return (
     <div className="border border-black rounded-lg p-4 space-y-3 shadow bg-white">
       <h2 className="text-blue-700 font-bold text-lg hover:underline">
-        <Link href={`/artikel/${id}`}>{title}</Link>
+        <Link href={`/article/${id}`}>{title}</Link>
       </h2>
 
       <div className="flex flex-wrap gap-2">
@@ -43,7 +43,7 @@ export default function CardArticle({ id, title, author, date, synopsis, categor
 
       <div className="text-right"> 
       <Link
-        href={`/artikel/${id}`}
+        href={`/article/${id}`}
         className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold"
       >
         Baca Selengkapnya ▸
