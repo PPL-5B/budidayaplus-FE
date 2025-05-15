@@ -1,103 +1,148 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FishDeathDashboard from '@/components/fish-death/FishDeathDashboard';
+import { useLatestFishDeath } from '@/hooks/useFishDeath';
 import { useCycle } from '@/hooks/useCycle';
-import { fetchLatestFishDeath } from '@/lib/fish-death/fetchFishDeath';
-import { FishDeath } from '@/types/fish-death';
+import { useRouter } from 'next/navigation';
 
-// 🔁 Mock hook & fetch
+// Mock hooks and dependencies
+jest.mock('@/hooks/useFishDeath');
 jest.mock('@/hooks/useCycle');
-jest.mock('@/lib/fish-death/fetchFishDeath');
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+}));
+jest.mock('@/components/ui/loading-data', () => ({
+  LoadingData: () => <div data-testid="loading-data">Loading...</div>,
+}));
+jest.mock('@/components/ui/empty-data', () => ({
+  EmptyData: ({ title }: { title?: string }) => (
+    <div data-testid="empty-data">{title ?? 'No data available'}</div>
+  ),
+}));
 
-const mockedUseCycle = useCycle as jest.Mock;
-const mockedFetchLatestFishDeath = fetchLatestFishDeath as jest.Mock;
-
-const mockFishDeath: FishDeath = {
-    id: 'fd-001',
-    pond_id: 'pond-1',
-    recorded_at: '2024-04-04T00:00:00Z',
-    fish_death_count: 25,
-    fish_alive_count: 75,
-    reporter: {
-        id: 1,
-        first_name: 'Ani',
-        last_name: 'Wijaya',
-        phone_number: '08123456789',
-    },
-    cycle_id: ''
-};
-
-const mockCycle = {
-  id: 'cycle-1',
-  pond_fish_amount: [
-    { pond_id: 'pond-1', fish_amount: 100 },
-    { pond_id: 'pond-2', fish_amount: 150 },
-  ],
-};
+const mockUseLatestFishDeath = useLatestFishDeath as jest.Mock;
+const mockUseCycle = useCycle as jest.Mock;
+const mockUseRouter = useRouter as jest.Mock;
 
 describe('FishDeathDashboard', () => {
+  const pondId = 'pond-1';
+  const mockRouter = { back: jest.fn() };
+  const mockCycle = {
+    pond_fish_amount: [
+      { pond_id: 'pond-1', fish_amount: 1000 },
+      { pond_id: 'pond-2', fish_amount: 2000 },
+    ],
+  };
+
   beforeEach(() => {
+    mockUseRouter.mockReturnValue(mockRouter);
+    mockUseCycle.mockReturnValue(mockCycle);
     jest.clearAllMocks();
   });
 
-  it('renders message if cycle is not available', () => {
-    mockedUseCycle.mockReturnValue(null);
+  it('shows loading state when data is undefined', () => {
+    mockUseLatestFishDeath.mockReturnValue(undefined);
+    render(<FishDeathDashboard pondId={pondId} />);
 
-    render(<FishDeathDashboard pondId="pond-1" />);
-    expect(screen.getByText(/Data siklus belum tersedia/i)).toBeInTheDocument();
+    expect(screen.getByTestId('loading-data')).toBeInTheDocument();
   });
 
-  it('renders message if pond is not found in cycle', () => {
-    mockedUseCycle.mockReturnValue({
-      id: 'cycle-1',
-      pond_fish_amount: [],
-    });
+  it('shows empty state when data is null', () => {
+    mockUseLatestFishDeath.mockReturnValue(null);
+    render(<FishDeathDashboard pondId={pondId} />);
 
-    render(<FishDeathDashboard pondId="pond-1" />);
-    expect(screen.getByText(/Kolam tidak ditemukan dalam siklus ini/i)).toBeInTheDocument();
+    expect(screen.getByTestId('empty-data')).toBeInTheDocument();
+    expect(screen.getByText('Dasbor Kematian Ikan Terbaru')).toBeInTheDocument();
   });
 
-  it('renders message if fish death data is not available', async () => {
-    mockedUseCycle.mockReturnValue(mockCycle);
-    mockedFetchLatestFishDeath.mockResolvedValue(null);
+  it('shows empty state with message when cycle is not available', () => {
+    mockUseCycle.mockReturnValue(null);
+    mockUseLatestFishDeath.mockReturnValue(null);
 
-    render(<FishDeathDashboard pondId="pond-1" />);
-    await waitFor(() => {
-      expect(screen.getByText(/Data belum tersedia/i)).toBeInTheDocument();
-    });
+    render(<FishDeathDashboard pondId={pondId} />);
+
+    expect(screen.getByTestId('empty-data')).toBeInTheDocument();
+    expect(
+      screen.getByText('Data siklus belum tersedia, silakan buat siklus terlebih dahulu.')
+    ).toBeInTheDocument();
   });
 
-  it('renders table with fish death data correctly', async () => {
-    mockedUseCycle.mockReturnValue(mockCycle);
-    mockedFetchLatestFishDeath.mockResolvedValue(mockFishDeath);
+  it('shows empty state with message when pond is not found in cycle', () => {
+    mockUseCycle.mockReturnValue({
+      pond_fish_amount: [{ pond_id: 'different-pond', fish_amount: 1000 }],
+    });
+    mockUseLatestFishDeath.mockReturnValue(null);
 
-    render(<FishDeathDashboard pondId="pond-1" />);
+    render(<FishDeathDashboard pondId={pondId} />);
 
-    expect(await screen.findByText(/Dashboard Kematian Ikan/i)).toBeInTheDocument();
-    expect(screen.getByText(/100 ekor/)).toBeInTheDocument(); // Bibit
-    expect(screen.getByText(/25 ekor/)).toBeInTheDocument(); // Mati
-    expect(screen.getByText(/75 ekor/)).toBeInTheDocument(); // Bertahan
+    expect(screen.getByTestId('empty-data')).toBeInTheDocument();
+    expect(screen.getByText('Kolam tidak ditemukan dalam siklus ini.')).toBeInTheDocument();
   });
 
-  it('renders correctly when fish_amount is undefined (fallback to 0)', async () => {
-    mockedUseCycle.mockReturnValue({
-      id: 'cycle-2',
-      pond_fish_amount: [
-        { pond_id: 'pond-3', fish_amount: undefined }, // 👈 fish_amount missing
-      ],
+  it('shows table when data is available', () => {
+    mockUseLatestFishDeath.mockReturnValue({
+      fish_death_count: 200,
+      fish_alive_count: 800,
     });
-  
-    mockedFetchLatestFishDeath.mockResolvedValue({
-      ...mockFishDeath,
-      pond_id: 'pond-3',
+
+    render(<FishDeathDashboard pondId={pondId} />);
+
+    expect(screen.getByText('Dasbor Kematian Ikan Terbaru')).toBeInTheDocument();
+    expect(screen.getByText('Parameter')).toBeInTheDocument();
+    expect(screen.getByText('Nilai')).toBeInTheDocument();
+    expect(screen.getByText('Bibit Ditebar')).toBeInTheDocument();
+    expect(screen.getByText('1000 ekor')).toBeInTheDocument();
+    expect(screen.getByText('Ikan Mati')).toBeInTheDocument();
+    expect(screen.getByText('200 ekor')).toBeInTheDocument();
+    expect(screen.getByText('Ikan Bertahan')).toBeInTheDocument();
+    expect(screen.getByText('800 ekor')).toBeInTheDocument();
+  });
+
+  it('navigates back when back button is clicked', () => {
+    mockUseLatestFishDeath.mockReturnValue({
+      fish_death_count: 200,
+      fish_alive_count: 800,
     });
-  
-    render(<FishDeathDashboard pondId="pond-3" />);
-  
-    // ✅ Expect fallback 0 ekor to appear
-    expect(await screen.findByText('0 ekor')).toBeInTheDocument(); // Bibit
-    expect(screen.getByText('25 ekor')).toBeInTheDocument(); // Mati
-    expect(screen.getByText('75 ekor')).toBeInTheDocument(); // Bertahan
+
+    render(<FishDeathDashboard pondId={pondId} />);
+    fireEvent.click(screen.getByText('Kembali'));
+    expect(mockRouter.back).toHaveBeenCalled();
+  });
+
+  it('handles zero values correctly', () => {
+    mockUseLatestFishDeath.mockReturnValue({
+      fish_death_count: 0,
+      fish_alive_count: 1000,
+    });
+
+    const zeroFishCycle = {
+      pond_fish_amount: [{ pond_id: 'pond-1', fish_amount: 0 }],
+    };
+    mockUseCycle.mockReturnValue(zeroFishCycle);
+
+    render(<FishDeathDashboard pondId={pondId} />);
+
+    const zeroElements = screen.getAllByText('0 ekor');
+    expect(zeroElements).toHaveLength(2); // Verifikasi jumlah elemen dengan teks "0 ekor"
+    expect(zeroElements[0]).toBeInTheDocument(); // Untuk fish_amount
+    expect(zeroElements[1]).toBeInTheDocument(); // Untuk fish_death_count
+    expect(screen.getByText('1000 ekor')).toBeInTheDocument(); // Untuk fish_alive_count
+});
+
+  it('handles null values correctly in fish amount', () => {
+    mockUseLatestFishDeath.mockReturnValue({
+      fish_death_count: 100,
+      fish_alive_count: 900,
+    });
+
+    const nullFishCycle = {
+      pond_fish_amount: [{ pond_id: 'pond-1', fish_amount: null }],
+    };
+    mockUseCycle.mockReturnValue(nullFishCycle);
+
+    render(<FishDeathDashboard pondId={pondId} />);
+
+    expect(screen.getByText('0 ekor')).toBeInTheDocument(); // Default value for null fish_amount
   });
 });
