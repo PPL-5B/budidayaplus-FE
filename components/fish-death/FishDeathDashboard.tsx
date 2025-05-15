@@ -1,33 +1,37 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCycle } from "@/hooks/useCycle";
-import { FishSymbol } from "lucide-react";
-import { fetchLatestFishDeath } from "@/lib/fish-death/fetchFishDeath";
-import { FishDeath } from "@/types/fish-death";
+import { useLatestFishDeath } from "@/hooks/useFishDeath";
+import { LoadingData } from "@/components/ui/loading-data";
+import { EmptyData } from "@/components/ui/empty-data";
 
 interface FishDeathDashboardProps {
   pondId: string;
 }
 
 const FishDeathDashboard: React.FC<FishDeathDashboardProps> = ({ pondId }) => {
+  const router = useRouter();
   const cycle = useCycle();
-  const [fishDeathData, setFishDeathData] = useState<FishDeath | null>(null);
+  const fishDeathData = useLatestFishDeath(pondId);
 
-  useEffect(() => {
-    const getData = async () => {
-      if (!cycle) return;
-      const data = await fetchLatestFishDeath(pondId, cycle.id);
-      setFishDeathData(data ?? null);
-    };
-
-    getData();
-  }, [pondId, cycle]);
+  const isLoading = fishDeathData === undefined;
 
   if (!cycle) {
     return (
-      <div className="border border-gray-200 p-3 rounded-md text-gray-500 text-center w-fit mx-auto">
-        Data siklus belum tersedia, silakan buat siklus terlebih dahulu.
+      <div className="w-full flex flex-col items-center bg-[#EDF2FF] pt-6">
+        <div className="w-[90%] max-w-2xl">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center text-[#2154C5] mb-4 focus:outline-none"
+          >
+            <ChevronLeft className="w-5 h-5 mr-1" />
+            <span className="text-[#2154C5] font-bold text-base">Kembali</span>
+          </button>
+          <EmptyData title="Data siklus belum tersedia, silakan buat siklus terlebih dahulu." />
+        </div>
       </div>
     );
   }
@@ -36,48 +40,82 @@ const FishDeathDashboard: React.FC<FishDeathDashboardProps> = ({ pondId }) => {
 
   if (!selectedPond) {
     return (
-      <div className="border border-gray-200 p-3 rounded-md text-gray-500 text-center w-fit mx-auto">
-        Kolam tidak ditemukan dalam siklus ini.
+      <div className="w-full flex flex-col items-center bg-[#EDF2FF] pt-6">
+        <div className="w-[90%] max-w-2xl">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center text-[#2154C5] mb-4 focus:outline-none"
+          >
+            <ChevronLeft className="w-5 h-5 mr-1" />
+            <span className="text-[#2154C5] font-bold text-base">Kembali</span>
+          </button>
+          <EmptyData title="Kolam tidak ditemukan dalam siklus ini." />
+        </div>
       </div>
     );
   }
 
   const fishSeeded = selectedPond.fish_amount ?? 0;
 
-  if (!fishDeathData) {
-    return (
-      <div className="border border-gray-200 p-3 rounded-md text-gray-500 text-center w-fit mx-auto">
-        Data belum tersedia, silakan isi data terlebih dahulu.
-      </div>
-    );
-  }
-
-  const fishDead = fishDeathData.fish_death_count;
-  const fishAlive = fishDeathData.fish_alive_count;
-
   return (
-    <div className="mt-10">
-      <h2 className="text-2xl font-semibold text-center flex items-center justify-center">
-        <FishSymbol className="w-10 h-10 text-[#2154C5] mr-2" /> Dashboard Kematian Ikan
-      </h2>
+    <div className="w-full flex flex-col items-center bg-[#EDF2FF] pt-6">
+      <div className="w-[90%] max-w-2xl">
+        {/* Tombol kembali */}
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-[#2154C5] mb-4 focus:outline-none"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          <span className="text-[#2154C5] font-bold text-base">Kembali</span>
+        </button>
 
-      <div className="flex justify-center mt-4">
-        <table className="border-collapse border border-gray-300 w-[80%] text-center">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-2">Bibit Ditebar</th>
-              <th className="border border-gray-300 px-4 py-2">Ikan Mati</th>
-              <th className="border border-gray-300 px-4 py-2">Ikan Bertahan</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-gray-300 px-4 py-2">{fishSeeded} ekor</td>
-              <td className="border border-gray-300 px-4 py-2 text-red-500">{fishDead} ekor</td>
-              <td className="border border-gray-300 px-4 py-2">{fishAlive} ekor</td>
-            </tr>
-          </tbody>
-        </table>
+        {/* Judul */}
+        <h2 className="text-lg font-bold text-black mb-4">Dasbor Kematian Ikan Terbaru</h2>
+
+        {/* Konten utama */}
+        {(() => {
+          if (isLoading) {
+            return <LoadingData />;
+          }
+
+          if (fishDeathData) {
+            const fishDead = fishDeathData.fish_death_count;
+            const fishAlive = fishDeathData.fish_alive_count;
+
+            return (
+              <div className="overflow-hidden rounded-xl border border-[#2154C5] bg-[#EDF2FF]">
+                <table className="w-full text-center">
+                  <thead className="bg-[#2154C5] text-white text-sm">
+                    <tr>
+                      <th className="py-3 px-4 font-semibold">Parameter</th>
+                      <th className="py-3 px-4 font-semibold">Nilai</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-gray-800 font-medium">
+                    <tr>
+                      <td className="py-4 px-4">Bibit Ditebar</td>
+                      <td className="py-4 px-4">{fishSeeded} ekor</td>
+                    </tr>
+                    <tr>
+                      <td className="py-4 px-4">Ikan Mati</td>
+                      <td className="py-4 px-4 text-red-500">{fishDead} ekor</td>
+                    </tr>
+                    <tr>
+                      <td className="py-4 px-4">Ikan Bertahan</td>
+                      <td className="py-4 px-4">{fishAlive} ekor</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            );
+          }
+
+          return (
+            <div className="mt-6">
+              <EmptyData/>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
