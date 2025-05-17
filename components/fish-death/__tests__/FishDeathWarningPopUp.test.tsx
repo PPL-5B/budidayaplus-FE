@@ -4,77 +4,37 @@ import '@testing-library/jest-dom';
 import FishDeathWarningPopup from '@/components/fish-death/FishDeathWarningPopUp';
 
 describe('FishDeathWarningPopup', () => {
-  const message = 'Jumlah kematian melebihi jumlah ikan yang tersedia';
   const mockOnClose = jest.fn();
-  const mockOnToggleDetail = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('renders warning popup with message hidden by default', () => {
-    render(
-      <FishDeathWarningPopup
-        message={message}
-        onClose={mockOnClose}
-        onToggleDetail={mockOnToggleDetail}
-        showDetail={false}
-      />
-    );
+  it('renders the popup with the correct message', () => {
+    render(<FishDeathWarningPopup message="Test warning message" onClose={mockOnClose} />);
 
-    // Komponen utama muncul
+    // Verifikasi bahwa popup dirender dengan pesan yang benar
     expect(screen.getByTestId('popup-warning')).toBeInTheDocument();
-
-    // Judul dan info muncul
-    expect(screen.getByText(/Peringatan!/i)).toBeInTheDocument();
-    expect(screen.getByText(/Lihat detail untuk melihat penyebabnya/i)).toBeInTheDocument();
-
-    // Detail pesan tidak muncul
-    expect(screen.queryByText(message)).not.toBeInTheDocument();
+    expect(screen.getByText('Indikator Tidak Sehat!')).toBeInTheDocument();
+    expect(screen.getByText('Test warning message')).toBeInTheDocument();
   });
 
-  test('shows message when showDetail is true', () => {
-    render(
-      <FishDeathWarningPopup
-        message={message}
-        onClose={mockOnClose}
-        onToggleDetail={mockOnToggleDetail}
-        showDetail={true}
-      />
-    );
+  it('calls onClose when the close button is clicked', () => {
+    render(<FishDeathWarningPopup message="Test warning message" onClose={mockOnClose} />);
 
-    expect(screen.getByText(message)).toBeInTheDocument();
-  });
+    // Klik tombol "Saya Paham"
+    const closeButton = screen.getByRole('button', { name: /saya paham/i });
+    fireEvent.click(closeButton);
 
-  test('calls onClose when "Tutup" button is clicked', () => {
-    render(
-      <FishDeathWarningPopup
-        message={message}
-        onClose={mockOnClose}
-        onToggleDetail={mockOnToggleDetail}
-        showDetail={false}
-      />
-    );
-
-    const closeBtn = screen.getByTestId('close-button');
-    fireEvent.click(closeBtn);
-
+    // Verifikasi bahwa fungsi onClose dipanggil
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  test('calls onToggleDetail when "Lihat Detail" button is clicked', () => {
-    render(
-      <FishDeathWarningPopup
-        message={message}
-        onClose={mockOnClose}
-        onToggleDetail={mockOnToggleDetail}
-        showDetail={false}
-      />
-    );
+  it('renders the close icon correctly', () => {
+    render(<FishDeathWarningPopup message="Test warning message" onClose={mockOnClose} />);
 
-    const detailBtn = screen.getByTestId('detail-button');
-    fireEvent.click(detailBtn);
-
-    expect(mockOnToggleDetail).toHaveBeenCalledTimes(1);
+    // Verifikasi bahwa ikon close dirender
+    const closeIcon = screen.getByTestId('popup-warning').querySelector('svg');
+    expect(closeIcon).toBeInTheDocument();
   });
 });
