@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { objectToFormData } from '@/lib/utils'
 import { addOrUpdatePond } from '@/lib/pond'
-import { Ruler, Droplet } from 'lucide-react'
+import { Ruler, Droplet, ImageIcon } from 'lucide-react'
 
 interface PondFormProps {
   pond?: Pond
@@ -42,10 +42,11 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
   const onSubmit = async (data: PondInput) => {
     try {
       setError(null)
-      const imageList = data.image as FileList
-      data.image = imageList[0]
-      const formData = objectToFormData(data)
 
+      const imageList = data.image as FileList
+      data.image = imageList?.[0] ?? undefined
+
+      const formData = objectToFormData(data)
       const res = await addOrUpdatePond(formData, pond?.pond_id)
 
       if (!res.success) {
@@ -72,10 +73,7 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
   return (
     <div className="bg-[#EAF0FF] rounded-md p-6 w-full max-w-sm mx-auto relative">
       <div className="flex justify-center mb-6">
-        <h2
-          className="text-[20px] text-center break-words font-inter font-semibold"
-          style={{ color: '#2254C5', fontWeight: 600 }}
-          >
+        <h2 className="text-[20px] text-center font-inter font-semibold text-[#2254C5]">
           {pond ? 'Edit Kolam' : 'Tambah Kolam'}
         </h2>
       </div>
@@ -86,7 +84,7 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Droplet size={20} color="#2254C5" fill="#2254C5" />
-            <label htmlFor="name" className="text-[#2254C5] font-medium text-sm">Nama Kolam</label>
+            <label className="text-[#2254C5] font-medium text-sm">Nama Kolam</label>
           </div>
           <Input
             {...register('name')}
@@ -100,7 +98,7 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label htmlFor="length" className="text-[#2254C5] font-medium text-sm">Panjang (meter)</label>
+            <label className="text-[#2254C5] font-medium text-sm">Panjang (meter)</label>
           </div>
           <Input
             {...register('length', { setValueAs: v => parseFloat(v) })}
@@ -115,7 +113,7 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label htmlFor="width" className="text-[#2254C5] font-medium text-sm">Lebar (meter)</label>
+            <label className="text-[#2254C5] font-medium text-sm">Lebar (meter)</label>
           </div>
           <Input
             {...register('width', { setValueAs: v => parseFloat(v) })}
@@ -130,7 +128,7 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label htmlFor="depth" className="text-[#2254C5] font-medium text-sm">Kedalaman (meter)</label>
+            <label className="text-[#2254C5] font-medium text-sm">Kedalaman (meter)</label>
           </div>
           <Input
             {...register('depth', { setValueAs: v => parseFloat(v) })}
@@ -140,6 +138,21 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
           />
           {errors.depth && <p className="text-red-500 text-sm">{errors.depth.message}</p>}
         </div>
+
+        <div className="hidden">
+          <div className="flex items-center gap-2">
+            <ImageIcon size={20} color="#2254C5" />
+            <label className="text-[#2254C5] font-medium text-sm">Foto Kolam</label>
+          </div>
+          <Input
+            type="file"
+            accept="image/*"
+            {...register('image')}
+            className="rounded-[15px] bg-white h-10"
+          />
+          {errors.image && <p className="text-red-500 text-sm">{(errors.image as any)?.message}</p>}
+        </div>
+
 
         {/* Volume */}
         {volume && (
