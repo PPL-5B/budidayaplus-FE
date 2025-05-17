@@ -16,9 +16,6 @@ const RegisterPage = () => {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
 
-
-
-
   const {
     register,
     handleSubmit,
@@ -62,7 +59,6 @@ const RegisterPage = () => {
 
         <form data-testid="register-form" onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
 
-          {/* Phone Field */}
           <div>
             <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
               <Phone className="w-4 h-4 mr-2" /> Nomor Ponsel
@@ -77,7 +73,6 @@ const RegisterPage = () => {
             )}
           </div>
 
-          {/* First Name Field */}
           <div>
             <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
               <User className="w-4 h-4 mr-2" /> Nama Depan
@@ -92,7 +87,6 @@ const RegisterPage = () => {
             )}
           </div>
 
-          {/* Last Name Field */}
           <div>
             <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
               <User className="w-4 h-4 mr-2" /> Nama Belakang
@@ -107,7 +101,6 @@ const RegisterPage = () => {
             )}
           </div>
 
-          {/* Password Field */}
           <div>
             <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
               <Key className="w-4 h-4 mr-2" /> Password
@@ -146,4 +139,3 @@ const RegisterPage = () => {
 }
 
 export default RegisterPage
-
