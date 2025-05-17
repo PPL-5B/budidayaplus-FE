@@ -10,47 +10,47 @@ export const columns: ColumnDef<FishDeath>[] = [
   {
     accessorKey: "recorded_at",
     header: () => (
-      <div className="flex gap-2">
-        <Calendar />
-        <p>Tanggal</p>
+      <div className="flex items-center gap-2">
+        <Calendar className="w-4 h-4" />
+        <p className="text-sm font-medium">Tanggal</p>
       </div>
     ),
     cell: ({ row }: { row: { original: FishDeath } }) => {
       const date = row.original.recorded_at;
-      return <div>{format(new Date(date), "dd-MM-yyyy", { locale: id })}</div>;
+      return <div className="text-sm">{format(new Date(date), "dd-MM-yyyy", { locale: id })}</div>;
     },
   },
   {
     accessorKey: "fish_death_count",
     header: () => (
-      <div className="flex gap-2">
-        <Skull />
-        <p>Kematian (ekor)</p>
+      <div className="flex items-center gap-2">
+        <Skull className="w-4 h-4" />
+        <p className="text-sm font-medium">Kematian (ekor)</p>
       </div>
     ),
-    cell: ({ row }) => <div>{row.original.fish_death_count}</div>,
+    cell: ({ row }) => <div className="text-sm">{row.original.fish_death_count}</div>,
   },
   {
     accessorKey: "fish_alive_count",
     header: () => (
-      <div className="flex gap-2">
-        <HeartPulse />
-        <p>Masih Hidup (ekor)</p>
+      <div className="flex items-center gap-2">
+        <HeartPulse className="w-4 h-4" />
+        <p className="text-sm font-medium">Masih Hidup (ekor)</p>
       </div>
     ),
-    cell: ({ row }) => <div>{row.original.fish_alive_count}</div>,
+    cell: ({ row }) => <div className="text-sm">{row.original.fish_alive_count}</div>,
   },
   {
     accessorKey: "reporter",
     header: () => (
-      <div className="flex gap-2">
-        <UserRound />
-        <p>Reporter</p>
+      <div className="flex items-center gap-2">
+        <UserRound className="w-4 h-4" />
+        <p className="text-sm font-medium">Reporter</p>
       </div>
     ),
     cell: ({ row }: { row: { original: FishDeath } }) => {
       const reporter = row.original.reporter;
-      return <div>{reporter.first_name} {reporter.last_name}</div>;
+      return <div className="text-sm">{reporter.first_name} {reporter.last_name}</div>;
     },
   },
 ];

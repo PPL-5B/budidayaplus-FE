@@ -1,67 +1,115 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FishDeathHistory from '@/components/fish-death/FishDeathHistory';
-import { fetchFishDeathHistory } from '@/lib/fish-death/fetchFishDeath';
-import { FishDeath } from '@/types/fish-death';
+import { fetchFishDeathHistory } from '@/lib/fish-death';
 
-jest.mock('@/lib/fish-death/fetchFishDeath', () => ({
+// Mock dependencies
+jest.mock('@/lib/fish-death', () => ({
   fetchFishDeathHistory: jest.fn(),
 }));
 
-const mockFishDeaths: FishDeath[] = [
-  {
-      id: '1',
-      pond_id: 'pond-1',
-      recorded_at: '2024-04-01T10:00:00Z',
-      fish_death_count: 12,
-      fish_alive_count: 88,
-      reporter: {
-          id: 1,
-          first_name: 'Udin',
-          last_name: 'Sedunia',
-          phone_number: '08123456789',
-      },
-      cycle_id: ''
-  },
-  {
-      id: '2',
-      pond_id: 'pond-1',
-      recorded_at: '2024-03-28T08:00:00Z',
-      fish_death_count: 5,
-      fish_alive_count: 95,
-      reporter: {
-          id: 2,
-          first_name: 'Ani',
-          last_name: 'Wijaya',
-          phone_number: '08991234567',
-      },
-      cycle_id: ''
-  },
-];
+const mockFetchFishDeathHistory = fetchFishDeathHistory as jest.Mock;
 
 describe('FishDeathHistory', () => {
+  const pondId = 'pond-1';
+
   beforeEach(() => {
-    (fetchFishDeathHistory as jest.Mock).mockResolvedValue({
-      fish_deaths: mockFishDeaths,
+    jest.clearAllMocks();
+  });
+
+  it('renders loading state initially', async () => {
+    mockFetchFishDeathHistory.mockResolvedValueOnce({ fish_deaths: [] });
+
+    render(<FishDeathHistory pondId={pondId} />);
+
+    expect(screen.getByText('Memuat Data Anda...')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading-data')).not.toBeInTheDocument();
     });
   });
 
-  it('renders fish death history correctly', async () => {
-    render(<FishDeathHistory pondId="pond-1" />);
+  it('renders empty state when no data is available', async () => {
+    mockFetchFishDeathHistory.mockResolvedValueOnce({ fish_deaths: [] });
 
-    // ✅ Title & icon
-    expect(await screen.findByText('Riwayat Kematian Ikan')).toBeInTheDocument();
-    expect(screen.getByRole('img')).toBeInTheDocument(); // SVG icon
+    render(<FishDeathHistory pondId={pondId} />);
 
-    // ✅ Table content
-    expect(await screen.findByText('Udin Sedunia')).toBeInTheDocument();
-    expect(screen.getByText('Ani Wijaya')).toBeInTheDocument();
-    expect(screen.getByText('12')).toBeInTheDocument(); // fish_death_count
-    expect(screen.getByText('5')).toBeInTheDocument();
-    expect(screen.getByText('88')).toBeInTheDocument(); // fish_alive_count
-    expect(screen.getByText('95')).toBeInTheDocument();
-    expect(screen.getByText('01-04-2024')).toBeInTheDocument();
-    expect(screen.getByText('28-03-2024')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Belum Ada Data!')).toBeInTheDocument();
+    });
+  });
+
+  it('renders history items when data is available', async () => {
+    mockFetchFishDeathHistory.mockResolvedValueOnce({
+      fish_deaths: [
+        {
+          id: '1',
+          recorded_at: '2025-05-10T10:00:00Z',
+          fish_death_count: 100,
+          fish_alive_count: 900,
+          reporter: { first_name: 'John', last_name: 'Doe' },
+        },
+        {
+          id: '2',
+          recorded_at: '2025-05-09T10:00:00Z',
+          fish_death_count: 50,
+          fish_alive_count: 950,
+          reporter: { first_name: 'Jane', last_name: 'Smith' },
+        },
+      ],
+    });
+
+    render(<FishDeathHistory pondId={pondId} />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Sabtu, 10 Mei 2025, oleh John Doe')).toBeInTheDocument();
+      expect(screen.getByText('Jumlah Ikan Mati:')).toBeInTheDocument();
+      expect(screen.getByText('100')).toBeInTheDocument();
+      expect(screen.getByText('Jumlah Ikan Hidup:')).toBeInTheDocument();
+      expect(screen.getByText('900')).toBeInTheDocument();
+
+      expect(screen.getByText('Jumat, 9 Mei 2025, oleh Jane Smith')).toBeInTheDocument();
+      expect(screen.getByText('50')).toBeInTheDocument();
+      expect(screen.getByText('950')).toBeInTheDocument();
+    });
+  });
+
+  it('handles API errors gracefully', async () => {
+    mockFetchFishDeathHistory.mockRejectedValueOnce(new Error('Failed to fetch data'));
+
+    render(<FishDeathHistory pondId={pondId} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('empty-data')).toBeInTheDocument();
+    });
+  });
+
+  it('renders sorted history items by date', async () => {
+    mockFetchFishDeathHistory.mockResolvedValueOnce({
+      fish_deaths: [
+        {
+          id: '1',
+          recorded_at: '2025-05-09T10:00:00Z',
+          fish_death_count: 50,
+          fish_alive_count: 950,
+          reporter: { first_name: 'Jane', last_name: 'Smith' },
+        },
+        {
+          id: '2',
+          recorded_at: '2025-05-10T10:00:00Z',
+          fish_death_count: 100,
+          fish_alive_count: 900,
+          reporter: { first_name: 'John', last_name: 'Doe' },
+        },
+      ],
+    });
+
+    render(<FishDeathHistory pondId={pondId} />);
+
+    await waitFor(() => {
+      const items = screen.getAllByText(/oleh/);
+      expect(items[0]).toHaveTextContent('Sabtu, 10 Mei 2025, oleh John Doe');
+      expect(items[1]).toHaveTextContent('Jumat, 9 Mei 2025, oleh Jane Smith');
+    });
   });
 });
