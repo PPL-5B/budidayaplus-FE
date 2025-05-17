@@ -1,22 +1,19 @@
-import React from 'react'
-import { Button } from '@/components/ui/button'
-import { History } from 'lucide-react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
+import ButtonLihatRiwayat from '@/components/ui/ButtonLihatRiwayat';
 
 interface ViewPondQualityHistoryProps extends React.HTMLAttributes<HTMLDivElement> {
-  pondId: string
+  pondId: string;
 }
 
 const ViewPondQualityHistory: React.FC<ViewPondQualityHistoryProps> = ({ pondId, ...props }) => {
   return (
-    <div {...props} data-testid='view-pond-quality-history'>
-      <Button variant={'outline'} size={'sm'} asChild>
-        <Link href={`/pond/${pondId}/pond-quality`}>
-          Lihat Riwayat <History className='ml-2' size={16} />
-        </Link>
-      </Button>
+    <div {...props} className="inline-flex" data-testid='view-pond-quality-history'>
+      <Link href={`/pond/${pondId}/pond-quality`}>
+        <ButtonLihatRiwayat />
+      </Link>
     </div>
-  )
-}
+  );
+};
 
-export default ViewPondQualityHistory
+export default ViewPondQualityHistory;
