@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { RegisterForm, registerSchema } from '@/types/auth/register'
 import { handleRegisterSubmit } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import { Phone, User, Key } from 'lucide-react'
 
