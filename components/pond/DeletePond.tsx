@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { deletePond } from '@/lib/pond';
 import { Pond } from '@/types/pond';
-import { Trash } from 'lucide-react';
+import { Trash, Trash2 } from 'lucide-react';
 import CancelButton from '@/components/ui/cancel-button';
 import DangerButton from '@/components/ui/danger-button';
 
@@ -40,10 +40,11 @@ const DeletePond: React.FC<DeletePondProps> = ({ pondId }) => {
   return (
     <div>
       <button
-        onClick={() => setShowConfirm(true)}
-        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 text-sm rounded flex items-center gap-2"
+      onClick={() => setShowConfirm(true)}
+      className="flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white px-4 py-2 font-semibold"
       >
-        Hapus <Trash size={16} />
+      <Trash2 size={16} strokeWidth={2} />
+      Hapus
       </button>
 
       {showConfirm && (
