@@ -3,8 +3,8 @@ import React from "react";
 const AboutUs = () => {
   return (
     <div className="w-full flex justify-center mt-10 px-4">
-      <details className="w-full max-w-2xl rounded-xl shadow-md group transition-all duration-300">
-        <summary className="flex justify-between items-center px-6 py-4 text-xl font-bold text-white bg-[#2254C5] cursor-pointer list-none rounded-xl">
+      <details className="w-full max-w-xl rounded-xl shadow-md group transition-all duration-300">
+        <summary className="flex justify-between items-center px-6 py-2 text-l font-bold text-white bg-[#2254C5] cursor-pointer list-none rounded-xl">
           <span className="text-white text-center">Tentang Kami</span>
 
           <svg
