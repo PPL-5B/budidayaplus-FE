@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { objectToFormData } from '@/lib/utils'
 import { addOrUpdatePond } from '@/lib/pond'
+import { Ruler, Droplet, ImageIcon } from 'lucide-react'
 
 interface PondFormProps {
   pond?: Pond
@@ -41,10 +42,11 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
   const onSubmit = async (data: PondInput) => {
     try {
       setError(null)
-      const imageList = data.image as FileList
-      data.image = imageList[0]
-      const formData = objectToFormData(data)
 
+      const imageList = data.image as FileList
+      data.image = imageList?.[0] ?? undefined
+
+      const formData = objectToFormData(data)
       const res = await addOrUpdatePond(formData, pond?.pond_id)
 
       if (!res.success) {
@@ -65,69 +67,113 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
     if (width && length && depth) {
       setVolume(width * length * depth)
     }
-    return () => { return setVolume(null) }
+    return () => setVolume(null)
   }, [width, length, depth])
 
   return (
-    <div>
-      <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
-        <div>
+    <div className="bg-[#EAF0FF] rounded-md p-6 w-full max-w-sm mx-auto relative">
+      <div className="flex justify-center mb-6">
+        <h2 className="text-[20px] text-center font-inter font-semibold text-[#2254C5]">
+          {pond ? 'Edit Kolam' : 'Tambah Kolam'}
+        </h2>
+      </div>
+
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+
+        {/* Nama Kolam */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Droplet size={20} color="#2254C5" fill="#2254C5" />
+            <label className="text-[#2254C5] font-medium text-sm">Nama Kolam</label>
+          </div>
           <Input
             {...register('name')}
-            placeholder='Nama Kolam'
-            className='h-12'
+            placeholder="Masukkan nama kolam..."
+            className="rounded-[15px] bg-white h-10"
           />
-          {errors.name && <p className='text-red-500 mt-1 text-sm'>{errors.name.message?.toString()}</p>}
+          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
         </div>
 
-        <div>
+        {/* Panjang */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Ruler size={20} color="#2254C5" fill="#2254C5" />
+            <label className="text-[#2254C5] font-medium text-sm">Panjang (meter)</label>
+          </div>
           <Input
-            {...register('length', { setValueAs: value => parseFloat(value) })}
-            placeholder='Panjang (meter)'
-            className='h-12'
+            {...register('length', { setValueAs: v => parseFloat(v) })}
+            placeholder="Masukkan panjang kolam..."
+            className="rounded-[15px] bg-white h-10"
             step={0.01}
           />
-          {errors.length && <p className='text-red-500 mt-1 text-sm'>{errors.length.message?.toString()}</p>}
+          {errors.length && <p className="text-red-500 text-sm">{errors.length.message}</p>}
         </div>
 
-        <div>
+        {/* Lebar */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Ruler size={20} color="#2254C5" fill="#2254C5" />
+            <label className="text-[#2254C5] font-medium text-sm">Lebar (meter)</label>
+          </div>
           <Input
-            {...register('width', { setValueAs: value => parseFloat(value) })}
-            placeholder='Lebar (meter)'
-            className='h-12'
+            {...register('width', { setValueAs: v => parseFloat(v) })}
+            placeholder="Masukkan lebar kolam..."
+            className="rounded-[15px] bg-white h-10"
             step={0.01}
           />
-          {errors.width && <p className='text-red-500 mt-1 text-sm'>{errors.width.message?.toString()}</p>}
+          {errors.width && <p className="text-red-500 text-sm">{errors.width.message}</p>}
         </div>
 
-        <div>
+        {/* Kedalaman */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Ruler size={20} color="#2254C5" fill="#2254C5" />
+            <label className="text-[#2254C5] font-medium text-sm">Kedalaman (meter)</label>
+          </div>
           <Input
-            {...register('depth', { setValueAs: value => parseFloat(value) })}
-            placeholder='Kedalaman (meter)'
-            className='h-12'
+            {...register('depth', { setValueAs: v => parseFloat(v) })}
+            placeholder="Masukkan kedalaman kolam..."
+            className="rounded-[15px] bg-white h-10"
             step={0.01}
           />
-          {errors.depth && <p className='text-red-500 mt-1 text-sm'>{errors.depth.message?.toString()}</p>}
+          {errors.depth && <p className="text-red-500 text-sm">{errors.depth.message}</p>}
         </div>
 
-        <div>
+        <div className="hidden">
+          <div className="flex items-center gap-2">
+            <ImageIcon size={20} color="#2254C5" />
+            <label className="text-[#2254C5] font-medium text-sm">Foto Kolam</label>
+          </div>
           <Input
+            type="file"
+            accept="image/*"
             {...register('image')}
-            data-testid='image'
-            type='file'
-            accept='image/*'
+            className="rounded-[15px] bg-white h-10"
           />
+          {errors.image && <p className="text-red-500 text-sm">{(errors.image as any)?.message}</p>}
         </div>
 
-        {volume && <p className='text-center font-semibold'>Volume: {volume.toFixed(2)} m<sup>3</sup></p>}
 
-        <Button className='w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700' type='submit' disabled={isSubmitting}>
-          Simpan
+        {/* Volume */}
+        {volume && (
+          <p className="text-center text-sm font-semibold text-[#2254C5]">
+            Volume: {volume.toFixed(2)} m<sup>3</sup>
+          </p>
+        )}
+
+        {/* Tombol Simpan */}
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-[#2254C5] hover:bg-[#1e46a1] text-white font-bold text-sm rounded-md h-11 shadow-inner"
+        >
+          {isSubmitting ? 'Menyimpan...' : 'Simpan'}
         </Button>
 
-        {error && <p className='w-full text-center text-red-500'>{error}</p>}
+        {error && (
+          <p className="w-full text-center text-red-500 text-sm">{error}</p>
+        )}
       </form>
-
     </div>
   )
 }
