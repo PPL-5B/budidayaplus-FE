@@ -49,7 +49,6 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#e8f0ff]">
       <div className="w-[90%] max-w-sm flex flex-col items-center">
         
-        {/* Logo */}
         <div className="flex justify-center items-center my-4">
           <Image
             src="/BudidayaPlus.svg"
@@ -60,19 +59,16 @@ const LoginPage = () => {
           />
         </div>
 
-        {/* Heading */}
         <h1 className="text-2xl font-bold text-center">Masuk Akun</h1>
         <p className="text-center text-sm mt-1 mb-4">
           Pantau kolam dan hasil panenmu!
         </p>
 
-        {/* Form */}
         <form
           data-testid="login-form"
           onSubmit={handleSubmit(onSubmit)}
           className="w-full space-y-4"
         >
-          {/* Phone Number */}
           <div>
             <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
               <Phone className="w-4 h-4 mr-2" /> Nomor Ponsel
@@ -87,7 +83,6 @@ const LoginPage = () => {
             )}
           </div>
 
-          {/* Password */}
           <div>
             <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
               <Key className="w-4 h-4 mr-2" /> Password
@@ -102,7 +97,6 @@ const LoginPage = () => {
             )}
           </div>
 
-          {/* Submit Button */}
           <Button
             data-testid="login-button"
             className="w-full h-11 bg-[#2254C5] hover:bg-[#1e4ab0] text-white rounded-md"
@@ -119,7 +113,6 @@ const LoginPage = () => {
           )}
         </form>
 
-        {/* Link to Register */}
         <p className="text-sm mt-4">
           Belum punya akun?{' '}
           <Link href="/auth/register" className="font-semibold underline text-black">
@@ -132,8 +125,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
-
-
-
-
