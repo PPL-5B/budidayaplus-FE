@@ -17,7 +17,7 @@ export const renderCycleCard = (
 ) => (
   <CarouselItem key={cycle.id} className="pl-1 basis-5/6">
     <Card
-      className={cn(bgColor, 'h-36 border-none rounded-2xl relative overflow-hidden')}
+      className={cn(bgColor, 'h-36 border-none rounded-lg relative overflow-hidden')}
     >
       <CardContent className="flex flex-col justify-between p-3 px-4 h-full">
         <div>
