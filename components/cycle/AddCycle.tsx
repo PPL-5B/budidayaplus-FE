@@ -1,3 +1,4 @@
+// components/cycle/AddCycle.tsx
 import { fetchPonds } from '@/lib/pond'
 import React from 'react'
 import { AddCycleModal } from '@/components/cycle'
@@ -7,8 +8,11 @@ interface AddCycleProps extends React.HTMLAttributes<HTMLDivElement> {
   user?: Profile
 }
 
-const AddCycle: React.FC<AddCycleProps> = async ({ user, ...props }) => {
-  const pondList = await fetchPonds()
+interface AddCycleContentProps extends AddCycleProps {
+  pondList: any[]
+}
+
+export const AddCycleContent: React.FC<AddCycleContentProps> = ({ user, pondList, ...props }) => {
   return (
     <div {...props}>
       {user && user.role === 'supervisor' && (
@@ -17,5 +21,9 @@ const AddCycle: React.FC<AddCycleProps> = async ({ user, ...props }) => {
     </div>
   )
 }
+
+const AddCycle = async ({ user, ...props }: AddCycleProps) => {
+  const pondList = await fetchPonds()
+  return <AddCycleContent user={user} pondList={pondList} {...props} />}
 
 export default AddCycle
