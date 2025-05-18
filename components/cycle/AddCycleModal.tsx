@@ -6,9 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Pond } from '@/types/pond';
 import { RefreshCcw } from 'lucide-react';
 import { EmptyPool } from '../ui/empty-pool';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
-import { Modal as DialogContent } from '@/components/ui/modal'
-import ActionButton from '../ui/action-button'
 
 interface AddCycleModalProps extends React.HTMLAttributes<HTMLDivElement> {
   pondList: Pond[]
