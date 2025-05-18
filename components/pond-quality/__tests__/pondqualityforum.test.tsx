@@ -178,7 +178,7 @@ describe('PondQualityForm', () => {
     render(<PondQualityForm setIsModalOpen={setIsModalOpenMock} pondId="1" cycleId="1" />);
     
     fillAllFields();
-    fireEvent.click(screen.getByText(/Simpan/i));
+    fireEvent.click(screen.getByText(/Submit/i));
     
     await waitFor(() => {
       expect(setIsModalOpenMock).toHaveBeenCalledWith(false);
