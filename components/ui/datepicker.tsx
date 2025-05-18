@@ -37,7 +37,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({ date, onDateChange, plac
           </Button>
         </PopoverTrigger>
         <Portal>
-          <PopoverContent className="w-auto p-0 z-50" align="start">
+          <PopoverContent className="w-auto p-0 z-[10000]" align="start">
             <Calendar
               defaultMonth={date || new Date()}
               mode="single"
