@@ -20,6 +20,7 @@ const config: Config = {
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   collectCoverageFrom: [
+    "app/page.tsx",
     // Include specific directories - uncomment these if you want to collect from all files
     "components/**/*.{ts,tsx,js,jsx}",
     "!components/ui/**/*",
