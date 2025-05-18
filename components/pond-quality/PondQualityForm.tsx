@@ -41,7 +41,22 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
     }
   });
 
-  const onSubmit = async (data: PondQualityInput) => addOrUpdatePondQuality(objectToFormData({...data, image: data.image instanceof FileList ? data.image[0] : data.image}), pondId, cycleId).then(res => res.success ? (reset(), setIsModalOpen(false), window.location.reload()) : setError('Gagal menyimpan kualitas air')).catch(err => (console.error(err), setError('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.')));
+  const onSubmit = async (data: PondQualityInput) => {
+    const formData = objectToFormData(data); // image removed from data
+    try {
+      const res = await addOrUpdatePondQuality(formData, pondId, cycleId);
+      if (res.success) {
+        reset();
+        setIsModalOpen(false);
+        window.location.reload();
+      } else {
+        setError('Gagal menyimpan kualitas air');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
+    }
+  };
 
   return (
     <div className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-md mx-auto">
@@ -73,12 +88,7 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
           </div>
         </div>
 
-        {/* File input and submit button - full width below columns */}
-        <div>
-          <Label className="text-sm text-[#2154C5]">Foto</Label>
-          <Input type="file" accept="image/*" {...register('image')} className="bg-white mt-1" />
-        </div>
-
+        {/* Error message if any */}
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <Button
@@ -86,7 +96,7 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
           type="submit"
           disabled={isSubmitting}
         >
-          Simpan
+          Submit
         </Button>
       </form>
     </div>
