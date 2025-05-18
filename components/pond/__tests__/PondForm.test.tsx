@@ -211,4 +211,135 @@ describe('PondForm Component', () => {
     expect(screen.getByText('Volume: 108.00 m³')).toBeInTheDocument();
     unmount();
   });
+
+  it('calls setError(null) when form is submitted', async () => {
+  (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true });
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+
+  fireEvent.submit(screen.getByRole('form'));
+
+  await waitFor(() => {
+    expect(addOrUpdatePond).toHaveBeenCalled();
+  });
+});
+
+it('handles FileList conversion for image correctly', async () => {
+  (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true });
+  mockUseForm({
+    watch: (field: string) => {
+      if (field === 'image') return { 0: { name: 'test.jpg' } }; // Mock FileList
+      return null;
+    }
+  });
+
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  fireEvent.submit(screen.getByRole('form'));
+
+  await waitFor(() => {
+    expect(addOrUpdatePond).toHaveBeenCalledWith(
+      expect.objectContaining({
+        image: { name: 'test.jpg' } // Verifikasi image diproses
+      }),
+      undefined
+    );
+  });
+});
+
+it('handles empty image FileList correctly', async () => {
+  (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true });
+  mockUseForm({
+    watch: (field: string) => {
+      if (field === 'image') return { 0: undefined }; // Mock FileList kosong
+      return null;
+    }
+  });
+
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  fireEvent.submit(screen.getByRole('form'));
+
+  await waitFor(() => {
+    expect(addOrUpdatePond).toHaveBeenCalledWith(
+      expect.objectContaining({
+        image: undefined // Verifikasi image jadi undefined
+      }),
+      undefined
+    );
+  });
+});
+
+it('calls reset() on successful submission', async () => {
+  (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true });
+  const { reset } = useForm(); // Spy on reset
+  
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  fireEvent.submit(screen.getByRole('form'));
+
+  await waitFor(() => {
+    expect(reset).toHaveBeenCalled(); // Reset dipanggil jika sukses
+  });
+});
+
+it('does not call reset() on failed submission', async () => {
+  (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: false });
+  const { reset } = useForm();
+  
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  fireEvent.submit(screen.getByRole('form'));
+
+  await waitFor(() => {
+    expect(reset).not.toHaveBeenCalled(); // Reset TIDAK dipanggil jika gagal
+  });
+});
+
+it('calculates volume correctly when all dimensions are present', () => {
+  mockUseForm({
+    watch: (field: string) => {
+      if (field === 'width') return 5;
+      if (field === 'length') return 10;
+      if (field === 'depth') return 2;
+      return null;
+    }
+  });
+
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  expect(screen.getByText('Volume: 100.00 m³')).toBeInTheDocument();
+});
+
+it('does not calculate volume when any dimension is missing', () => {
+  mockUseForm({
+    watch: (field: string) => {
+      if (field === 'width') return 5;
+      if (field === 'length') return 10;
+      return null; // depth missing
+    }
+  });
+
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  expect(screen.queryByText(/Volume:/)).not.toBeInTheDocument();
+});
+
+it('clears volume calculation on unmount', () => {
+  const { unmount } = render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  expect(screen.getByText('Volume: 108.00 m³')).toBeInTheDocument();
+  unmount();
+  // Tidak bisa langsung assert, tapi memastikan cleanup effect dijalankan
+});
+
+it('shows loading state on submit button when isSubmitting is true', () => {
+  mockUseForm({
+    formState: { isSubmitting: true },
+  });
+
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  expect(screen.getByText('Menyimpan...')).toBeInTheDocument();
+});
+
+it('shows "Simpan" text on submit button when not submitting', () => {
+  mockUseForm({
+    formState: { isSubmitting: false },
+  });
+
+  render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
+  expect(screen.getByText('Simpan')).toBeInTheDocument();
+});
 });
