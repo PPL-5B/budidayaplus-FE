@@ -22,7 +22,7 @@ const COLOR_MAP = {
 
 const SIZE_MAP = {
   sm: 'py-2 px-2 w-[80px] h-[25px] text-[10px]',
-  md: 'w-[100px] h-[30px] text-[10px]',
+  md: 'w-[120px] h-[35px] text-[14px]',
 };
 
 const ActionButton: React.FC<ActionButtonProps> = ({
