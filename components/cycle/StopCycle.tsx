@@ -56,10 +56,30 @@ const StopCycle: React.FC<StopCycleButtonProps> = ({ cycleId, ...props }) => {
             Stop Siklus <Ban className='ml-2' size={18} />
           </Button>
         </DialogTrigger>
-        <DialogContent className='sm:justify-start' title='Hentikan siklus' description='Apakah anda yakin ingin menghentikan siklus ini?'>
-          <Button variant={'destructive'} onClick={handleStop} disabled={loading}>
-            Konfirmasi
-          </Button>
+        <DialogContent
+          title='' 
+          className="bg-[#EAF0FF] p-4 rounded-xl max-w-xs w-full shadow-none text-center space-y-4"
+        >
+          <h2 className="text-[#2254C5] font-semibold text-sm">
+            Apa Anda yakin ingin stop siklus?
+          </h2>
+          <div className="flex justify-center gap-3">
+            <Button
+              variant="outline"
+              className="border-[#2254C5] text-[#2254C5] px-4 py-1 text-sm"
+              onClick={() => setModalOpen(false)}
+              disabled={loading}
+            >
+              Tidak
+            </Button>
+            <Button
+              className="bg-[#2254C5] hover:bg-[#1e45a8] text-white px-4 py-1 text-sm"
+              onClick={handleStop}
+              disabled={loading}
+            >
+              Iya
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
