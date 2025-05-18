@@ -38,15 +38,14 @@ interface AddCycleFormProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const AddCycleForm: React.FC<AddCycleFormProps> = ({ pondList, setIsModalOpen, ...props }) => {
-  const [error, setError] = useState<string | null>(null)
-  const { toast } = useToast()
+  const [error] = useState<string | null>(null)
+  useToast()
 
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
-    reset,
     control,
   } = useForm<CycleInput>({
     resolver: zodResolver(CycleInputSchema),
