@@ -4,5 +4,4 @@ export type Pond = {
   length: number;
   width: number;
   depth: number;
-  image_name: string;
 }

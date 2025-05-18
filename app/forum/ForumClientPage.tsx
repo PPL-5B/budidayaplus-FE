@@ -40,24 +40,22 @@ const ForumPage: React.FC = () => {
   }, [searchParams, router]);
 
   return (
-    <div className="h-screen overflow-y-auto px-6 py-4 bg-[#EAF0FF] flex flex-col gap-4">
+    <div className="h-screen overflow-y-auto px-6 py-4 bg-[#EAF0FF] flex flex-col gap-3">
       {/* Tombol kembali */}
       <button
-        onClick={() => router.push('/')}
-        className="text-blue-600 text-sm flex items-center gap-1"
+        onClick={() => router.push('/community')}
+        className="flex items-center text-sm text-blue-600 hover:underline mb-3"
       >
-        <ChevronLeft size={16} />
+        <ChevronLeft size={20} />
         Kembali
       </button>
 
-      {/* Judul Forum */}
-      <div className="text-center text-[#14142B] text-[24px] font-bold leading-[36px]">
-        Daftar Forum
-      </div>
-
-      {/* Tombol Buat Forum */}
-      <div className="w-[100px] h-[30px] relative shadow-sm">
-        <AddForum onForumAdded={handleForumAdded} />
+      {/* Wrapper Judul + Tombol Buat Forum */}
+      <div className="flex items-center justify-between mt-1">
+        <h1 className="text-[#14142B] text-[24px] font-bold">Daftar Forum</h1>
+        <div className="translate-y-[1px]">
+          <AddForum onForumAdded={handleForumAdded} />
+        </div>
       </div>
 
       {/* Search dan Filter */}
@@ -67,7 +65,7 @@ const ForumPage: React.FC = () => {
           <input
             type="text"
             placeholder="Cari Topik..."
-            className="pl-9 pr-3 text-[14px] text-[#979797] font-medium bg-white rounded-full h-full w-full outline-none"
+            className="pl-9 pr-3 text-[13px] text-[#979797] font-medium bg-white rounded-full h-full w-full outline-none"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -75,11 +73,11 @@ const ForumPage: React.FC = () => {
         </div>
 
         {/* Filter */}
-        <div className="relative w-[110px] h-[30px]">
+        <div className="relative w-[145px] h-[30px]">
           <select
             value={selectedTag}
             onChange={(e) => setSelectedTag(e.target.value)}
-            className="pl-8 pr-3 text-[14px] text-[#979797] font-medium bg-white rounded-full h-full w-full appearance-none outline-none"
+            className="pl-9 pr-3 text-[13px] text-[#979797] font-medium bg-white rounded-full h-full w-full appearance-none outline-none"
           >
             <option value="">Semua</option>
             <option value="ikan">Ikan</option>

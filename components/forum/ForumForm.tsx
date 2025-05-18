@@ -138,7 +138,7 @@ const ForumForm: React.FC<ForumFormProps> = ({ setIsModalOpen, parentForumId, on
           disabled={isSubmitting}
           className="w-full bg-[#2254C5] hover:bg-[#1e46a1] text-white font-bold text-sm rounded-md h-11 shadow-inner"
         >
-          {isSubmitting ? 'Submitting...' : 'Submit'}
+          {isSubmitting ? 'Menyimpan...' : 'Simpan'}
         </Button>
       </form>
     </div>

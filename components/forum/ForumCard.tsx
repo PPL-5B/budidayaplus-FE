@@ -53,9 +53,12 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
     goToDetail(forum);
   };
 
-  const handleVote = async () => {
+  const handleVote = async (voteType: 'upvote') => {
     try {
-      userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
+      if (voteType === 'upvote') {
+        userVote === 'upvote' ? await handleCancelVote() : await handleUpvote();
+      } 
+      
       onVoteSuccess?.({
         ...forum,
         upvotes,
@@ -70,6 +73,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
   }
 
   return (
+
     <div className="relative w-full max-w-[338px] bg-white rounded-[10px] shadow-md p-4 transition-all duration-200 overflow-hidden">
       <ForumCardHeader
         title={title}
@@ -101,7 +105,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
           onEdit={() => setIsEditing(true)}
           onDelete={() => setIsDeleteOpen(true)}
           isEditing={isEditing}
-          tag={forum.tag}
           upvotes={upvotes}
           userVote={userVote === 'upvote' ? userVote : null}
           handleVote={handleVote}
@@ -109,7 +112,6 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
           isOwner={isOwner}
         />
       </div>
-
       <DeleteForumContainer
         forumId={forum.id}
         isOpen={isDeleteOpen}
@@ -117,8 +119,7 @@ const ForumCard: React.FC<ForumCardProps> = ({ forum, onDeleteSuccess, onVoteSuc
         onSuccess={() => onDeleteSuccess?.(forum.id)}
       />
     </div>
-  );
+  );  
 };
 
 export default ForumCard;
-

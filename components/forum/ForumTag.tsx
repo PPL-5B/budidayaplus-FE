@@ -13,7 +13,7 @@ const tagStyles: Record<string, { bg: string; text: string; width: string }> = {
   budidayaplus: {
     bg: '#FFE4BE',
     text: '#FF9500',
-    width: 'w-[80px]',
+    width: 'w-[100px]',
   },
   siklus: {
     bg: '#CDFFD3',

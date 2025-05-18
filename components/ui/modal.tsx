@@ -1,20 +1,23 @@
 'use client'
 
 import React from 'react'
-import { DialogContent } from '@/components/ui/dialog'
+import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string
+  title: string
   description?: string
   children?: React.ReactNode
 }
 
-export const Modal: React.FC<ModalProps> = ({ children, ...props }) => {  
+export const Modal: React.FC<ModalProps> = ({ title, description, children, ...props }) => {  
   return (
-    <DialogContent 
-      {...props}
-      className="w-[95vw] max-w-[350px] p-0 bg-transparent border-none shadow-none ml-10 sm:ml-0"
-    >
+    <DialogContent {...props}>
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>
+          {description}
+        </DialogDescription>
+      </DialogHeader>
       {children}
     </DialogContent>
   )
