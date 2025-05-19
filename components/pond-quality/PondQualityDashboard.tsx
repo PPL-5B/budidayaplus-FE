@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { getLatestPondDashboard } from '@/lib/pond-quality/getLatestPondDashboard';
@@ -52,7 +52,7 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
         setHasError(false);
         const latest = await getLatestPondDashboard(pondId, cycleId);
         setLatestData(latest ?? null);
-        
+
         if (latest) {
           const newAlerts: Alert[] = [];
           if (latest.ph_level < 7.5) {
@@ -69,11 +69,11 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
           }
           setAlerts(newAlerts);
         }
-      } catch (err) { 
+      } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
         setHasError(true);
-      } finally { 
-        setLoading(false); 
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -101,41 +101,40 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
 
   if (hasError || !latestData) {
     return (
-      <div className="mt-10">
+      <div className="mt-6">
         <EmptyData />
       </div>
     );
   }
 
   return (
-    <div className="mt-10">
-      <h2 className="text-2xl font-semibold text-center flex items-center justify-center">
-        <Waves className="w-10 h-10 text-[#2154C5] mr-2" /> Dashboard Kualitas Air Terbaru
-      </h2>
-      <div className="flex justify-center mt-4">
-        <table className="border-collapse border border-gray-300 w-[80%] text-center">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-2">Parameter</th>
-              <th className="border border-gray-300 px-4 py-2">Nilai Aktual</th>
-              <th className="border border-gray-300 px-4 py-2">Nilai Target</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.keys(targetValues).map((key) => (
-              <tr key={key}>
-                <td className="border border-gray-300 px-4 py-2 capitalize">{key.replace('_', ' ')}</td>
-                <td className={`border border-gray-300 px-4 py-2 ${getValueClassName(key)}`}>
-                  {latestData[key] ?? 'N/A'}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">{targetValues[key as keyof typeof targetValues]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="w-full flex flex-col items-center bg-[#EDF2FF] pt-6">
+      <div className="w-[90%] max-w-2xl">
+        <h2 className="text-lg font-bold text-black mb-4">Dashboard Kualitas Air Terbaru</h2>
 
-      {alerts.length > 0 && <PondAlertPopup alerts={alerts} />}
+        <div className="overflow-hidden rounded-xl border border-[#2154C5] bg-[#EDF2FF]">
+          <table className="w-full text-center">
+            <thead className="bg-[#2154C5] text-white text-sm">
+              <tr>
+                <th className="py-3 px-4 font-semibold">Parameter</th>
+                <th className="py-3 px-4 font-semibold">Nilai Aktual</th>
+                <th className="py-3 px-4 font-semibold">Nilai Target</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm text-gray-800 font-medium">
+              {Object.keys(targetValues).map((key) => (
+                <tr key={key}>
+                  <td className="py-4 px-4 capitalize">{key.replace('_', ' ')}</td>
+                  <td className={`py-4 px-4 ${getValueClassName(key)}`}>{latestData[key] ?? 'N/A'}</td>
+                  <td className="py-4 px-4">{targetValues[key as keyof typeof targetValues]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {alerts.length > 0 && <PondAlertPopup alerts={alerts} />}
+      </div>
     </div>
   );
 };
