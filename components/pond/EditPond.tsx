@@ -19,10 +19,10 @@ const EditPond: React.FC<EditPondProps> = ({ pond, ...props }) => {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
           <button
-          className="flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 text-white px-4 py-2 font-semibold"
+          className="flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 text-white px-4 py-2 font-semibold text-sm whitespace-nowrap"
           >
           <Pencil size={16} strokeWidth={2} />
-          Ubah
+          Ubah Data Kolam
           </button>
         </DialogTrigger>
         <DialogContent title='Edit Kolam'>
