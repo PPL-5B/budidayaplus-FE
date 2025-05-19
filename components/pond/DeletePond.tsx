@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { deletePond } from '@/lib/pond';
 import { Pond } from '@/types/pond';
-import { Trash, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import CancelButton from '@/components/ui/cancel-button';
 import DangerButton from '@/components/ui/danger-button';
 
@@ -31,6 +31,7 @@ const DeletePond: React.FC<DeletePondProps> = ({ pondId }) => {
         setError('Gagal menghapus kolam');
       }
     } catch (error) {
+      console.error('Error deleting pond:', error);
       setError('Gagal menghapus kolam');
     } finally {
       setLoading(false);
