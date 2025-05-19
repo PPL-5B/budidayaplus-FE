@@ -58,129 +58,143 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
       setIsModalOpen(false)
       window.location.reload()
 
-    } catch (error) {
-      console.error('Error saat menyimpan kolam:', error);
-      setError('Gagal menyimpan kolam');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error(err.message)
+      }
+      setError('Gagal menyimpan kolam')
     }
   }
 
   useEffect(() => {
     if (width && length && depth) {
       setVolume(width * length * depth)
+    } else {
+      setVolume(null)
     }
-    return () => setVolume(null)
   }, [width, length, depth])
 
+  // Tutup popup jika klik di luar form
+  const onOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      setIsModalOpen(false)
+    }
+  }
+
   return (
-    <div className="bg-[#EAF0FF] rounded-md p-6 w-full max-w-sm mx-auto relative">
-      <div className="flex justify-center mb-6">
-        <h2 className="text-[20px] text-center font-inter font-semibold text-[#2254C5]">
-          {pond ? 'Edit Kolam' : 'Tambah Kolam'}
-        </h2>
-      </div>
-
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-
-        {/* Nama Kolam */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Droplet size={20} color="#2254C5" fill="#2254C5" />
-            <label htmlFor="pond-name" className="text-[#2254C5] font-medium text-sm">Nama Kolam</label>
-          </div>
-          <Input
-            id="pond-name"
-            {...register('name')}
-            placeholder="Masukkan nama kolam..."
-            className="rounded-[15px] bg-white h-10"
-          />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-        </div>
-
-        {/* Panjang */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label htmlFor="pond-length" className="text-[#2254C5] font-medium text-sm">Panjang (meter)</label>
-          </div>
-          <Input
-            id="pond-length"
-            {...register('length', { setValueAs: v => parseFloat(v) })}
-            placeholder="Masukkan panjang kolam..."
-            className="rounded-[15px] bg-white h-10"
-            step={0.01}
-          />
-          {errors.length && <p className="text-red-500 text-sm">{errors.length.message}</p>}
-        </div>
-
-        {/* Lebar */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label htmlFor="pond-width" className="text-[#2254C5] font-medium text-sm">Lebar (meter)</label>
-          </div>
-          <Input
-            id="pond-width"
-            {...register('width', { setValueAs: v => parseFloat(v) })}
-            placeholder="Masukkan lebar kolam..."
-            className="rounded-[15px] bg-white h-10"
-            step={0.01}
-          />
-          {errors.width && <p className="text-red-500 text-sm">{errors.width.message}</p>}
-        </div>
-
-        {/* Kedalaman */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label htmlFor="pond-depth" className="text-[#2254C5] font-medium text-sm">Kedalaman (meter)</label>
-          </div>
-          <Input
-            id="pond-depth"
-            {...register('depth', { setValueAs: v => parseFloat(v) })}
-            placeholder="Masukkan kedalaman kolam..."
-            className="rounded-[15px] bg-white h-10"
-            step={0.01}
-          />
-          {errors.depth && <p className="text-red-500 text-sm">{errors.depth.message}</p>}
-        </div>
-
-        <div className="hidden">
-          <div className="flex items-center gap-2">
-            <ImageIcon size={20} color="#2254C5" />
-            <label htmlFor="pond-image" className="text-[#2254C5] font-medium text-sm">Foto Kolam</label>
-          </div>
-          <Input
-            id="pond-image"
-            type="file"
-            accept="image/*"
-            {...register('image')}
-            className="rounded-[15px] bg-white h-10"
-          />
-          {errors.image && <p className="text-red-500 text-sm">{(errors.image as any)?.message}</p>}
-        </div>
-
-
-        {/* Volume */}
-        {volume && (
-          <p className="text-center text-sm font-semibold text-[#2254C5]">
-            Volume: {volume.toFixed(2)} m<sup>3</sup>
-          </p>
-        )}
-
-        {/* Tombol Simpan */}
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-[#2254C5] hover:bg-[#1e46a1] text-white font-bold text-sm rounded-md h-11 shadow-inner"
+    <>
+        {/* Form container */}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 bg-[#EAF0FF] rounded-md p-6 w-full max-w-sm mx-auto relative shadow-lg"
         >
-          {isSubmitting ? 'Menyimpan...' : 'Simpan'}
-        </Button>
+          {/* Header */}
+          <div className="flex justify-center">
+            <h2 className="text-[20px] text-center font-inter font-semibold text-[#2254C5] mb-6">
+              {pond ? 'Edit Kolam' : 'Tambah Kolam'}
+            </h2>
+          </div>
 
-        {error && (
-          <p className="w-full text-center text-red-500 text-sm">{error}</p>
-        )}
-      </form>
-    </div>
+          {/* Nama Kolam */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Droplet size={20} color="#2254C5" fill="#2254C5" />
+              <label htmlFor="pond-name" className="text-[#2254C5] font-medium text-sm">Nama Kolam</label>
+            </div>
+            <Input
+              id="pond-name"
+              {...register('name')}
+              placeholder="Masukkan nama kolam..."
+              className="rounded-[15px] bg-white h-10 border-none"
+            />
+            {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+          </div>
+
+          {/* Panjang */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Ruler size={20} color="#2254C5" fill="#2254C5" />
+              <label htmlFor="pond-length" className="text-[#2254C5] font-medium text-sm">Panjang (meter)</label>
+            </div>
+            <Input
+              id="pond-length"
+              {...register('length', { setValueAs: v => parseFloat(v) })}
+              placeholder="Masukkan panjang kolam..."
+              className="rounded-[15px] bg-white h-10 border-none"
+              step={0.01}
+            />
+            {errors.length && <p className="text-red-500 text-sm">{errors.length.message}</p>}
+          </div>
+
+          {/* Lebar */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Ruler size={20} color="#2254C5" fill="#2254C5" />
+              <label htmlFor="pond-width" className="text-[#2254C5] font-medium text-sm">Lebar (meter)</label>
+            </div>
+            <Input
+              id="pond-width"
+              {...register('width', { setValueAs: v => parseFloat(v) })}
+              placeholder="Masukkan lebar kolam..."
+              className="rounded-[15px] bg-white h-10 border-none"
+              step={0.01}
+            />
+            {errors.width && <p className="text-red-500 text-sm">{errors.width.message}</p>}
+          </div>
+
+          {/* Kedalaman */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Ruler size={20} color="#2254C5" fill="#2254C5" />
+              <label htmlFor="pond-depth" className="text-[#2254C5] font-medium text-sm">Kedalaman (meter)</label>
+            </div>
+            <Input
+              id="pond-depth"
+              {...register('depth', { setValueAs: v => parseFloat(v) })}
+              placeholder="Masukkan kedalaman kolam..."
+              className="rounded-[15px] bg-white h-10 border-none"
+              step={0.01}
+            />
+            {errors.depth && <p className="text-red-500 text-sm">{errors.depth.message}</p>}
+          </div>
+
+          {/* Gambar Kolam */}
+          <div className="hidden">
+            <div className="flex items-center gap-2">
+              <ImageIcon size={20} color="#2254C5" />
+              <label htmlFor="pond-image" className="text-[#2254C5] font-medium text-sm">Foto Kolam</label>
+            </div>
+            <Input
+              id="pond-image"
+              type="file"
+              accept="image/*"
+              {...register('image')}
+              className="rounded-[15px] bg-white h-10 border-none"
+            />
+            {errors.image && <p className="text-red-500 text-sm">{(errors.image as any)?.message}</p>}
+          </div>
+
+          {/* Volume */}
+          {volume !== null && (
+            <p className="text-center text-sm font-semibold text-[#2254C5]">
+              Volume: {volume.toFixed(2)} m<sup>3</sup>
+            </p>
+          )}
+
+          {/* Tombol Simpan */}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-[#2254C5] hover:bg-[#1e46a1] text-white font-bold text-sm rounded-md h-11 shadow-inner"
+          >
+            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
+          </Button>
+
+          {error && (
+            <p className="w-full text-center text-red-500 text-sm">{error}</p>
+          )}
+        </form>
+    </>
   )
 }
 

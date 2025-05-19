@@ -1,195 +1,163 @@
 import React from 'react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DeletePond from '@/components/pond/DeletePond';
 import { deletePond } from '@/lib/pond';
+import '@testing-library/jest-dom';
 
-// Mock the dependencies
+// Mock dependencies
 jest.mock('@/lib/pond', () => ({
-  deletePond: jest.fn()
+  deletePond: jest.fn(),
 }));
 
-// Mock the Trash2 icon
 jest.mock('lucide-react', () => ({
-  Trash2: jest.fn(() => <span data-testid="trash-icon" />)
+  Trash2: () => <div data-testid="trash-icon" />,
 }));
-
-// Mock the CancelButton and DangerButton components
-jest.mock('@/components/ui/cancel-button', () => ({
-  __esModule: true,
-  default: jest.fn(({ children, onClick }) => (
-    <button onClick={onClick} data-testid="cancel-button">
-      {children}
-    </button>
-  ))
-}));
-
-jest.mock('@/components/ui/danger-button', () => ({
-  __esModule: true,
-  default: jest.fn(({ children, onClick, disabled, className }) => (
-    <button 
-      onClick={onClick} 
-      disabled={disabled}
-      className={className}
-      data-testid="danger-button"
-    >
-      {children}
-    </button>
-  ))
-}));
-
-// Helper to simulate delayed promise
-function delayedResolveTrue() {
-  return new Promise<boolean>((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, 500);
-  });
-}
 
 describe('DeletePond Component', () => {
   const mockPondId = 'pond-123';
-  const originalWindowLocation = window.location;
-
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: { href: '', assign: jest.fn() },
-    });
-  });
-
-  afterAll(() => {
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: originalWindowLocation,
-    });
-  });
 
   beforeEach(() => {
     jest.clearAllMocks();
+    window.location = { href: '' } as any;
   });
 
-  it('renders the delete button correctly', () => {
+  it('renders delete button with trash icon', () => {
     render(<DeletePond pondId={mockPondId} />);
-    
-    const deleteButton = screen.getByRole('button', { name: /hapus/i });
-    expect(deleteButton).toBeInTheDocument();
-    expect(deleteButton).toHaveClass('bg-red-600');
-    expect(deleteButton).toHaveClass('hover:bg-red-700');
+
+    const button = screen.getByRole('button', { name: /hapus/i });
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass('bg-red-600');
+    expect(button).toHaveClass('hover:bg-red-700');
     expect(screen.getByTestId('trash-icon')).toBeInTheDocument();
   });
 
-  it('shows confirmation dialog when delete button is clicked', () => {
+  it('shows confirmation dialog when button is clicked', () => {
     render(<DeletePond pondId={mockPondId} />);
     
     fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
-    
-    expect(screen.getByText(/apakah anda yakin ingin menghapus kolam/i)).toBeInTheDocument();
-    expect(screen.getByTestId('cancel-button')).toBeInTheDocument();
-    expect(screen.getByTestId('danger-button')).toBeInTheDocument();
+    expect(screen.getByText('Apakah Anda yakin ingin menghapus kolam?')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /batal/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /hapus/i })).toBeInTheDocument();
   });
 
-  it('closes confirmation dialog when cancel is clicked', () => {
+  it('hides confirmation dialog when cancel is clicked', () => {
     render(<DeletePond pondId={mockPondId} />);
     
     // Open dialog
     fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
     
     // Close dialog
-    fireEvent.click(screen.getByTestId('cancel-button'));
+    fireEvent.click(screen.getByRole('button', { name: /batal/i }));
     
-    expect(screen.queryByText(/apakah anda yakin ingin menghapus kolam/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('Apakah Anda yakin ingin menghapus kolam?')).not.toBeInTheDocument();
   });
 
-  describe('when confirming deletion', () => {
-    it('shows loading state while deleting', async () => {
-      (deletePond as jest.Mock).mockImplementation(delayedResolveTrue);
-      
-      render(<DeletePond pondId={mockPondId} />);
-      
-      // Open dialog
-      fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
-      
-      // Confirm delete
-      fireEvent.click(screen.getByTestId('danger-button'));
-      
-      expect(screen.getByText(/menghapus.../i)).toBeInTheDocument();
-      expect(screen.getByTestId('danger-button')).toBeDisabled();
-      
-      await waitFor(() => {
-        expect(screen.queryByText(/menghapus.../i)).not.toBeInTheDocument();
-      });
-    });
-
-    it('shows success message and redirects after successful deletion', async () => {
-      (deletePond as jest.Mock).mockResolvedValue(true);
-      
-      render(<DeletePond pondId={mockPondId} />);
-      
-      // Open dialog
-      fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
-      
-      // Confirm delete
-      fireEvent.click(screen.getByTestId('danger-button'));
-      
-      await waitFor(() => {
-        expect(screen.getByText(/kolam berhasil dihapus/i)).toBeInTheDocument();
-      });
-      
-      // Wait for redirect
-      await waitFor(() => {
-        expect(window.location.href).toBe('/pond');
-      }, { timeout: 1500 });
-    });
-
-    it('shows error message when deletion fails', async () => {
-      (deletePond as jest.Mock).mockResolvedValue(false);
-      
-      render(<DeletePond pondId={mockPondId} />);
-      
-      // Open dialog
-      fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
-      
-      // Confirm delete
-      fireEvent.click(screen.getByTestId('danger-button'));
-      
-      await waitFor(() => {
-        expect(screen.getByText(/gagal menghapus kolam/i)).toBeInTheDocument();
-      });
-    });
-
-    it('shows error message when deletion throws an error', async () => {
-      (deletePond as jest.Mock).mockRejectedValue(new Error('Network error'));
-      
-      render(<DeletePond pondId={mockPondId} />);
-      
-      // Open dialog
-      fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
-      
-      // Confirm delete
-      fireEvent.click(screen.getByTestId('danger-button'));
-      
-      await waitFor(() => {
-        expect(screen.getByText(/gagal menghapus kolam/i)).toBeInTheDocument();
-      });
-    });
-  });
-
-  it('has correct styling for confirmation dialog', () => {
+  it('shows loading state when deleting', async () => {
+    (deletePond as jest.Mock).mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(true), 1000))
+    );
     render(<DeletePond pondId={mockPondId} />);
     
     // Open dialog
     fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    // Confirm delete
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
     
-    const overlay = screen.getByRole('dialog');
-    expect(overlay).toHaveClass('fixed');
-    expect(overlay).toHaveClass('inset-0');
-    expect(overlay).toHaveClass('bg-black');
-    expect(overlay).toHaveClass('bg-opacity-50');
+    // Verify loading state
+    expect(screen.getByText('Menghapus...')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /menghapus.../i })).toBeDisabled();
     
-    const dialogContent = overlay.querySelector('div > div');
-    expect(dialogContent).toHaveClass('bg-[#EAF0FF]');
-    expect(dialogContent).toHaveClass('rounded-lg');
-    expect(dialogContent).toHaveClass('shadow-md');
+    // Verify error is cleared
+    expect(screen.queryByText('Gagal menghapus kolam')).not.toBeInTheDocument();
+  });
+
+  it('shows success message and redirects after successful deletion', async () => {
+    jest.useFakeTimers();
+    (deletePond as jest.Mock).mockResolvedValue(true);
+    render(<DeletePond pondId={mockPondId} />);
+    
+    // Open dialog
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    // Confirm delete
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('Kolam berhasil dihapus!')).toBeInTheDocument();
+    });
+    
+    // Advance timers to trigger the redirect
+    jest.advanceTimersByTime(1000);
+    
+    expect(window.location.href).toBe('/pond');
+    jest.useRealTimers();
+  });
+
+  it('shows error message when deletion fails (returns false)', async () => {
+    (deletePond as jest.Mock).mockResolvedValue(false);
+    render(<DeletePond pondId={mockPondId} />);
+    
+    // Open dialog
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    // Confirm delete
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('Gagal menghapus kolam')).toBeInTheDocument();
+      // Verify loading is finished
+      expect(screen.getByRole('button', { name: /hapus/i })).not.toBeDisabled();
+    });
+  });
+
+  it('shows error message when API throws error', async () => {
+    (deletePond as jest.Mock).mockRejectedValue(new Error('Network error'));
+    render(<DeletePond pondId={mockPondId} />);
+    
+    // Open dialog
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    // Confirm delete
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('Gagal menghapus kolam')).toBeInTheDocument();
+      // Verify loading is finished
+      expect(screen.getByRole('button', { name: /hapus/i })).not.toBeDisabled();
+    });
+  });
+
+  it('clears error state when starting new delete attempt', async () => {
+    (deletePond as jest.Mock)
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockResolvedValueOnce(true);
+    
+    render(<DeletePond pondId={mockPondId} />);
+    
+    // First attempt - fails
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('Gagal menghapus kolam')).toBeInTheDocument();
+    });
+    
+    // Second attempt - succeeds
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
+    
+    // Error should be cleared immediately
+    expect(screen.queryByText('Gagal menghapus kolam')).not.toBeInTheDocument();
+  });
+
+  it('forwards additional props to container div', () => {
+    const testProps = {
+      className: 'custom-class',
+      'data-testid': 'delete-pond-container'
+    };
+    
+    const { getByTestId } = render(
+      <DeletePond pondId={mockPondId} {...testProps} />
+    );
+    
+    const container = getByTestId('delete-pond-container');
+    expect(container).toHaveClass('custom-class');
   });
 });

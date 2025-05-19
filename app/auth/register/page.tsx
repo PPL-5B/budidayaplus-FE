@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -42,13 +41,6 @@ const RegisterPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#e8f0ff]">
       <div className="w-[90%] max-w-sm flex flex-col items-center">
         <div className="flex justify-center items-center my-4">
-          <Image
-            src="/BudidayaPlus.svg"
-            alt="BudidayaPlus Logo"
-            width={128}
-            height={128}
-            className="w-32 h-32 object-contain"
-          />
         </div>
 
         <h1 className="text-2xl font-bold text-center">Buat Akun</h1>

@@ -42,10 +42,10 @@ const DeletePond: React.FC<DeletePondProps> = ({ pondId }) => {
     <div>
       <button
       onClick={() => setShowConfirm(true)}
-      className="flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white px-4 py-2 font-semibold"
+      className="flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white px-4 py-2 font-semibold text-sm whitespace-nowrap"
       >
-      <Trash2 size={16} strokeWidth={2} />
-      Hapus
+      <Trash2 size={12} strokeWidth={3} />
+      Hapus Kolam
       </button>
 
       {showConfirm && (
