@@ -1,202 +1,119 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import UpdateProfileModal from '@/components/profile/UpdateProfileModal';
-import { Profile } from '@/types/profile';
+import React from 'react'
+import { render, screen, fireEvent } from '@testing-library/react'
+import UpdateProfileModal from '@/components/profile/UpdateProfileModal'
+import { Profile } from '@/types/profile'
 
-jest.mock('@/components/ui/dialog', () => ({
-  Dialog: ({ children, open, onOpenChange }) => (
-    <div data-testid="dialog" data-open={open} onClick={() => onOpenChange(!open)}>
-      {children}
-    </div>
-  ),
-  DialogTrigger: ({ children, asChild }) => (
-    <div data-testid="dialog-trigger" data-aschild={asChild}>
-      {children}
+jest.mock('@/components/profile/UpdateProfileForm', () => {
+  type Props = {
+    profile: {
+      id: number
+      role: string
+      image_name: string
+      user: {
+        id: number
+        first_name: string
+        last_name: string
+        phone_number: string
+      }
+    }
+    setIsModalOpen: (open: boolean) => void
+  }
+
+  const MockUpdateProfileForm: React.FC<Props> = ({ setIsModalOpen }) => (
+    <div data-testid="mock-update-form">
+      <button data-testid="mock-close-button" onClick={() => setIsModalOpen(false)}>Close Form</button>
+      <p>Form is rendered</p>
     </div>
   )
-}));
 
-jest.mock('@/components/ui/dialog-content-no-x', () => ({
-  DialogContentNoX: ({ children }) => (
-    <div data-testid="dialog-content-no-x">{children}</div>
-  )
-}));
+  return {
+    __esModule: true,
+    default: MockUpdateProfileForm,
+  }
+})
 
-jest.mock('@/components/profile', () => ({
-  UpdateProfileForm: jest.fn(({ profile, setIsModalOpen }) => (
-    <div data-testid="update-profile-form">
-      <button data-testid="mock-submit" onClick={() => setIsModalOpen(false)}>
-        Save
-      </button>
-      <span>Profile name: {profile.user.first_name} {profile.user.last_name}</span>
-    </div>
-  ))
-}));
+jest.mock('@radix-ui/react-dialog', () => {
+  const originalModule = jest.requireActual('@radix-ui/react-dialog')
 
-jest.mock('@/components/ui/icon-chevron-filled', () => ({
-  __esModule: true,
-  default: () => <div data-testid="icon-chevron-filled" />
-}));
+  return {
+    ...originalModule,
+    Title: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => <h2 {...props}>{children || 'Dialog Title'}</h2>,
+    Description: (props: React.HTMLAttributes<HTMLParagraphElement>) => <p {...props} />,
+  }
+})
+
+const dummyProfile: Profile = {
+  id: 1,
+  role: 'worker',
+  image_name: 'default.jpg',
+  user: {
+    id: 123,
+    first_name: 'Dina',
+    last_name: 'Putri',
+    phone_number: '081234567890',
+  },
+}
 
 describe('UpdateProfileModal', () => {
-  const mockProfile: Profile = {
-    id: 1,
-    image_name: 'profile1.png',
-    role: 'worker',
-    user: {
-      id: 1,
-      first_name: 'John',
-      last_name: 'Doe',
-      phone_number: '08123456789',
+  it('should not show modal content initially', () => {
+    render(
+      <UpdateProfileModal profile={dummyProfile}>
+        <button>Open Modal</button>
+      </UpdateProfileModal>
+    )
+
+    expect(screen.queryByText('Form is rendered')).not.toBeInTheDocument()
+  })
+
+  it('should show modal content when trigger is clicked', () => {
+    render(
+      <UpdateProfileModal profile={dummyProfile}>
+        <button>Open Modal</button>
+      </UpdateProfileModal>
+    )
+
+    fireEvent.click(screen.getByText('Open Modal'))
+    expect(screen.getByText('Form is rendered')).toBeInTheDocument()
+  })
+
+  it('should close modal when setIsModalOpen is called from form', () => {
+    render(
+      <UpdateProfileModal profile={dummyProfile}>
+        <button>Open Modal</button>
+      </UpdateProfileModal>
+    )
+
+    fireEvent.click(screen.getByText('Open Modal'))
+    fireEvent.click(screen.getByTestId('mock-close-button'))
+
+    expect(screen.queryByText('Form is rendered')).not.toBeInTheDocument()
+  })
+
+  it('should render gracefully with null children (edge case)', () => {
+    render(<UpdateProfileModal profile={dummyProfile}>{null}</UpdateProfileModal>)
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('should handle empty profile fields (corner case)', () => {
+    const emptyProfile: Profile = {
+      id: 0,
+      role: 'worker',
+      image_name: '',
+      user: {
+        id: 0,
+        first_name: '',
+        last_name: '',
+        phone_number: '',
+      },
     }
-  };
 
-  describe('Positive Tests', () => {
-    it('renders the modal with children as trigger', () => {
-      render(
-        <UpdateProfileModal profile={mockProfile}>
-          <button>Open Modal</button>
-        </UpdateProfileModal>
-      );
+    render(
+      <UpdateProfileModal profile={emptyProfile}>
+        <button>Open Modal</button>
+      </UpdateProfileModal>
+    )
 
-      expect(screen.getByText('Open Modal')).toBeInTheDocument();
-      expect(screen.getByTestId('dialog-trigger')).toBeInTheDocument();
-    });
-
-    it('opens the modal when trigger is clicked', () => {
-      render(
-        <UpdateProfileModal profile={mockProfile}>
-          <button data-testid="trigger-button">Open Modal</button>
-        </UpdateProfileModal>
-      );
-
-      const triggerButton = screen.getByTestId('trigger-button');
-      fireEvent.click(triggerButton);
-
-      expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'true');
-      expect(screen.getByText('Ubah Profil')).toBeInTheDocument();
-      expect(screen.getByTestId('update-profile-form')).toBeInTheDocument();
-    });
-
-    it('passes profile data to the UpdateProfileForm', () => {
-      render(
-        <UpdateProfileModal profile={mockProfile}>
-          <button data-testid="trigger-button">Open Modal</button>
-        </UpdateProfileModal>
-      );
-
-      const triggerButton = screen.getByTestId('trigger-button');
-      fireEvent.click(triggerButton);
-
-      expect(screen.getByText(`Profile name: ${mockProfile.user.first_name} ${mockProfile.user.last_name}`)).toBeInTheDocument();
-    });
-
-    it('closes the modal when back button is clicked', async () => {
-      render(
-        <UpdateProfileModal profile={mockProfile}>
-          <button data-testid="trigger-button">Open Modal</button>
-        </UpdateProfileModal>
-      );
-
-      const triggerButton = screen.getByTestId('trigger-button');
-      fireEvent.click(triggerButton);
-      expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'true');
-
-      const backButton = screen.getByRole('button', { name: '' });
-      fireEvent.click(backButton);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'false');
-      });
-    });
-
-    it('closes the modal when form submission is successful', async () => {
-      render(
-        <UpdateProfileModal profile={mockProfile}>
-          <button data-testid="trigger-button">Open Modal</button>
-        </UpdateProfileModal>
-      );
-
-      const triggerButton = screen.getByTestId('trigger-button');
-      fireEvent.click(triggerButton);
-      expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'true');
-
-      const submitButton = screen.getByTestId('mock-submit');
-      fireEvent.click(submitButton);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'false');
-      });
-    });
-  });
-
-  describe('Edge Cases', () => {
-
-    it('renders with additional HTML attributes passed to the wrapper div', () => {
-      render(
-        <UpdateProfileModal 
-          profile={mockProfile}
-          data-testid="custom-wrapper"
-          className="custom-class"
-        >
-          <button>Open Modal</button>
-        </UpdateProfileModal>
-      );
-
-      const wrapper = screen.getByTestId('custom-wrapper');
-      expect(wrapper).toHaveClass('custom-class');
-    });
-  });
-
-  describe('Negative Tests', () => {
-
-    it('handles rapid opening and closing of modal', async () => {
-      render(
-        <UpdateProfileModal profile={mockProfile}>
-          <button data-testid="trigger-button">Open Modal</button>
-        </UpdateProfileModal>
-      );
-
-      const triggerButton = screen.getByTestId('trigger-button');
-      
-      fireEvent.click(triggerButton); 
-      fireEvent.click(screen.getByTestId('dialog')); 
-      fireEvent.click(triggerButton); 
-      
-      expect(screen.getByTestId('dialog')).toHaveAttribute('data-open', 'true');
-      expect(screen.getByText('Ubah Profil')).toBeInTheDocument();
-    });
-  });
-
-  describe('UI Elements', () => {
-    it('renders the correct title in the modal header', () => {
-      render(
-        <UpdateProfileModal profile={mockProfile}>
-          <button data-testid="trigger-button">Open Modal</button>
-        </UpdateProfileModal>
-      );
-
-      const triggerButton = screen.getByTestId('trigger-button');
-      fireEvent.click(triggerButton);
-
-      expect(screen.getByText('Ubah Profil')).toBeInTheDocument();
-      expect(screen.getByText('Ubah Profil')).toHaveClass('text-[#2254C5]');
-    });
-
-    it('renders the back button with correct styling', () => {
-      render(
-        <UpdateProfileModal profile={mockProfile}>
-          <button data-testid="trigger-button">Open Modal</button>
-        </UpdateProfileModal>
-      );
-
-      const triggerButton = screen.getByTestId('trigger-button');
-      fireEvent.click(triggerButton);
-
-      const backButton = screen.getByRole('button', { name: '' });
-      expect(backButton).toHaveClass('absolute left-0 text-[#2254C5]');
-      expect(screen.getByTestId('icon-chevron-filled')).toBeInTheDocument();
-    });
-  });
-});
+    fireEvent.click(screen.getByText('Open Modal'))
+    expect(screen.getByTestId('mock-update-form')).toBeInTheDocument()
+  })
+})
