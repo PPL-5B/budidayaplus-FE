@@ -1,36 +1,43 @@
-'use client'
-
 import React from 'react'
+import { FishDeathList, AddFishDeath } from '@/components/fish-death'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { History } from 'lucide-react'
-import AddFishDeath from '@/components/fish-death/AddFishDeath'
-import FishDeathList from '@/components/fish-death/FishDeathList'
+import { fetchLatestFishDeath } from '@/lib/fish-death'
 
 interface FishDeathCardProps extends React.HTMLAttributes<HTMLDivElement> {
   pondId: string
   cycleId?: string
 }
 
-const FishDeathCard: React.FC<FishDeathCardProps> = ({ pondId, cycleId, ...props }) => {
+const FishDeathCard: React.FC<FishDeathCardProps> = async ({ pondId, cycleId, ...props }) => {
+  const fishDeath = cycleId ? await fetchLatestFishDeath(pondId, cycleId) : undefined
+
   return (
     <div {...props}>
-      <p className="text-2xl font-medium"> Kematian Ikan </p>
+      <p className='text-2xl font-medium'> Kematian Ikan </p>
       <div className="flex flex-col space-y-2">
         {cycleId && (
           <>
-            <div className="flex items-center space-x-2">
-              <AddFishDeath pondId={pondId} cycleId={cycleId} />
-              <Button size="sm" variant="outline" asChild>
-                <Link href={`/pond/${pondId}/fish-death`}>
-                  Lihat Riwayat <History size={16} className="ml-2" />
+            {/* Row untuk tombol Sample & Riwayat */}
+            <div className="flex gap-1 items-center mt-2">
+              <AddFishDeath pondId={pondId} cycleId={cycleId} fishDeath={fishDeath} />
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="border-[#2154C5] text-[#2154C5] font-semibold hover:bg-[#F1F5FF] px-4 py-2"
+              >
+                <Link href={`/pond/${pondId}/fish-death`} className="flex items-center gap-2">
+                  <History size={16} className="text-[#2154C5]" />
+                  Lihat Riwayat
                 </Link>
               </Button>
             </div>
-            <FishDeathList className="mt-5" pondId={pondId} cycleId={cycleId} />
           </>
         )}
-      </div>
+        </div>
+      <FishDeathList className='mt-5' fishDeath={fishDeath}/>
     </div>
   )
 }
