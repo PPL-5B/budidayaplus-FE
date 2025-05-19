@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { objectToFormData } from '@/lib/utils'
 import { addOrUpdatePond } from '@/lib/pond'
-import { Ruler, Droplet, ImageIcon, X } from 'lucide-react'
+import { Ruler, Droplet, ImageIcon } from 'lucide-react'
 
 interface PondFormProps {
   pond?: Pond
@@ -40,8 +40,9 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
   const depth = watch('depth')
 
   const onSubmit = async (data: PondInput) => {
-    setError(null)
     try {
+      setError(null)
+
       const imageList = data.image as FileList
       data.image = imageList?.[0] ?? undefined
 
@@ -56,12 +57,12 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
       reset()
       setIsModalOpen(false)
       window.location.reload()
+
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message || 'Gagal menyimpan kolam')
-      } else {
-        setError('Terjadi kesalahan yang tidak diketahui.')
+        console.error(err.message)
       }
+      setError('Gagal menyimpan kolam')
     }
   }
 
@@ -73,6 +74,7 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
     }
   }, [width, length, depth])
 
+  // Tutup popup jika klik di luar form
   const onOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       setIsModalOpen(false)
@@ -80,24 +82,19 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
   }
 
   return (
-    <div
-      onClick={onOverlayClick}
-      className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
-    >
-      <div className="relative w-full max-w-sm bg-[#EAF0FF] rounded-lg shadow-lg p-6 mx-4">
-        <button
-          onClick={() => setIsModalOpen(false)}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-          aria-label="Tutup"
+    <>
+        {/* Form container */}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 bg-[#EAF0FF] rounded-md p-6 w-full max-w-sm mx-auto relative shadow-lg"
         >
-          <X size={20} />
-        </button>
+          {/* Header */}
+          <div className="flex justify-center">
+            <h2 className="text-[20px] text-center font-inter font-semibold text-[#2254C5] mb-6">
+              {pond ? 'Edit Kolam' : 'Tambah Kolam'}
+            </h2>
+          </div>
 
-        <h2 className="text-[20px] text-center font-inter font-semibold text-[#2254C5] mb-6">
-          {pond ? 'Edit Kolam' : 'Tambah Kolam'}
-        </h2>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Nama Kolam */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -177,12 +174,14 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
             {errors.image && <p className="text-red-500 text-sm">{(errors.image as any)?.message}</p>}
           </div>
 
+          {/* Volume */}
           {volume !== null && (
             <p className="text-center text-sm font-semibold text-[#2254C5]">
               Volume: {volume.toFixed(2)} m<sup>3</sup>
             </p>
           )}
 
+          {/* Tombol Simpan */}
           <Button
             type="submit"
             disabled={isSubmitting}
@@ -195,8 +194,7 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
             <p className="w-full text-center text-red-500 text-sm">{error}</p>
           )}
         </form>
-      </div>
-    </div>
+    </>
   )
 }
 
