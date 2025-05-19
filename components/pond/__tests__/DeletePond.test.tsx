@@ -35,7 +35,6 @@ describe('DeletePond Component', () => {
     render(<DeletePond pondId={mockPondId} />);
     
     fireEvent.click(screen.getByRole('button', { name: /hapus/i }));
-    
     expect(screen.getByText('Apakah Anda yakin ingin menghapus kolam?')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /batal/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /hapus/i })).toBeInTheDocument();

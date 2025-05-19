@@ -31,6 +31,7 @@ const DeletePond: React.FC<DeletePondProps> = ({ pondId }) => {
         setError('Gagal menghapus kolam');
       }
     } catch (error) {
+      console.error('Error deleting pond:', error);
       setError('Gagal menghapus kolam');
     } finally {
       setLoading(false);

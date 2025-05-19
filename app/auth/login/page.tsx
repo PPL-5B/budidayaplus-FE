@@ -48,7 +48,6 @@ const LoginPage = () => {
       <div className="w-[90%] max-w-sm flex flex-col items-center">
         
         <div className="flex justify-center items-center my-4">
-
         </div>
 
         <h1 className="text-2xl font-bold text-center">Masuk Akun</h1>

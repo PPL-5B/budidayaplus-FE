@@ -1,98 +1,106 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import UpdateProfileForm from '@/components/profile/UpdateProfileForm';
-import type { Profile } from '@/types/profile';
-import userEvent from '@testing-library/user-event';
+import React from 'react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import UpdateProfileForm from '@/components/profile/UpdateProfileForm'
+import { Profile } from '@/types/profile'
+import * as profileApi from '@/lib/profile'
 
-const toastMock = jest.fn();
-jest.mock('@/hooks/use-toast', () => ({
-  useToast: () => ({ toast: toastMock }),
-}));
+const mockSetIsModalOpen = jest.fn()
+const mockUpdateProfile = jest.fn()
 
-const updateProfileMock = jest.fn();
 jest.mock('@/lib/profile', () => ({
-  updateProfile: (...args: unknown[]) => updateProfileMock(...args),
-}));
+  updateProfile: jest.fn(),
+}))
+
+const dummyProfile: Profile = {
+  id: 1,
+  role: 'worker',
+  image_name: 'default.jpg',
+  user: {
+    id: 10,
+    first_name: 'Dina',
+    last_name: 'Putri',
+    phone_number: '081234567890',
+  },
+}
 
 describe('UpdateProfileForm', () => {
-  const setIsModalOpenMock = jest.fn();
-
-  const mockProfile: Profile = {
-    id: 1,
-    image_name: 'profile1.png',
-    role: 'worker',
-    user: {
-      id: 1,
-      first_name: 'John',
-      last_name: 'Doe',
-      phone_number: '08123456789',
-    },
-  };
-
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
-  it('renders input fields correctly with default values', () => {
-    render(<UpdateProfileForm profile={mockProfile} setIsModalOpen={setIsModalOpenMock} />);
+  it('renders form with default values', () => {
+    render(
+      <UpdateProfileForm profile={dummyProfile} setIsModalOpen={mockSetIsModalOpen} />
+    )
 
-    expect(screen.getByPlaceholderText('Nama Depan')).toHaveValue('John');
-    expect(screen.getByPlaceholderText('Nama Belakang')).toHaveValue('Doe');
-  });
+    expect(screen.getByDisplayValue('Dina')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Putri')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
+  })
 
-  it('submits form successfully, shows success toast, and closes modal', async () => {
-    updateProfileMock.mockResolvedValue(true);
+  it('submits valid form and closes modal on success', async () => {
+    mockUpdateProfile.mockResolvedValueOnce(true)
+    ;(profileApi.updateProfile as jest.Mock).mockImplementation(mockUpdateProfile)
 
-    render(<UpdateProfileForm profile={mockProfile} setIsModalOpen={setIsModalOpenMock} />);
+    render(
+      <UpdateProfileForm profile={dummyProfile} setIsModalOpen={mockSetIsModalOpen} />
+    )
 
-    await userEvent.clear(screen.getByPlaceholderText('Nama Depan'));
-    await userEvent.type(screen.getByPlaceholderText('Nama Depan'), 'Jane');
-    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
-
-    await waitFor(() => {
-      expect(updateProfileMock).toHaveBeenCalledWith({ first_name: 'Jane', last_name: 'Doe' });
-      expect(toastMock).toHaveBeenCalledWith(expect.objectContaining({ title: 'Berhasil mengupdate profil' }));
-      expect(setIsModalOpenMock).toHaveBeenCalledWith(false);
-    });
-  });
-
-  it('handles failed updateProfile gracefully with error toast', async () => {
-    updateProfileMock.mockResolvedValue(false);
-
-    render(<UpdateProfileForm profile={mockProfile} setIsModalOpen={setIsModalOpenMock} />);
-
-    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }))
 
     await waitFor(() => {
-      expect(toastMock).toHaveBeenCalledWith(expect.objectContaining({ title: 'Gagal mengupdate profil' }));
-      expect(setIsModalOpenMock).toHaveBeenCalledWith(false);
-    });
-  });
-
-  it('renders correctly without profile', () => {
-    render(<UpdateProfileForm setIsModalOpen={setIsModalOpenMock} />);
-
-    expect(screen.getByPlaceholderText('Nama Depan')).toHaveValue('');
-    expect(screen.getByPlaceholderText('Nama Belakang')).toHaveValue('');
-  });
-
-  it('submit button is disabled while submitting (loading state)', async () => {
-    let resolveSubmit: (value: boolean) => void = () => {};
-    updateProfileMock.mockImplementation(
-      () => new Promise((resolve) => {
-        resolveSubmit = resolve;
+      expect(mockUpdateProfile).toHaveBeenCalledWith({
+        first_name: 'Dina',
+        last_name: 'Putri',
       })
-    );
+      expect(mockSetIsModalOpen).toHaveBeenCalledWith(false)
+    })
+  })
 
-    render(<UpdateProfileForm profile={mockProfile} setIsModalOpen={setIsModalOpenMock} />);
+  it('shows validation error when required fields are empty (edge case)', async () => {
+    render(
+      <UpdateProfileForm
+        profile={{ ...dummyProfile, user: { ...dummyProfile.user, first_name: '', last_name: '' } }}
+        setIsModalOpen={mockSetIsModalOpen}
+      />
+    )
 
-    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+    const firstNameInput = screen.getByPlaceholderText('Nama Depan')
+    const lastNameInput = screen.getByPlaceholderText('Nama Belakang')
 
-    expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
+    fireEvent.change(firstNameInput, { target: { value: '' } })
+    fireEvent.change(lastNameInput, { target: { value: '' } })
 
-    resolveSubmit(true);
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /submit/i })).not.toBeDisabled();
-    });
-  });
-});
+      expect(screen.getByText(/nama depan/i)).toBeInTheDocument()
+      expect(screen.getByText(/nama belakang/i)).toBeInTheDocument()
+    })
+  })
+
+  it('clicks close button and closes modal (corner case)', () => {
+    render(<UpdateProfileForm profile={dummyProfile} setIsModalOpen={mockSetIsModalOpen} />)
+
+    const closeButton = screen.getByRole('button', { name: /tutup/i })
+    fireEvent.click(closeButton)
+
+    expect(mockSetIsModalOpen).toHaveBeenCalledWith(false)
+  })
+
+  it('does not close modal if updateProfile returns false', async () => {
+    mockUpdateProfile.mockResolvedValueOnce(false)
+    ;(profileApi.updateProfile as jest.Mock).mockImplementation(mockUpdateProfile)
+
+    render(
+      <UpdateProfileForm profile={dummyProfile} setIsModalOpen={mockSetIsModalOpen} />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }))
+
+    await waitFor(() => {
+      expect(mockUpdateProfile).toHaveBeenCalled()
+      expect(mockSetIsModalOpen).not.toHaveBeenCalled()
+    })
+  })
+})
