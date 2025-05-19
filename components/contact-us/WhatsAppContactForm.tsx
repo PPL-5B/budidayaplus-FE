@@ -1,27 +1,33 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { ContactFormInput, ContactFormSchema } from '@/types/contact-us/contact';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { getUser } from '@/lib/auth';
-import User from '@/types/auth/user';
-import { IoPerson, IoCall, IoChatbubble } from 'react-icons/io5';
-import IconChevronFilled from '@/components/ui/icon-chevron-filled';
 import { NewButton } from '@/components/ui/new-button';
+import { X } from 'lucide-react';
+
+import { getUser } from '@/lib/auth';
+import { ContactFormInput, ContactFormSchema } from '@/types/contact-us/contact';
+import User from '@/types/auth/user';
+
+import { IoPerson, IoCall, IoChatbubble } from 'react-icons/io5';
 
 interface WhatsAppContactFormProps {
   setIsSubmitted?: (submitted: boolean) => void;
   setIsModalOpen?: (open: boolean) => void;
 }
 
-const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitted, setIsModalOpen }) => {
+const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({
+  setIsSubmitted,
+  setIsModalOpen,
+}) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [, setIsSuccess] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false); 
 
   const {
     register,
@@ -46,6 +52,7 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
         console.error('Failed to load user data:', error);
       }
     };
+
     loadUserData();
   }, [setValue]);
 
@@ -58,7 +65,6 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
       reset();
       setIsSuccess(true);
       setErrorMessage(null);
-
       if (setIsSubmitted) {
         setIsSubmitted(true);
       }
@@ -70,30 +76,28 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
     }
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center py-0 bg-[#EAF0FF] rounded-xl p-2 w-full max-w-md mx-auto">
-      <div className="relative flex items-center justify-center w-full mb-2">
-        <button
-          type="button"
-          onClick={() => {
-            if (setIsModalOpen) {
-              setIsModalOpen(false);
-            } else {
-              window.location.href = `/profile/${userData?.phone_number}`;
-            }
-          }}
-          className="absolute left-0 text-[#2254C5]"
-        >
-          <IconChevronFilled className="h-6 w-6 rotate-[90deg]" fill="#2254C5" />
-        </button>
+  const handleClose = () => {
+    if (setIsModalOpen) {
+      setIsModalOpen(false);
+    } else if (userData?.phone_number) {
+      window.location.href = `/profile/${userData.phone_number}`;
+    } else {
+      window.location.href = '/profile'; // fallback jika userData belum sempat terisi
+    }
+  };
 
-        <h2 className="text-[#2254C5] text-lg font-bold text-center">
-          Hubungi Kami
-        </h2>
+  return (
+    <div className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-[#2254C5] font-semibold text-base">Hubungi Kami</h2>
+        <button onClick={handleClose} aria-label="Tutup">
+          <X className="text-[#2254C5] w-5 h-5" />
+        </button>
       </div>
 
-      <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col gap-0.5 w-full">
+      <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
+        {/* Nama */}
+        <div className="flex flex-col gap-0.5">
           <Label htmlFor="name" className="flex items-center gap-2 text-[#2254C5]">
             <IoPerson className="h-4 w-4" />
             Nama Lengkap
@@ -107,7 +111,8 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
           />
         </div>
 
-        <div className="flex flex-col gap-0.5 w-full">
+        {/* Nomor HP */}
+        <div className="flex flex-col gap-0.5">
           <Label htmlFor="phone_number" className="flex items-center gap-2 text-[#2254C5]">
             <IoCall className="h-4 w-4" />
             Nomor Ponsel
@@ -121,7 +126,8 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
           />
         </div>
 
-        <div className="flex flex-col gap-0.5 w-full">
+        {/* Pesan */}
+        <div className="flex flex-col gap-0.5">
           <Label htmlFor="message" className="flex items-center gap-2 text-[#2254C5]">
             <IoChatbubble className="h-4 w-4" />
             Pesan
@@ -134,16 +140,25 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
             className="bg-[#E6E6E5] text-black"
           />
           {errors.message && (
-            <p className="text-red-500 text-xs">{errors.message.message}</p>
+            <p className="text-sm text-red-500 text-center">{errors.message.message}</p>
           )}
         </div>
 
+        {/* Error */}
         {errorMessage && (
-          <div className="text-red-500 text-xs" data-testid="error-message">
+          <div className="text-sm text-red-500 text-center" data-testid="error-message">
             {errorMessage}
           </div>
         )}
 
+        {/* Success */}
+        {isSuccess && (
+          <div className="text-sm text-green-500 text-center">
+            Pesan berhasil dikirim!
+          </div>
+        )}
+
+        {/* Submit */}
         <NewButton
           type="submit"
           disabled={isSubmitting}
@@ -156,4 +171,5 @@ const WhatsAppContactForm: React.FC<WhatsAppContactFormProps> = ({ setIsSubmitte
   );
 };
 
-export default WhatsAppContactForm;
+export default WhatsAppContactForm
+
