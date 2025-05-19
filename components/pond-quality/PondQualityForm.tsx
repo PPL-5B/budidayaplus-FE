@@ -65,7 +65,7 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
   return (
     <div className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-md mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-[#2154C5] font-semibold text-base">Tambah Data Jumlah Makanan</h2>
+        <h2 className="text-[#2154C5] font-semibold text-base">Tambah Data Kualitas Air</h2>
         <button onClick={() => setIsModalOpen(false)} aria-label="Tutup">
           <X className="text-[#2154C5] w-5 h-5" />
         </button>
