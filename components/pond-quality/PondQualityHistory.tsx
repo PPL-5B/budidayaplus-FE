@@ -2,49 +2,61 @@
 
 import React, { useEffect, useState } from 'react';
 import { getPondQualityHistory } from '@/lib/pond-quality/getPondQualityHistory';
-import { DataTable } from '@/components/ui/data-table';
 import { Waves } from 'lucide-react';
-import PondQualityDashboard from './PondQualityDashboard';
-import { columns } from '@/components/pond-quality';
-
-// Import the existing PondQuality type instead of redefining it
-// This assumes you have a type definition file somewhere in your project
-import { PondQuality } from '@/types/pond-quality'; // Adjust this import based on your project structure
+import { PondQuality } from '@/types/pond-quality';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 interface PondQualityHistoryProps {
   pondId: string;
 }
 
 const PondQualityHistory: React.FC<PondQualityHistoryProps> = ({ pondId }) => {
-  // Use the imported PondQuality type
   const [history, setHistory] = useState<PondQuality[]>([]);
-  const [cycleId, setCycleId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
       const result = await getPondQualityHistory(pondId);
       setHistory(result.pond_qualities);
-      setCycleId(result.cycle_id);
     };
-
     fetchHistory();
   }, [pondId]);
 
   return (
     <div className="w-full">
-      <PondQualityDashboard pondId={pondId} cycleId={cycleId} />
-
-      <div className="mt-2"></div>
-
       <div className="flex justify-center">
         <div className="w-[80%] flex gap-4">
           <Waves className="w-10 h-10 text-[#2154C5]" />
           <p className="w-full text-start text-3xl font-semibold">Riwayat Kualitas Kolam</p>
         </div>
       </div>
-      
+
       <div className="mt-6">
-        <DataTable columns={columns} data={history} />
+        {history.length === 0 ? (
+          <p className="text-center text-gray-500">Belum ada data riwayat.</p>
+        ) : (
+          history.map((item) => (
+            <div
+              key={item.id}
+              className="bg-[#F1F5FF] text-[#3B3B3B] p-4 rounded-md border border-[#4D4C4C] mt-4 space-y-2 text-sm"
+            >
+              <p>
+                {format(item.recorded_at, 'EEEE, d MMMM yyyy', { locale: id })},{" "}
+                oleh {item.reporter.first_name} {item.reporter.last_name}
+              </p>
+              <p className="font-semibold">Suhu (°C): <span className="font-normal">{item.water_temperature}°C</span></p>
+              <p className="font-semibold">pH level: <span className="font-normal">{item.ph_level}</span></p>
+              <p className="font-semibold">Salinitas: <span className="font-normal">{item.salinity}</span></p>
+              <p className="font-semibold">Kecerahan (cm): <span className="font-normal">{item.water_clarity}</span></p>
+              <p className="font-semibold">Sirkulasi: <span className="font-normal">{item.water_circulation}</span></p>
+              <p className="font-semibold">DO (mg/L): <span className="font-normal">{item.dissolved_oxygen}</span></p>
+              <p className="font-semibold">ORP (mV): <span className="font-normal">{item.orp}</span></p>
+              <p className="font-semibold">NH₃ (mg/L): <span className="font-normal">{item.ammonia}</span></p>
+              <p className="font-semibold">NO₃ (mg/L): <span className="font-normal">{item.nitrate}</span></p>
+              <p className="font-semibold">PO₄ (mg/L): <span className="font-normal">{item.phosphate}</span></p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
