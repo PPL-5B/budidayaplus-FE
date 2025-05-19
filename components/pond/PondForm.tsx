@@ -40,9 +40,8 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
   const depth = watch('depth')
 
   const onSubmit = async (data: PondInput) => {
+    setError(null)
     try {
-      setError(null)
-
       const imageList = data.image as FileList
       data.image = imageList?.[0] ?? undefined
 
@@ -57,9 +56,12 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
       reset()
       setIsModalOpen(false)
       window.location.reload()
-
-    } catch (error) {
-      setError('Gagal menyimpan kolam')
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Gagal menyimpan kolam')
+      } else {
+        setError('Terjadi kesalahan yang tidak diketahui.')
+      }
     }
   }
 
@@ -71,16 +73,6 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
     }
   }, [width, length, depth])
 
-  // 🔥 Tambahan: Hilangkan background putih dari DialogContent
-  useEffect(() => {
-    const dialog = document.querySelector('[role="dialog"]')
-    if (dialog) {
-      const el = dialog as HTMLElement
-      el.style.background = 'transparent'
-      el.style.boxShadow = 'none'
-    }
-  }, [])
-
   const onOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       setIsModalOpen(false)
@@ -90,12 +82,13 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
   return (
     <div
       onClick={onOverlayClick}
-      className="fixed inset-0 z-50 bg-transparent bg-opacity-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
     >
       <div className="relative w-full max-w-sm bg-[#EAF0FF] rounded-lg shadow-lg p-6 mx-4">
         <button
           onClick={() => setIsModalOpen(false)}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          aria-label="Tutup"
         >
           <X size={20} />
         </button>
