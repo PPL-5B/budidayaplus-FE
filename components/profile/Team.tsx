@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { fetchTeamByUsername } from '@/lib/profile'
 import { CreateWorkerAccount } from '@/components/profile'
 import { toTitleCase } from '@/lib/utils'
@@ -19,16 +19,16 @@ const Team: React.FC<TeamProps> = ({ username, userRole, isUserSelf }) => {
   const [team, setTeam] = useState<Profile[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      const data = await fetchTeamByUsername(username)
-      setTeam(data)
-      setIsLoading(false)
-    }
-
-    fetchData()
+  const fetchData = useCallback(async () => {
+    setIsLoading(true)
+    const data = await fetchTeamByUsername(username)
+    setTeam(data)
+    setIsLoading(false)
   }, [username])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   let content: React.ReactNode
   if (isLoading) {
@@ -68,15 +68,12 @@ const Team: React.FC<TeamProps> = ({ username, userRole, isUserSelf }) => {
   return (
     <div className="flex flex-col items-center">
       <div className="w-[80%] self-center">
-        {/* Baris Judul + Tombol */}
         <div className="flex items-center justify-between">
           <p className="text-base font-bold text-black">Anggota Tim</p>
           {isUserSelf && userRole === 'supervisor' && (
-            <CreateWorkerAccount />
+            <CreateWorkerAccount onSuccess={fetchData} />
           )}
         </div>
-
-        {/* Render content */}
         <div className="mt-6">{content}</div>
       </div>
     </div>
