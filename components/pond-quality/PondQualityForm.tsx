@@ -41,7 +41,21 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
     }
   });
 
-  const onSubmit = async (data: PondQualityInput) => addOrUpdatePondQuality(objectToFormData(data), pondId, cycleId).then(res => res.success ? (reset(), setIsModalOpen(false), window.location.reload()) : setError('Gagal menyimpan kualitas air')).catch(err => (console.error(err), setError('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.')));
+  const onSubmit = async (data: PondQualityInput) => {
+    try {
+      const res = await addOrUpdatePondQuality(objectToFormData(data), pondId, cycleId);
+      if (res.success) {
+        reset();
+        setIsModalOpen(false);
+        window.location.reload();
+      } else {
+        setError('Gagal menyimpan kualitas air');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
+    }
+  };
 
   return (
     <div className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-md mx-auto">
