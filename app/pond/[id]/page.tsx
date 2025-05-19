@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 
 const PondDetailPage = async ({ params }: { params: { id: string } }) => {
-  const fallbackSrc = 'fallbackimage.png'
+  // const fallbackSrc = 'fallbackimage.png'
   const pond = await fetchPond(params.id)
   const volume = pond ? pond.length * pond.width * pond.depth : 0
   const cycle = await getLatestCycle()
@@ -70,19 +70,13 @@ const PondDetailPage = async ({ params }: { params: { id: string } }) => {
               {user?.role === 'supervisor' && !cycle &&
                 (
                   <>
-                    <EditPond pond={pond} />
                     <DeletePond pondId={pond.pond_id} />
+                    <EditPond pond={pond} />
                   </>
                 )
               }
             </div>
             <div className='relative mt-5'>
-              <div className='absolute top-3 left-3 bg-black/10 py-1 px-2 rounded-lg'>
-                <p>{volume.toFixed(2)} m<sup>3</sup></p>
-              </div>
-              <div>
-                <Image className='object-cover h-full w-full rounded-xl' src={`/${fallbackSrc}`} width={500} height={400} alt={`${pond.name} image`} />
-              </div>
             </div>
           </div>
         </div>

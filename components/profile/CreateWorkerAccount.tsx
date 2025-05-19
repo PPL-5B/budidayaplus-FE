@@ -2,54 +2,61 @@
 
 import React, { useState } from 'react'
 import { ReusableRegisterForm } from '@/components/profile'
+import { IoIosAdd } from 'react-icons/io'
 import { RegisterForm } from '@/types/auth/register'
 import { createWorker } from '@/lib/profile'
-import { useToast } from '@/hooks/use-toast'
-import { Dialog, DialogHeader, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { UserRoundPlus } from 'lucide-react'
 
 interface CreateWorkerAccountProps extends React.HTMLAttributes<HTMLDivElement> {
+  onSuccess?: () => void
 }
 
-const CreateWorkerAccount: React.FC<CreateWorkerAccountProps> = ({ ...props }) => {
+const CreateWorkerAccount: React.FC<CreateWorkerAccountProps> = ({ onSuccess, ...props }) => {
   const [open, setOpen] = useState(false)
 
-  const { toast } = useToast()
-
-  const onSubmit = async (data: RegisterForm, reset: () => void, setError: React.Dispatch<React.SetStateAction<string | null>>) => {
+  const onSubmit = async (
+    data: RegisterForm,
+    reset: () => void,
+    setError: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
     const result = await createWorker(data)
     if (result.data) {
-      toast({
-        title: 'Berhasil',
-        description: `Berhasil membuat akun untuk pekerja ${result.data.user.phone_number}`,
-        variant: 'success'
-      })
       setOpen(false)
       reset()
+      onSuccess?.()
     } else {
       setError(result.error)
     }
   }
 
   return (
-    <div {...props}>
+    <div {...props} data-testid="create-worker-container">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className='bg-blue-500 hover:bg-blue-600 active:bg-blue-600'>
-            Buat Akun Pekerja <UserRoundPlus className='inline-block w-5 h-5 ml-2' />
+          <Button
+            data-testid="open-dialog-button"
+            size="sm"
+            className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-4 py-2"
+          >
+            <IoIosAdd size={16} data-testid="add-icon" />
+            Daftarkan Pekerja
           </Button>
         </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Registrasi Pekerja
-            </DialogTitle>
-            <DialogDescription />
-          </DialogHeader>
-          <div>
-            <ReusableRegisterForm onSubmit={onSubmit} />
-          </div>
+
+        <DialogContent
+          data-testid="dialog-content"
+          className="w-[350px] max-w-xl p-0 bg-transparent shadow-none [&>button]:hidden"
+        >
+          <ReusableRegisterForm
+            data-testid="register-form"
+            onSubmit={onSubmit}
+            setIsFormOpen={setOpen}
+          />
         </DialogContent>
       </Dialog>
     </div>

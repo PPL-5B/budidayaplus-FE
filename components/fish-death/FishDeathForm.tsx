@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { X } from 'lucide-react';
+
 import { addFishDeath } from '@/lib/fish-death/addFishDeath';
 import FishDeathWarningPopUp from './FishDeathWarningPopUp';
 
@@ -20,9 +22,17 @@ interface FishDeathInput {
 
 const AddFishDeathForm: React.FC<AddFishDeathFormProps> = ({ pondId, cycleId, setIsModalOpen }) => {
   const [warningMessage, setWarningMessage] = useState<string | null>(null);
-  const [showDetail, setShowDetail] = useState(false);
 
-  const { register, handleSubmit, formState: { isSubmitting }, reset } = useForm<FishDeathInput>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<FishDeathInput>({
+    defaultValues: {
+      fish_death_count: 0,
+    },
+  });
 
   const onSubmit = async (data: FishDeathInput) => {
     try {
@@ -46,45 +56,59 @@ const AddFishDeathForm: React.FC<AddFishDeathFormProps> = ({ pondId, cycleId, se
             };
           };
         };
-        const message = serverError?.response?.data?.detail ?? "Terjadi kesalahan saat menyimpan data.";
+        const message = serverError?.response?.data?.detail ?? 'Terjadi kesalahan saat menyimpan data.';
         setWarningMessage(message);
       } else {
-        setWarningMessage("Terjadi kesalahan yang tidak diketahui.");
+        setWarningMessage('Terjadi kesalahan yang tidak diketahui.');
       }
     }
   };
 
   return (
-    <>
-      <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
-        <div className="col-span-2">
-          <Label htmlFor="fish_death_count">Jumlah Ikan Mati</Label>
-          <Input
-            id="fish_death_count"
-            type="number"
-            {...register('fish_death_count', { setValueAs: value => parseInt(value) })}
-            placeholder="Jumlah Ikan Mati"
-          />
-        </div>
-
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="col-span-2 bg-primary-500 hover:bg-primary-600"
-        >
-          Simpan
-        </Button>
-      </form>
+    <div className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-[#2154C5] font-semibold text-base">Tambah Kematian Ikan</h2>
+        <button onClick={() => setIsModalOpen(false)} aria-label="Tutup">
+          <X className="text-[#2154C5] w-5 h-5" />
+        </button>
+      </div>
 
       {warningMessage && (
         <FishDeathWarningPopUp
           message={warningMessage}
           onClose={() => setWarningMessage(null)}
-          onToggleDetail={() => setShowDetail(prev => !prev)}
-          showDetail={showDetail}
         />
       )}
-    </>
+
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div>
+          <Label className="text-sm text-[#2154C5]" htmlFor="fish_death_count">
+            Jumlah Ikan Mati
+          </Label>
+          <Input
+            id="fish_death_count"
+            {...register('fish_death_count', { valueAsNumber: true })}
+            type="number"
+            step={1}
+            className="mt-1 bg-[#E7E7E7]"
+            aria-invalid={!!errors.fish_death_count}
+          />
+          {errors.fish_death_count && (
+            <p role="alert" className="text-red-500 text-sm mt-1">
+              {errors.fish_death_count.message}
+            </p>
+          )}
+        </div>
+
+        <Button
+          className="w-full bg-[#2154C5] hover:bg-[#1A3F96] text-white font-medium rounded-md py-2"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          Submit
+        </Button>
+      </form>
+    </div>
   );
 };
 

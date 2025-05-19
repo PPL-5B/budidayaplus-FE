@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import { loginSchema, LoginForm } from "@/types/auth/login";
-import { handleLoginFormSubmit } from "@/lib/auth/login/actions";
-import Link from "next/link";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { loginSchema, LoginForm } from '@/types/auth/login';
+import { handleLoginFormSubmit } from '@/lib/auth/login/actions';
+import { Phone, Key } from 'lucide-react';
+import Link from 'next/link';
 
 const LoginPage = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const {
     register,
@@ -29,91 +29,90 @@ const LoginPage = () => {
     setError(null);
     const response = await handleLoginFormSubmit(data);
     if (response.ok) {
-      console.log('response ok')
       reset();
-      setIsLoggedIn(true); // Set login status to true
+      setIsLoggedIn(true);
       return;
     }
     setError(response.message);
   };
 
-  // useEffect to handle navigation after login on the client-side
   useEffect(() => {
     if (isLoggedIn) {
-      console.log('isloggedin sebelum push')
       router.refresh();
-      router.push("/"); // Navigate after login
-      console.log('isloggedin setelah push')
+      router.push('/');
     }
   }, [isLoggedIn, router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-transparent flex flex-col p-6 rounded-lg w-full max-w-md">
-        <div className="flex flex-col items-center">
-          <p className="text-4xl font-bold text-center">Login</p>
-          <p className="text-3xl mt-1">
-            Budidaya<span className="text-blue-500">Plus</span>
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-[#e8f0ff]">
+      <div className="w-[90%] max-w-sm flex flex-col items-center">
+        
+        <div className="flex justify-center items-center my-4">
         </div>
+
+        <h1 className="text-2xl font-bold text-center">Masuk Akun</h1>
+        <p className="text-center text-sm mt-1 mb-4">
+          Pantau kolam dan hasil panenmu!
+        </p>
+
         <form
           data-testid="login-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col w-full mt-5"
+          className="w-full space-y-4"
         >
-          <div className="flex flex-col">
-            <Input
-              className="border-none bg-blue-50 mt-3 focus-visible:ring-blue-500 placeholder:text-black"
+          <div>
+            <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
+              <Phone className="w-4 h-4 mr-2" /> Nomor Ponsel
+            </label>
+            <input
               type="text"
-              placeholder="Nomor Ponsel"
-              {...register("phone_number")}
+              {...register('phone_number')}
+              className="w-full h-11 px-4 rounded-md bg-[#E6E6E5] focus:outline-none"
             />
             {errors.phone_number && (
-              <span className="text-sm text-red-500 mt-1">
-                {errors.phone_number.message}
-              </span>
-            )}
-
-            <Input
-              className="border-none bg-blue-50 mt-3 focus-visible:ring-blue-500 placeholder:text-black"
-              type="password"
-              placeholder="Kata Sandi"
-              {...register("password")}
-            />
-            {errors.password && (
-              <span className="text-sm text-red-500 mt-1">
-                {errors.password.message}
-              </span>
-            )}
-
-            <Button
-              data-testid="login-button"
-              className="mt-6 bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <LoadingSpinner className="h-5 w-5" />
-              ) : (
-                "Login"
-              )}
-            </Button>
-
-            {error && (
-              <p className="text-red-500 font-semibold text-sm self-center mt-2">
-                {error}
-              </p>
+              <span className="text-sm text-red-500 mt-1">{errors.phone_number.message}</span>
             )}
           </div>
+
+          <div>
+            <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
+              <Key className="w-4 h-4 mr-2" /> Password
+            </label>
+            <input
+              type="password"
+              {...register('password')}
+              className="w-full h-11 px-4 rounded-md bg-[#E6E6E5] focus:outline-none"
+            />
+            {errors.password && (
+              <span className="text-sm text-red-500 mt-1">{errors.password.message}</span>
+            )}
+          </div>
+
+          <Button
+            data-testid="login-button"
+            className="w-full h-11 bg-[#2254C5] hover:bg-[#1e4ab0] text-white rounded-md"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? <LoadingSpinner className="h-5 w-5" /> : 'Masuk'}
+          </Button>
+
+          {error && (
+            <p className="text-red-500 font-semibold text-sm text-center mt-2">
+              {error}
+            </p>
+          )}
         </form>
-        <Button asChild variant={'link'} >
-          <Link className="mt-10 text-center underline" href="/auth/register">
-            Tidak punya akun? Klik disini untuk daftar
+
+        <p className="text-sm mt-4">
+          Belum punya akun?{' '}
+          <Link href="/auth/register" className="font-semibold underline text-black">
+            Buat Akun
           </Link>
-        </Button>
+        </p>
       </div>
     </div>
   );
 };
 
-export default LoginPage
+export default LoginPage;

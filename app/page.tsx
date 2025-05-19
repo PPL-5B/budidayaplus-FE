@@ -44,13 +44,13 @@ export default function Home() {
         <TaskByDateList />
       </div>
  
-      <div className="w-full flex justify-center mt-28">
-      <details className="w-full md:w-[60%] max-w-md mx-auto rounded-lg bg-white shadow-md border group transition-all duration-300">
-        <summary className="relative text-center px-4 py-3 text-lg font-semibold text-black cursor-pointer list-none group-open:mb-2">
+    <div className="w-full flex justify-center mt-28">
+      <details className="w-full md:w-[60%] max-w-md mx-auto rounded-lg shadow-md border group transition-all duration-300">
+        <summary className="relative text-center px-4 py-3 text-lg font-semibold text-white bg-[#2254C5] cursor-pointer list-none group-open:mb-2 rounded-t-lg">
           Tentang Kami
-          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 transition-transform group-open:rotate-180" />
+          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white transition-transform group-open:rotate-180" />
         </summary>
-        <div className="px-4 pb-4 text-neutral-700 text-sm leading-relaxed text-center">
+        <div className="px-4 pb-4 text-neutral-700 text-sm leading-relaxed text-center bg-[#EDF2FF] rounded-b-lg">
           <p>
             Dikembangkan oleh <strong>PT Dimensi Kreasi Nusantara</strong> sejak tahun 2024, aplikasi <strong>BudidayaPlus</strong> dirancang untuk membantu para peternak lele meningkatkan produktivitas dan profit usaha mereka.
           </p>
@@ -63,7 +63,6 @@ export default function Home() {
           </p>
         </div>
       </details>
-
    </div>
     </div>
   );

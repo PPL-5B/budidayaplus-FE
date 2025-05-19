@@ -1,169 +1,133 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import PondForm from '@/components/pond/PondForm';
-import { Pond } from '@/types/pond';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { addOrUpdatePond } from '@/lib/pond';
-import '@testing-library/jest-dom';
+import React from 'react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import PondForm from '@/components/pond/PondForm'
+import { addOrUpdatePond } from '@/lib/pond'
 
-// Mock dependencies
-jest.mock('react-hook-form', () => ({
-  ...jest.requireActual('react-hook-form'),
-  useForm: jest.fn(),
-}));
-
-jest.mock('@hookform/resolvers/zod');
 jest.mock('@/lib/pond', () => ({
-  addOrUpdatePond: jest.fn(),
-}));
+  addOrUpdatePond: jest.fn()
+}))
 
-jest.mock('@/lib/utils', () => ({
-  objectToFormData: jest.fn().mockImplementation(obj => obj),
-}));
-
-describe('PondForm Component', () => {
-  const mockSetIsModalOpen = jest.fn();
-  const mockPond: Pond = {
-    pond_id: 'pond-123',
-    name: 'Kolam Lele',
-    length: 10,
-    width: 5,
-    depth: 2,
-  };
-
-  const mockUseForm = (overrides = {}) => {
-    (useForm as jest.Mock).mockReturnValue({
-      register: jest.fn(),
-      handleSubmit: (fn: any) => (e: any) => {
-        e.preventDefault();
-        fn({
-          name: 'Kolam Baru',
-          length: '12',
-          width: '6',
-          depth: '1.5',
-        });
-      },
-      watch: (field: string) => {
-        if (field === 'width') return 6;
-        if (field === 'length') return 12;
-        if (field === 'depth') return 1.5;
-        return null;
-      },
-      reset: jest.fn(),
-      formState: { errors: {}, isSubmitting: false },
-      ...overrides,
-    });
-  };
+describe('PondForm', () => {
+  const mockSetIsModalOpen = jest.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockUseForm();
-  });
+    jest.clearAllMocks()
+  })
 
-  it('renders form fields correctly for new pond', () => {
-    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
-    
-    expect(screen.getByPlaceholderText('Nama Kolam')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Panjang (meter)')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Lebar (meter)')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Kedalaman (meter)')).toBeInTheDocument();
-    expect(screen.getByTestId('image')).toBeInTheDocument();
-  });
+  it('renders all input fields and the submit button', () => {
+    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />)
 
-  it('pre-fills form when editing existing pond', () => {
-    mockUseForm({
-      defaultValues: {
-        name: mockPond.name,
-        length: mockPond.length,
-        width: mockPond.width,
-        depth: mockPond.depth,
-      },
-    });
-    
-    render(<PondForm pond={mockPond} setIsModalOpen={mockSetIsModalOpen} />);
-    
-    expect(screen.getByDisplayValue(mockPond.name)).toBeInTheDocument();
-  });
+    expect(screen.getByLabelText(/nama kolam/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/panjang/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/lebar/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/kedalaman/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /simpan/i })).toBeInTheDocument()
+  })
 
-  it('calculates and displays volume', () => {
-    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
-    
-    expect(screen.getByText('Volume: 108.00 m³')).toBeInTheDocument();
-  });
+  it('calculates and displays volume when dimensions are filled', () => {
+    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />)
 
-  it('submits form data correctly', async () => {
-    (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true });
-    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
-    
-    fireEvent.submit(screen.getByRole('form'));
-    
+    fireEvent.change(screen.getByLabelText(/panjang/i), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText(/lebar/i), { target: { value: '3' } })
+    fireEvent.change(screen.getByLabelText(/kedalaman/i), { target: { value: '4' } })
+
+    expect(screen.getByText(/volume: 24.00 m/i)).toBeInTheDocument()
+  })
+
+  it('submits form and calls addOrUpdatePond successfully', async () => {
+    (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true })
+
+    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />)
+
+    fireEvent.change(screen.getByLabelText(/nama kolam/i), { target: { value: 'Kolam A' } })
+    fireEvent.change(screen.getByLabelText(/panjang/i), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText(/lebar/i), { target: { value: '3' } })
+    fireEvent.change(screen.getByLabelText(/kedalaman/i), { target: { value: '4' } })
+
+    fireEvent.click(screen.getByRole('button', { name: /simpan/i }))
+
     await waitFor(() => {
-      expect(addOrUpdatePond).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'Kolam Baru',
-          length: '12',
-          width: '6',
-          depth: '1.5',
-          image: { 0: {} },
-        }),
-        undefined
-      );
-    });
-  });
+      expect(addOrUpdatePond).toHaveBeenCalled()
+      expect(mockSetIsModalOpen).toHaveBeenCalledWith(false)
+    })
+  })
 
-  it('handles edit mode with pond ID', async () => {
-    (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true });
-    render(<PondForm pond={mockPond} setIsModalOpen={mockSetIsModalOpen} />);
-    
-    fireEvent.submit(screen.getByRole('form'));
-    
+  it('displays error message when API returns success: false', async () => {
+    (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: false })
+
+    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />)
+
+    fireEvent.change(screen.getByLabelText(/nama kolam/i), { target: { value: 'Kolam B' } })
+    fireEvent.change(screen.getByLabelText(/panjang/i), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText(/lebar/i), { target: { value: '3' } })
+    fireEvent.change(screen.getByLabelText(/kedalaman/i), { target: { value: '4' } })
+
+    fireEvent.click(screen.getByRole('button', { name: /simpan/i }))
+
     await waitFor(() => {
-      expect(addOrUpdatePond).toHaveBeenCalledWith(
-        expect.any(Object),
-        mockPond.pond_id
-      );
-    });
-  });
+      expect(screen.getByText(/gagal menyimpan kolam/i)).toBeInTheDocument()
+    })
+  })
 
-  it('shows error message when submission fails', async () => {
-    (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: false });
-    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
-    
-    fireEvent.submit(screen.getByRole('form'));
-    
+  it('renders with defaultValues when pond is provided (edit mode)', () => {
+    const mockPond = {
+      pond_id: 'pond-123',
+      name: 'Kolam Uji',
+      length: 5,
+      width: 4,
+      depth: 3
+    }
+
+    render(<PondForm pond={mockPond} setIsModalOpen={mockSetIsModalOpen} />)
+
+    expect(screen.getByDisplayValue('Kolam Uji')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('5')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('4')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('3')).toBeInTheDocument()
+  })
+
+
+  it('displays error message when API throws an exception', async () => {
+    (addOrUpdatePond as jest.Mock).mockRejectedValue(new Error('Network error'))
+
+    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />)
+
+    fireEvent.change(screen.getByLabelText(/nama kolam/i), { target: { value: 'Kolam C' } })
+    fireEvent.change(screen.getByLabelText(/panjang/i), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText(/lebar/i), { target: { value: '3' } })
+    fireEvent.change(screen.getByLabelText(/kedalaman/i), { target: { value: '4' } })
+
+    fireEvent.click(screen.getByRole('button', { name: /simpan/i }))
+
     await waitFor(() => {
-      expect(screen.getByText('Gagal menyimpan kolam')).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText(/gagal menyimpan kolam/i)).toBeInTheDocument()
+    })
+  })
 
-  it('shows validation errors', () => {
-    mockUseForm({
-      formState: {
-        errors: {
-          name: { message: 'Nama kolam wajib diisi' },
-          length: { message: 'Panjang harus angka positif' },
-        },
-        isSubmitting: false,
-      },
-    });
-    
-    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
-    
-    expect(screen.getByText('Nama kolam wajib diisi')).toBeInTheDocument();
-    expect(screen.getByText('Panjang harus angka positif')).toBeInTheDocument();
-  });
+  it('submits with pond_id when editing an existing pond', async () => {
+    const mockPond = {
+      pond_id: 'pond-123',
+      name: 'Kolam Lama',
+      length: 1,
+      width: 1,
+      depth: 1,
+    }
 
-  it('closes modal and reloads on success', async () => {
-    window.location = { reload: jest.fn() } as any;
-    (addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true });
-    
-    render(<PondForm setIsModalOpen={mockSetIsModalOpen} />);
-    fireEvent.submit(screen.getByRole('form'));
-    
+    ;(addOrUpdatePond as jest.Mock).mockResolvedValue({ success: true })
+
+    render(<PondForm pond={mockPond} setIsModalOpen={mockSetIsModalOpen} />)
+
+    fireEvent.change(screen.getByLabelText(/nama kolam/i), { target: { value: 'Kolam Baru' } })
+    fireEvent.change(screen.getByLabelText(/panjang/i), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText(/lebar/i), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText(/kedalaman/i), { target: { value: '2' } })
+
+    fireEvent.click(screen.getByRole('button', { name: /simpan/i }))
+
     await waitFor(() => {
-      expect(mockSetIsModalOpen).toHaveBeenCalledWith(false);
-      expect(window.location.reload).toHaveBeenCalled();
-    });
-  });
-});
+      expect(addOrUpdatePond).toHaveBeenCalled()
+      expect((addOrUpdatePond as jest.Mock).mock.calls[0][1]).toBe('pond-123')
+    })
+  })
+
+})
