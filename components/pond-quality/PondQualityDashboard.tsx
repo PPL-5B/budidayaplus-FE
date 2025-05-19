@@ -1,30 +1,23 @@
-'use client';
-
+'use client'
 
 import React, { useEffect, useState } from 'react';
 import { getLatestPondDashboard } from '@/lib/pond-quality/getLatestPondDashboard';
-import PondAlertPopup from './PondQualityAlerts';  // Import komponen pop-up alert
+import PondAlertPopup from './PondQualityAlerts';
 import { Waves } from 'lucide-react';
-
 
 interface PondQualityDashboardProps {
   pondId: string;
   cycleId: string | null;
 }
 
-
 interface PondData {
   ph_level?: number;
   salinity?: number;
   water_temperature?: number;
   water_clarity?: number;
-
-
   [key: string]: number | string | undefined;
 }
 
-
-// Define the Alert interface if it's not already imported
 interface Alert {
   id: string;
   parameter: string;
@@ -33,31 +26,35 @@ interface Alert {
   status: string;
 }
 
-
 const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cycleId }) => {
   const [latestData, setLatestData] = useState<PondData | null>(null);
-  const [alerts, setAlerts] = useState<Alert[]>([]);  // Use Alert[] instead of any[]
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [hasError, setHasError] = useState<boolean>(false);
 
+  const targetValues = {
+    ph_level: 7.5,
+    salinity: 30,
+    water_temperature: 28,
+    water_clarity: 80,
+  };
 
   useEffect(() => {
     if (!cycleId || !pondId) {
       setLoading(false);
       return;
     }
- 
+
     const fetchLatestData = async () => {
       try {
         setLoading(true);
+        setHasError(false);
         const latest = await getLatestPondDashboard(pondId, cycleId);
- 
+        setLatestData(latest ?? null);
+        
         if (latest) {
-          setLatestData(latest);
- 
-          // Check for alert conditions and show alert if there is an issue
           const newAlerts: Alert[] = [];
- 
-          // Only show alert if the actual value is less than the target
+          // Alert generation logic remains the same
           if (latest.ph_level < 7.5) {
             newAlerts.push({ id: '1', parameter: 'ph_level', actual_value: latest.ph_level, target_value: 7.5, status: 'Below Target' });
           }
@@ -70,63 +67,56 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
           if (latest.water_clarity < 80) {
             newAlerts.push({ id: '4', parameter: 'water_clarity', actual_value: latest.water_clarity, target_value: 80, status: 'Below Target' });
           }
- 
-          // Update alerts only if there are violations
           setAlerts(newAlerts);
         }
-      } catch (err) {
+      } catch (err) { 
         console.error('Failed to fetch dashboard data:', err);
-      } finally {
-        setLoading(false);
+        setHasError(true);
+      } finally { 
+        setLoading(false); 
       }
     };
- 
+
     fetchLatestData();
   }, [pondId, cycleId]);
- 
-
-
-  const targetValues = {
-    ph_level: 7.5,
-    salinity: 30,
-    water_temperature: 28,
-    water_clarity: 80,
-  };
-
-
-  if (loading) return <p className="text-center">Loading...</p>;
-
-
-  if (!latestData) return null;
-
 
   const getValueClassName = (key: string) => {
-    const actualValue = latestData[key];
+    const actualValue = latestData?.[key];
     const targetValue = targetValues[key as keyof typeof targetValues];
 
-
-    if (actualValue === undefined || actualValue === null) {
-      return "";
-    }
-
+    if (actualValue === undefined || actualValue === null) return "";
 
     return typeof actualValue === 'number' && actualValue < targetValue
       ? "text-red-500 font-medium"
-      : "";  };
+      : "";
+  };
 
+  if (!cycleId || !pondId) {
+    return <p className="text-center">Loading...</p>;
+  }
+
+  if (loading) {
+    return <p className="text-center">Loading...</p>;
+  }
+
+  if (hasError || !latestData) {
+    return <div className="border border-gray-200 p-3 rounded-md text-gray-500 text-center w-fit mx-auto mt-10">
+      Data belum tersedia, silakan isi data terlebih dahulu.
+    </div>;
+  }
 
   return (
     <div className="mt-10">
       <h2 className="text-2xl font-semibold text-center flex items-center justify-center">
-        <Waves className="w-10 h-10 text-[#2154C5] mr-2" /> Dashboard Kualitas Air Today
+        <Waves className="w-10 h-10 text-[#2154C5] mr-2" /> Dashboard Kualitas Air Terbaru
       </h2>
       <div className="flex justify-center mt-4">
         <table className="border-collapse border border-gray-300 w-[80%] text-center">
           <thead>
             <tr className="bg-gray-100">
               <th className="border border-gray-300 px-4 py-2">Parameter</th>
-              <th className="border border-gray-300 px-4 py-2">Exact Value</th>
-              <th className="border border-gray-300 px-4 py-2">Target Value</th>
+              <th className="border border-gray-300 px-4 py-2">Nilai Aktual</th>
+              <th className="border border-gray-300 px-4 py-2">Nilai Target</th>
             </tr>
           </thead>
           <tbody>
@@ -143,15 +133,9 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
         </table>
       </div>
 
-
-      {/* Tampilkan pop-up alert jika ada alert */}
       {alerts.length > 0 && <PondAlertPopup alerts={alerts} />}
     </div>
   );
 };
 
-
 export default PondQualityDashboard;
-
-
-
