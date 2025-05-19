@@ -53,6 +53,25 @@ describe('CreateWorkerAccount', () => {
     expect(formProps.setIsFormOpen).toBeDefined()
   })
 
+  it('calls onSuccess after successful submission', async () => {
+    const mockOnSuccess = jest.fn()
+    ;(createWorker as jest.Mock).mockResolvedValue({ data: true })
+
+    render(<CreateWorkerAccount {...mockProps} onSuccess={mockOnSuccess} />)
+    fireEvent.click(screen.getByTestId('open-dialog-button'))
+
+    const formProps = (require('@/components/profile').ReusableRegisterForm as jest.Mock).mock.calls[0][0]
+
+    const mockReset = jest.fn()
+    const mockSetError: React.Dispatch<React.SetStateAction<string | null>> = jest.fn()
+
+    await formProps.onSubmit({} as RegisterForm, mockReset, mockSetError)
+
+    expect(mockReset).toHaveBeenCalled()
+    expect(mockOnSuccess).toHaveBeenCalled()
+    })
+
+
   it('closes dialog when form submission is successful', async () => {
     (createWorker as jest.Mock).mockResolvedValue({ data: true })
 
