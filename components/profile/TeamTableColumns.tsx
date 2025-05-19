@@ -3,8 +3,6 @@
 import { toTitleCase } from "@/lib/utils";
 import { Profile } from "@/types/profile";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye } from "lucide-react";
-import Link from "next/link";
 
 export const columns: ColumnDef<Profile>[] = [
   {
@@ -35,17 +33,4 @@ export const columns: ColumnDef<Profile>[] = [
       )
     },
   },
-  {
-    id: 'actions',
-    cell: ({ row }) => {
-      const user = row.original.user
-      return (
-        <div>
-          <Link href={`/profile/${user.phone_number}`}>
-            <Eye className='w-5 h-5 text-blue-500' />
-          </Link>
-        </div>
-      )
-    }
-  }
 ]
