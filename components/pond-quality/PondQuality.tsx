@@ -4,7 +4,7 @@ import { getLatestPondQuality } from '@/lib/pond-quality';
 
 interface PondQualityProps extends React.HTMLAttributes<HTMLDivElement> {
   pondId: string;
-  cycleId?: string;
+  cycleId : string;
 }
 
 const PondQuality: React.FC<PondQualityProps> = async ({ pondId, cycleId, ...props }) => {
@@ -21,7 +21,7 @@ const PondQuality: React.FC<PondQualityProps> = async ({ pondId, cycleId, ...pro
           </div>
         )}
       </div>
-      <PondQualityList pondQuality={pondQuality} />
+      <PondQualityList pondId={pondId} cycleId={cycleId} />
     </div>
   );
 };

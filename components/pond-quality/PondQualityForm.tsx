@@ -42,8 +42,13 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
   });
 
   const onSubmit = async (data: PondQualityInput) => {
+    const dataWithImage = {
+      ...data,
+      image: "", // ⬅️ fix agar backend tidak error
+    };
+
     try {
-      const res = await addOrUpdatePondQuality(objectToFormData(data), pondId, cycleId);
+      const res = await addOrUpdatePondQuality(objectToFormData(dataWithImage), pondId, cycleId);
       if (res.success) {
         reset();
         setIsModalOpen(false);
@@ -60,7 +65,7 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
   return (
     <div className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-md mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-[#2154C5] font-semibold text-base">Tambah Data Jumlah Makanan</h2>
+        <h2 className="text-[#2154C5] font-semibold text-base">Tambah Data Kualitas Air</h2>
         <button onClick={() => setIsModalOpen(false)} aria-label="Tutup">
           <X className="text-[#2154C5] w-5 h-5" />
         </button>
@@ -68,16 +73,16 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
 
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-2 gap-4">
-          {/* Column 1 */}
+          {/* Kolom Kiri */}
           <div className="space-y-4">
-            {renderField<PondQualityInput>("Temperatur (Â°C)", "water_temperature", register, errors)}
+            {renderField<PondQualityInput>("Temperatur (°C)", "water_temperature", register, errors)}
             {renderField<PondQualityInput>("pH (0-14)", "ph_level", register, errors)}
             {renderField<PondQualityInput>("Kejernihan Air (NTU)", "water_clarity", register, errors)}
             {renderField<PondQualityInput>("Oksigen Terlarut (mg/L)", "dissolved_oxygen", register, errors)}
             {renderField<PondQualityInput>("Salinitas (PSU)", "salinity", register, errors)}
           </div>
 
-          {/* Column 2 */}
+          {/* Kolom Kanan */}
           <div className="space-y-4">
             {renderField<PondQualityInput>("Ammonia (mg/L)", "ammonia", register, errors)}
             {renderField<PondQualityInput>("Sirkulasi Air (L/menit)", "water_circulation", register, errors)}
@@ -87,7 +92,6 @@ const PondQualityForm: React.FC<PondQualityFormProps> = ({ pondId, cycleId, setI
           </div>
         </div>
 
-        {/* Error message if any */}
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <Button

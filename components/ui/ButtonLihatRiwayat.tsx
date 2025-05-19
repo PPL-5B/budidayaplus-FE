@@ -15,7 +15,7 @@ const ButtonLihatRiwayat = React.forwardRef<HTMLButtonElement, ButtonLihatRiwaya
       <Comp
         ref={ref}
         {...props}
-        className={`border border-[#2154C5] text-[#2154C5] font-semibold hover:bg-[#F1F5FF] px-4 py-1.5 rounded-md flex items-center gap-2 ${className}`}
+        className={`bg-white border border-[#2154C5] text-[#2154C5] font-semibold hover:bg-[#F1F5FF] px-4 py-1.5 rounded-md flex items-center gap-2 ${className}`}
       >
         <History size={16} className="text-[#2154C5]" />
         <span className="whitespace-nowrap">Lihat Riwayat</span>

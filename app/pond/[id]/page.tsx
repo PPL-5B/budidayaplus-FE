@@ -83,7 +83,7 @@ const PondDetailPage = async ({ params }: { params: { id: string } }) => {
         
         {/* Updated Pond Quality Section */}
         <div className='flex flex-col mt-10'>
-          <PondQuality pondId={pond.pond_id} cycleId={cycle?.id} />
+          {cycle?.id && <PondQuality pondId={pond.pond_id} cycleId={cycle.id} />}
         </div>
 
         <div className='flex flex-col mt-10'>
