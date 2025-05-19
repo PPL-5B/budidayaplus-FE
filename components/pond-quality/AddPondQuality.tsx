@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { IoIosAdd } from 'react-icons/io';
 import { Modal as DialogContent } from '@/components/ui/modal';
-import { Dialog, DialogClose, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogTrigger } from '@/components/ui/dialog';
 import { PondQualityForm } from '@/components/pond-quality';
 import { PondQuality } from '@/types/pond-quality';
 import { Button } from '@/components/ui/button';
