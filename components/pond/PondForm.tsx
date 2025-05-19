@@ -84,9 +84,10 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Droplet size={20} color="#2254C5" fill="#2254C5" />
-            <label className="text-[#2254C5] font-medium text-sm">Nama Kolam</label>
+            <label htmlFor="pond-name" className="text-[#2254C5] font-medium text-sm">Nama Kolam</label>
           </div>
           <Input
+            id="pond-name"
             {...register('name')}
             placeholder="Masukkan nama kolam..."
             className="rounded-[15px] bg-white h-10"
@@ -98,9 +99,10 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label className="text-[#2254C5] font-medium text-sm">Panjang (meter)</label>
+            <label htmlFor="pond-length" className="text-[#2254C5] font-medium text-sm">Panjang (meter)</label>
           </div>
           <Input
+            id="pond-length"
             {...register('length', { setValueAs: v => parseFloat(v) })}
             placeholder="Masukkan panjang kolam..."
             className="rounded-[15px] bg-white h-10"
@@ -113,9 +115,10 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label className="text-[#2254C5] font-medium text-sm">Lebar (meter)</label>
+            <label htmlFor="pond-width" className="text-[#2254C5] font-medium text-sm">Lebar (meter)</label>
           </div>
           <Input
+            id="pond-width"
             {...register('width', { setValueAs: v => parseFloat(v) })}
             placeholder="Masukkan lebar kolam..."
             className="rounded-[15px] bg-white h-10"
@@ -128,9 +131,10 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Ruler size={20} color="#2254C5" fill="#2254C5" />
-            <label className="text-[#2254C5] font-medium text-sm">Kedalaman (meter)</label>
+            <label htmlFor="pond-depth" className="text-[#2254C5] font-medium text-sm">Kedalaman (meter)</label>
           </div>
           <Input
+            id="pond-depth"
             {...register('depth', { setValueAs: v => parseFloat(v) })}
             placeholder="Masukkan kedalaman kolam..."
             className="rounded-[15px] bg-white h-10"
@@ -139,12 +143,14 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
           {errors.depth && <p className="text-red-500 text-sm">{errors.depth.message}</p>}
         </div>
 
+        {/* Gambar Kolam */}
         <div className="hidden">
           <div className="flex items-center gap-2">
             <ImageIcon size={20} color="#2254C5" />
-            <label className="text-[#2254C5] font-medium text-sm">Foto Kolam</label>
+            <label htmlFor="pond-image" className="text-[#2254C5] font-medium text-sm">Foto Kolam</label>
           </div>
           <Input
+            id="pond-image"
             type="file"
             accept="image/*"
             {...register('image')}
@@ -152,7 +158,6 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
           />
           {errors.image && <p className="text-red-500 text-sm">{(errors.image as any)?.message}</p>}
         </div>
-
 
         {/* Volume */}
         {volume && (
