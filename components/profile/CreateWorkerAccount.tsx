@@ -12,9 +12,11 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
-interface CreateWorkerAccountProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface CreateWorkerAccountProps extends React.HTMLAttributes<HTMLDivElement> {
+  onSuccess?: () => void
+}
 
-const CreateWorkerAccount: React.FC<CreateWorkerAccountProps> = ({ ...props }) => {
+const CreateWorkerAccount: React.FC<CreateWorkerAccountProps> = ({ onSuccess, ...props }) => {
   const [open, setOpen] = useState(false)
 
   const onSubmit = async (
@@ -26,6 +28,7 @@ const CreateWorkerAccount: React.FC<CreateWorkerAccountProps> = ({ ...props }) =
     if (result.data) {
       setOpen(false)
       reset()
+      onSuccess?.()
     } else {
       setError(result.error)
     }
@@ -45,14 +48,14 @@ const CreateWorkerAccount: React.FC<CreateWorkerAccountProps> = ({ ...props }) =
           </Button>
         </DialogTrigger>
 
-        <DialogContent 
+        <DialogContent
           data-testid="dialog-content"
           className="w-[350px] max-w-xl p-0 bg-transparent shadow-none [&>button]:hidden"
         >
-          <ReusableRegisterForm 
+          <ReusableRegisterForm
             data-testid="register-form"
-            onSubmit={onSubmit} 
-            setIsFormOpen={setOpen} 
+            onSubmit={onSubmit}
+            setIsFormOpen={setOpen}
           />
         </DialogContent>
       </Dialog>
