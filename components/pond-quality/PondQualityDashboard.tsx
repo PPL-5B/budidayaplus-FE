@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { getLatestPondDashboard } from '@/lib/pond-quality/getLatestPondDashboard';
 import PondAlertPopup from './PondQualityAlerts';
 import { Waves } from 'lucide-react';
+import { EmptyData } from '@/components/ui/empty-data';
 
 interface PondQualityDashboardProps {
   pondId: string;
@@ -54,7 +55,6 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
         
         if (latest) {
           const newAlerts: Alert[] = [];
-          // Alert generation logic remains the same
           if (latest.ph_level < 7.5) {
             newAlerts.push({ id: '1', parameter: 'ph_level', actual_value: latest.ph_level, target_value: 7.5, status: 'Below Target' });
           }
@@ -100,9 +100,11 @@ const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId, cyc
   }
 
   if (hasError || !latestData) {
-    return <div className="border border-gray-200 p-3 rounded-md text-gray-500 text-center w-fit mx-auto mt-10">
-      Data belum tersedia, silakan isi data terlebih dahulu.
-    </div>;
+    return (
+      <div className="mt-10">
+        <EmptyData />
+      </div>
+    );
   }
 
   return (

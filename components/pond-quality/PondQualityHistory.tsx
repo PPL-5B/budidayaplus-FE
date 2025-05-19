@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { getPondQualityHistory } from '@/lib/pond-quality/getPondQualityHistory';
@@ -6,6 +6,7 @@ import { Waves } from 'lucide-react';
 import { PondQuality } from '@/types/pond-quality';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { EmptyData } from '@/components/ui/empty-data';
 
 interface PondQualityHistoryProps {
   pondId: string;
@@ -33,7 +34,9 @@ const PondQualityHistory: React.FC<PondQualityHistoryProps> = ({ pondId }) => {
 
       <div className="mt-6">
         {history.length === 0 ? (
-          <p className="text-center text-gray-500">Belum ada data riwayat.</p>
+          <div className="mt-6">
+            <EmptyData />
+          </div>
         ) : (
           history.map((item) => (
             <div
