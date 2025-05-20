@@ -11,7 +11,7 @@ const PondQualityHistoryPage = async ({ params }: { params: { id: string } }) =>
   return (
     <div className="py-10 pb-20 space-y-10">
       {/* Dasbor Kualitas Air Terbaru */}
-      <PondQualityDashboard pondId={params.id} cycleId={cycle?.id ?? null} />
+      <PondQualityDashboard pondId={params.id} />
 
       {/* Riwayat Kualitas Air */}
       <PondQualityHistory pondId={params.id} />
