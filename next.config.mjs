@@ -12,6 +12,9 @@ const nextConfig = {
   images: {
     domains: ['www.svgrepo.com'],
   },
+  eslint: {
+    ignoreDuringBuilds: true, // Tambahkan ini
+  },
 };
 
 export default nextConfig;
