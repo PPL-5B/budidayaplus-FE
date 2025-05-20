@@ -3,7 +3,6 @@ import { PondQuality } from '@/components/pond-quality';
 import { FoodSampling } from '@/components/food-sampling';
 import FishDeathCard from '@/components/fish-death/FishDeathCard';
 import { fetchPond } from '@/lib/pond';
-import Image from 'next/image';
 import React from 'react'
 import { FishSamplingCard } from '@/components/fish-sampling';
 import { getLatestCycle } from '@/lib/cycle';
@@ -15,7 +14,6 @@ import { cn } from '@/lib/utils';
 const PondDetailPage = async ({ params }: { params: { id: string } }) => {
   // const fallbackSrc = 'fallbackimage.png'
   const pond = await fetchPond(params.id)
-  const volume = pond ? pond.length * pond.width * pond.depth : 0
   const cycle = await getLatestCycle()
   const user = await getProfile()
 
