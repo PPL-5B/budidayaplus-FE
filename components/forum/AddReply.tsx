@@ -33,7 +33,7 @@ const AddReply: React.FC<AddReplyProps> = ({ parentForumId, onReplyAdded }) => {
           </button>
         </DialogTrigger>
 
-        <Modal>
+        <Modal title="Tambah Balasan">
           <ReplyForm
             setIsModalOpen={setIsModalOpen}
             parentForumId={parentForumId}
