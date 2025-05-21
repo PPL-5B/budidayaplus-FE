@@ -25,7 +25,7 @@ const FishSamplingWarningPopup: React.FC<FishSamplingWarningPopupProps> = ({
 
         {/* Judul */}
         <h2 className="text-center text-lg font-semibold text-neutral-800">
-          Indikator Tidak Sehat!
+          Parameter Tidak Normal!
         </h2>
 
         {/* Deskripsi tanpa bullet, rata tengah */}
