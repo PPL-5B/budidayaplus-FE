@@ -59,7 +59,7 @@ const PondQualityList: React.FC<PondQualityListProps> = ({ pondId, cycleId, ...p
             Salinitas: <span className="font-normal">{pondQuality.salinity}</span>
           </p>
           <p className="font-semibold">
-            Kecerahan (cm): <span className="font-normal">{pondQuality.water_clarity}</span>
+            Kejernihan Air (NTU): <span className="font-normal">{pondQuality.water_clarity}</span>
           </p>
           <p className="font-semibold">
             Sirkulasi: <span className="font-normal">{pondQuality.water_circulation}</span>
