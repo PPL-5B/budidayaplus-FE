@@ -26,10 +26,10 @@ const FishSamplingCard: React.FC<FishSamplingCardProps> = async ({ pondId, cycle
                 asChild
                 variant="outline"
                 size="sm"
-                className="border-[#2154C5] text-[#2154C5] font-semibold hover:bg-[#F1F5FF] px-4 py-2"
+                className="bg-white border border-[#2154C5] text-[#2154C5] font-semibold hover:bg-[#F1F5FF] px-4 py-1.5 rounded-md flex items-center gap-2 text-sm"
               >
-                <Link href={`/pond/${pondId}/fish-sampling`} className="flex items-center gap-2">
-                  <History size={16} className="text-[#2154C5]" />
+                <Link href={`/pond/${pondId}/fish-sampling`} className="text-[#2154C5]">
+                  <History size={16} className="whitespace-nowrap" />
                   Lihat Riwayat
                 </Link>
               </Button>

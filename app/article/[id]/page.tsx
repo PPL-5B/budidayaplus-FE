@@ -16,7 +16,7 @@ export default function DetailArtikelPage({ params }: Readonly<DetailArtikelPage
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <Link href="/article" className="text-blue-600 flex items-center space-x-2 mb-4">
+      <Link href="/community" className="text-blue-600 flex items-center space-x-2 mb-4">
         <span>&#8592; Kembali</span>
       </Link>
 

@@ -26,7 +26,7 @@ const AddPondQuality: React.FC<AddPondQualityProps> = ({ pondId, cycleId, pondQu
           <DialogTrigger asChild>
             <Button
               size="sm"
-              className="h-9 flex items-center gap-1 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-3"
+              className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-4 py-2"
             >
               <IoIosAdd size={16} />
               Tambahkan Data
@@ -34,10 +34,10 @@ const AddPondQuality: React.FC<AddPondQualityProps> = ({ pondId, cycleId, pondQu
           </DialogTrigger>
           <DialogContent
             title=""
-            className="bg-[#F1F5FF] p-6 rounded-2xl w-full max-w-sm mx-auto [&>button.absolute]:hidden"
+            className="bg-[#F1F5FF] p-5 rounded-lg w-full max-w-xs mx-auto [&>button.absolute]:hidden"
           >
             <div className="flex justify-between items-center mb-3">
-              <h2 className="text-[#2154C5] font-semibold text-lg">
+              <h2 className="text-[#2154C5] font-semibold text-base">
                 Timpa Data Jumlah Makanan
               </h2>
               <DialogClose asChild>
@@ -55,14 +55,14 @@ const AddPondQuality: React.FC<AddPondQualityProps> = ({ pondId, cycleId, pondQu
               <DialogClose asChild>
                 <Button
                   variant="outline"
-                  className="border-[#2154C5] text-[#2154C5] font-semibold rounded-xl px-6 py-2"
+                  className="border-[#2154C5] text-[#2154C5] font-semibold rounded-md px-4"
                 >
                   Tidak
                 </Button>
               </DialogClose>
               <DialogClose asChild>
                 <Button
-                  className="bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-xl px-6 py-2"
+                  className="bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-6"
                   onClick={() => setIsModalOpen(true)}
                 >
                   Iya
@@ -78,11 +78,12 @@ const AddPondQuality: React.FC<AddPondQualityProps> = ({ pondId, cycleId, pondQu
         {!pondQuality && (
           <DialogTrigger asChild>
             <Button
+              className="flex items-center gap-2 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-4 py-2"
               size="sm"
-              className="h-9 flex items-center gap-1 bg-[#2154C5] hover:bg-[#1A3F96] text-white font-semibold rounded-md px-3"
             >
-              <IoIosAdd size={16} />
-              Tambahkan Data
+              <span className="flex items-center justify-center w-5 h-5 text-[#EAF0FF]">
+                <IoIosAdd size={14} />
+              </span>Tambahkan Data
             </Button>
           </DialogTrigger>
         )}

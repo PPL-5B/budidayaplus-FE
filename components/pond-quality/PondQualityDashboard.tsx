@@ -1,86 +1,100 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getPondQualityHistory } from '@/lib/pond-quality/getPondQualityHistory';
-import { format } from 'date-fns';
-import { id } from 'date-fns/locale';
-import { PondQuality } from '@/types/pond-quality';
+import { ChevronLeft } from 'lucide-react';
 import { EmptyData } from '@/components/ui/empty-data';
 import { LoadingData } from '@/components/ui/loading-data';
-import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getPondQualityHistory } from '@/lib/pond-quality/getPondQualityHistory';
+import { PondQuality } from '@/types/pond-quality';
 
-interface PondQualityHistoryProps {
+interface PondQualityDashboardProps {
   pondId: string;
 }
 
-const PondQualityHistory: React.FC<PondQualityHistoryProps> = ({ pondId }) => {
-  const [history, setHistory] = useState<PondQuality[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+const PondQualityDashboard: React.FC<PondQualityDashboardProps> = ({ pondId }) => {
   const router = useRouter();
+  const [latestQuality, setLatestQuality] = useState<PondQuality | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const targetValues = {
+    salinity: 5,
+    temperature: 27,
+    ph: 6
+  };
 
   useEffect(() => {
-    const fetchHistory = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
       const result = await getPondQualityHistory(pondId);
-      setHistory(result.pond_qualities);
+      const latest = result.pond_qualities[result.pond_qualities.length - 1];
+      setLatestQuality(latest ?? null);
       setIsLoading(false);
     };
-    fetchHistory();
+    fetchData();
   }, [pondId]);
 
   return (
     <div className="w-full flex flex-col items-center bg-[#EDF2FF] pt-6">
       <div className="w-[90%] max-w-2xl">
-        {/* Tombol kembali */}
         <button
           onClick={() => router.back()}
           className="flex items-center text-[#2154C5] mb-4 focus:outline-none"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          <span className="text-[#2154C5] font-bold text-base">Lihat Riwayat Kualitas Air</span>
+          <span className="text-[#2154C5] font-bold text-base">Lihat Riwayat Kualitas Kolam</span>
         </button>
 
-        {/* Judul */}
-        <p className="text-lg font-bold mb-4 text-black">Riwayat Kualitas Kolam</p>
+        <h2 className="text-lg font-bold text-black mb-4">Dasbor Sampling Ikan Terbaru</h2>
 
-        {/* Konten */}
         {(() => {
-          if (isLoading) {
-            return <LoadingData />;
-          }
+          if (isLoading) return <LoadingData />;
+          if (!latestQuality) return <EmptyData />;
 
-          if (history.length === 0) {
-            return <EmptyData />;
-          }
+          const isSalinityLow = latestQuality.salinity < targetValues.salinity;
+          const isTempLow = latestQuality.water_temperature < targetValues.temperature;
+          const isPhLow = latestQuality.ph_level < targetValues.ph;
 
-          return history.map((item) => {
-            const date = format(new Date(item.recorded_at), 'EEEE, d MMMM yyyy', { locale: id });
-            const fullName = `${item.reporter.first_name} ${item.reporter.last_name}`;
-
-            return (
-              <div
-                key={item.id}
-                className="bg-[#EDF2FF] border border-gray-400 rounded-lg p-4 mb-3 text-sm text-gray-700"
-              >
-                <p className="mb-1">{date}, oleh {fullName}</p>
-                <p className="mb-1 font-bold">Suhu (°C): <span className="font-normal">{item.water_temperature}</span></p>
-                <p className="mb-1 font-bold">pH level: <span className="font-normal">{item.ph_level}</span></p>
-                <p className="mb-1 font-bold">Salinitas: <span className="font-normal">{item.salinity}</span></p>
-                <p className="mb-1 font-bold">Kecerahan (cm): <span className="font-normal">{item.water_clarity}</span></p>
-                <p className="mb-1 font-bold">Sirkulasi: <span className="font-normal">{item.water_circulation}</span></p>
-                <p className="mb-1 font-bold">DO (mg/L): <span className="font-normal">{item.dissolved_oxygen}</span></p>
-                <p className="mb-1 font-bold">ORP (mV): <span className="font-normal">{item.orp}</span></p>
-                <p className="mb-1 font-bold">NH₃ (mg/L): <span className="font-normal">{item.ammonia}</span></p>
-                <p className="mb-1 font-bold">NO₃ (mg/L): <span className="font-normal">{item.nitrate}</span></p>
-                <p className="mb-1 font-bold">PO₄ (mg/L): <span className="font-normal">{item.phosphate}</span></p>
-              </div>
-            );
-          });
+          return (
+            <div className="overflow-hidden rounded-xl border border-[#2154C5] bg-[#EDF2FF]">
+              <table className="w-full text-center">
+                <thead className="bg-[#2154C5] text-white text-sm">
+                  <tr>
+                    <th className="py-3 px-4 font-semibold">Parameter</th>
+                    <th className="py-3 px-4 font-semibold">Nilai Target</th>
+                    <th className="py-3 px-4 font-semibold">Nilai Aktual</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="text-gray-800 text-sm font-medium">
+                    <td className="py-4 px-4">Salinitas</td>
+                    <td className="py-4 px-4">{targetValues.salinity}</td>
+                    <td className={`py-4 px-4 ${isSalinityLow ? 'text-red-600 font-semibold' : ''}`}>
+                      {latestQuality.salinity}
+                    </td>
+                  </tr>
+                  <tr className="text-gray-800 text-sm font-medium">
+                    <td className="py-4 px-4">Temperatur</td>
+                    <td className="py-4 px-4">{targetValues.temperature}</td>
+                    <td className={`py-4 px-4 ${isTempLow ? 'text-red-600 font-semibold' : ''}`}>
+                      {latestQuality.water_temperature}
+                    </td>
+                  </tr>
+                  <tr className="text-gray-800 text-sm font-medium">
+                    <td className="py-4 px-4">pH</td>
+                    <td className="py-4 px-4">{targetValues.ph}</td>
+                    <td className={`py-4 px-4 ${isPhLow ? 'text-red-600 font-semibold' : ''}`}>
+                      {latestQuality.ph_level}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          );
         })()}
       </div>
     </div>
   );
 };
 
-export default PondQualityHistory;
+export default PondQualityDashboard;
