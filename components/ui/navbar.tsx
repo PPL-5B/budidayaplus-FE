@@ -11,7 +11,6 @@ const menuItems = [
   { name: 'Beranda', href: '/', icon: Home, activeIcon: Home },
   { name: 'Kolam', href: '/pond', icon: Fish, activeIcon: Fish },
   { name: 'Komunitas', href: '/community', icon: Users, activeIcon: Users },
-  { name: 'Tugas', href: '/task', icon: CheckCircleIconOutline, activeIcon: CheckCircleIcon },
   { name: 'Profil', href: '/profile', icon: UserIconOutline, activeIcon: UserIcon },
 ];
 
