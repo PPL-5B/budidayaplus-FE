@@ -15,7 +15,7 @@ const FishDeathCard: React.FC<FishDeathCardProps> = async ({ pondId, cycleId, ..
 
   return (
     <div {...props}>
-      <p className='text-2xl font-medium'> Kematian Ikan </p>
+      <h1 className="text-[#2154C5] text-[22px] font-bold">Kematian Ikan</h1>
       <div className="flex flex-col space-y-2">
         {cycleId && (
           <>

@@ -65,14 +65,19 @@ const AddCycleForm: React.FC<AddCycleFormProps> = ({ pondList, setIsModalOpen, .
   }
 
   return (
-    <div {...props}>
+    <div {...props} className="bg-[#EDF2FF]">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <Controller
           name='start_date'
           control={control}
           render={({ field }) => (
             <div className='w-full'>
-              <Label htmlFor="start_date">Tanggal Mulai</Label>
+              <Label
+                htmlFor="start_date"
+                className="block mb-2 font-semibold text-md text-[#000]"
+              >
+                Tanggal Mulai
+              </Label>
               <DatePicker
                 id='start_date'
                 className='w-full'
@@ -94,9 +99,12 @@ const AddCycleForm: React.FC<AddCycleFormProps> = ({ pondList, setIsModalOpen, .
         {pondList.map((pond, index) => (
           <div key={pond.pond_id}>
             <input type="hidden" {...register(`pond_fish_amount.${index}.pond_id`)} value={pond.pond_id} />
-            <Label htmlFor={`pond_fish_amount.${index}.pond_id`}>
-              Jumlah ikan kolam {pond.name}
-            </Label>
+            <Label
+                htmlFor={`pond_fish_amount.${index}.pond_id`}
+                className="block mb-2 font-semibold text-md text-[#000]"
+            >Jumlah ikan kolam {pond.name}</Label>
+
+
             <Input
               id={`pond_fish_amount.${index}.pond_id`}
               {...register(`pond_fish_amount.${index}.fish_amount`, {
@@ -108,7 +116,7 @@ const AddCycleForm: React.FC<AddCycleFormProps> = ({ pondList, setIsModalOpen, .
             {errors.pond_fish_amount?.[index]?.fish_amount && <p className='text-red-500 text-sm'>{errors.pond_fish_amount[index].fish_amount.message}</p>}
           </div>
         ))}
-        <Button type="submit" disabled={isSubmitting}>Simpan</Button>
+        <Button type="submit" disabled={isSubmitting} className="bg-[#2254C5] hover:bg-[#1e46a1] text-white">Simpan</Button>
         {error && <p className='text-red-500'>{error}</p>}
       </form>
     </div >

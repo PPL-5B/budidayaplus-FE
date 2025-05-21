@@ -6,7 +6,7 @@ const Cycle = async () => {
   const user = await getProfile();
 
   return (
-    <div className="flex flex-col items-center w-full mt-10">
+    <div className="flex flex-col items-center w-full mt-7">
       {/* 
         This container holds both the Memulai Siklus button 
         and the Check our Forum button side by side.

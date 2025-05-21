@@ -29,7 +29,10 @@ const AddCycleModal: React.FC<AddCycleModalProps> = ({ pondList, ...props }) => 
               className="bg-[#2254C5] hover:bg-[#2254C5] text-white text-[12px] font-semibold transition"
             />
           </DialogTrigger>
-          <DialogContent title="Mulai Siklus">
+            <DialogContent
+              title="Mulai Siklus"
+              className="bg-[#EDF2FF]"
+            >
             <AddCycleForm pondList={pondList} setIsModalOpen={setIsModalOpen} />
           </DialogContent>
         </Dialog>

@@ -1,5 +1,4 @@
 import { PondList, AddPond } from '@/components/pond';
-import { getUser } from '@/lib/auth';
 import { fetchPonds } from '@/lib/pond';
 import { getLatestCycle } from '@/lib/cycle';
 import { Pond } from '@/types/pond'
@@ -14,10 +13,8 @@ const PondListPage = async () => {
       <div className='flex-1 flex flex-col items-center pt-4 pb-20'> 
         <div className='w-[80%]'>
           <div className='flex flex-col space-y-10'>
-            <div>
-              <p className='text-3xl text-center leading-7 font-semibold text-[#2154C5]'>
-                Daftar Kolam
-              </p>
+            <div className="flex justify-center mt-1">
+              <h1 className="text-[#2154C5] text-[30px] font-bold">Daftar Kolam</h1>
             </div>
             {!cycle && <AddPond />}
             {ponds.length > 0 ? (

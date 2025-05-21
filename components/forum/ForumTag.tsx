@@ -21,7 +21,7 @@ const tagStyles: Record<string, { bg: string; text: string; width: string }> = {
     width: 'w-[60px]',
   },
   ikan: {
-    bg: '#C0FDFF',
+    bg: '#EDF2FF',
     text: '#2254C5',
     width: 'w-[60px]',
   },

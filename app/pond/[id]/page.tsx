@@ -31,10 +31,10 @@ const PondDetailPage = async ({ params }: { params: { id: string } }) => {
   return (
     <div className='min-h-[100vh] flex flex-col py-10 pb-20 mb-10 items-center'>
       <div className='w-[80%]'>
-        <div className='flex flex-col space-y-8'>
+        <div className='flex flex-col space-y-2'>
           <div>
-            <p className='text-3xl'>Selamat datang di</p>
-            <p className='text-3xl font-semibold'>{pond.name}</p>
+            <h1 className="text-2xl font-semibold text-neutral-800">Selamat datang di</h1>
+            <h2 className="text-2xl font-bold text-[#2154C5]">{pond.name}</h2>
             {thresholdStatus && (
               <div className='mt-6'>
                 <Popover>

@@ -39,7 +39,7 @@ const PondQualityList: React.FC<PondQualityListProps> = ({ pondId, cycleId, ...p
   return (
     <div {...props} data-testid="pond-quality-list">
       {pondQuality ? (
-        <div className="bg-[#F1F5FF] text-[#3B3B3B] p-4 rounded-md border border-[#4D4C4C] mt-4 space-y-2 text-sm">
+        <div className="bg-[#F1F5FF] text-[#3B3B3B] p-4 rounded-md border border-[#4D4C4C] space-y-2 text-sm">
           <div className="text-gray-500">
             <div className="flex">
               <p className="font-semibold">Laporan Terakhir</p>

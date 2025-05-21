@@ -15,7 +15,7 @@ const FishSamplingCard: React.FC<FishSamplingCardProps> = async ({ pondId, cycle
 
   return (
     <div {...props}>
-      <p className='text-2xl font-medium'> Ukuran Ikan </p>
+      <h1 className="text-[#2154C5] text-[22px] font-bold">Ukuran Ikan</h1>
       <div className="flex flex-col space-y-2">
         {cycleId && (
           <>

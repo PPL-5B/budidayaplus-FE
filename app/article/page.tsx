@@ -7,9 +7,9 @@ export default function Articles() {
     <div className="w-full">
         <a
             href="/community"
-            className="flex items-center text-sm text-blue-600 hover:underline mb-3"
-            >
-            <ChevronLeft size={16} className="mr-1" />
+            className="flex items-center text-sm text-blue-600 hover:underline mt-6 mb-3 ml-4"
+        >
+            <ChevronLeft size={20} />
             Kembali
         </a>
         <DaftarArtikel />

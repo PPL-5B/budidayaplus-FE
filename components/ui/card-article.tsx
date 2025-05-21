@@ -19,7 +19,7 @@ const categoryColorMap: Record<string, string> = {
 
 export default function CardArticle({ id, title, author, date, synopsis, categories }: CardArticleProps) {
   return (
-    <div className="border border-black rounded-lg p-4 space-y-3 shadow bg-white">
+    <div className="rounded-xl p-5 space-y-3 shadow-md bg-white">
       <h2 className="text-blue-700 font-bold text-lg hover:underline">
         <Link href={`/article/${id}`}>{title}</Link>
       </h2>
