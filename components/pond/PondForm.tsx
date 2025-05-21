@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { objectToFormData } from '@/lib/utils'
 import { addOrUpdatePond } from '@/lib/pond'
-import { Ruler, Droplet, ImageIcon } from 'lucide-react'
+import { Ruler, Droplet, ImageIcon, X } from 'lucide-react'
 
 interface PondFormProps {
   pond?: Pond
@@ -18,6 +18,7 @@ interface PondFormProps {
 const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
   const [volume, setVolume] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isVisible, setIsVisible] = useState(true) // untuk transparansi
 
   const {
     register,
@@ -55,13 +56,11 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
       }
 
       reset()
-      setIsModalOpen(false)
+      setIsVisible(false)
+      setTimeout(() => setIsModalOpen(false), 200) // delay agar animasi jalan
       window.location.reload()
 
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error(err.message)
-      }
+    } catch (error) {
       setError('Gagal menyimpan kolam')
     }
   }
@@ -74,27 +73,40 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
     }
   }, [width, length, depth])
 
-  // Tutup popup jika klik di luar form
   const onOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      setIsModalOpen(false)
+      setIsVisible(false)
+      setTimeout(() => setIsModalOpen(false), 200)
     }
   }
 
   return (
-    <>
-        {/* Form container */}
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6 bg-[#EAF0FF] rounded-md p-6 w-full max-w-sm mx-auto relative shadow-lg"
+    <div
+      onClick={onOverlayClick}
+      className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+    >
+      <div
+        className={`relative w-full max-w-sm rounded-lg shadow-lg p-6 mx-4 transition-opacity duration-200 ${
+          isVisible ? 'opacity-100 pointer-events-auto bg-[#EAF0FF]' : 'opacity-0 pointer-events-none bg-transparent'
+        }`}
+      >
+        {/* Tombol close */}
+        <button
+          onClick={() => {
+            setIsVisible(false)
+            setTimeout(() => setIsModalOpen(false), 200)
+          }}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
         >
-          {/* Header */}
-          <div className="flex justify-center">
-            <h2 className="text-[20px] text-center font-inter font-semibold text-[#2254C5] mb-6">
-              {pond ? 'Edit Kolam' : 'Tambah Kolam'}
-            </h2>
-          </div>
+          <X size={20} />
+        </button>
 
+        {/* Header */}
+        <h2 className="text-[20px] text-center font-inter font-semibold text-[#2254C5] mb-6">
+          {pond ? 'Edit Kolam' : 'Tambah Kolam'}
+        </h2>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Nama Kolam */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -158,7 +170,7 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
             {errors.depth && <p className="text-red-500 text-sm">{errors.depth.message}</p>}
           </div>
 
-          {/* Gambar Kolam */}
+          {/* Gambar Kolam (Hidden) */}
           <div className="hidden">
             <div className="flex items-center gap-2">
               <ImageIcon size={20} color="#2254C5" />
@@ -194,7 +206,8 @@ const PondForm: React.FC<PondFormProps> = ({ pond, setIsModalOpen }) => {
             <p className="w-full text-center text-red-500 text-sm">{error}</p>
           )}
         </form>
-    </>
+      </div>
+    </div>
   )
 }
 
