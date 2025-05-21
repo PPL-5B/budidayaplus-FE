@@ -20,24 +20,6 @@ export async function upvoteForum(forumId: string) {
   }
 }
 
-export async function downvoteForum(forumId: string) {
-  const accessToken = cookies().get("accessToken")?.value;
-
-  if (!accessToken) throw new Error("Token tidak ditemukan");
-
-  const res = await fetch(`${process.env.API_BASE_URL}/api/forum/downvote/${forumId}`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error?.error ?? "Gagal memberikan downvote");
-  }
-}
-
 export async function cancelVote(forumId: string) {
     const accessToken = cookies().get("accessToken")?.value;
   

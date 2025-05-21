@@ -7,14 +7,12 @@ const BASE_URL = process.env.API_BASE_URL;
 
 export const handleVote = async (
   forumId: string,
-  type: 'up' | 'down'
+  type: 'up'
 ): Promise<void> => {
   const token = cookies().get('accessToken')?.value;
   if (!token) throw new Error('Token tidak ditemukan');
 
-  const endpoint = type === 'up'
-    ? `/api/forum/upvote/${forumId}`
-    : `/api/forum/downvote/${forumId}`;
+const endpoint = `/api/forum/upvote/${forumId}`;
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'POST',
