@@ -39,14 +39,13 @@ const TaskByDateCard: React.FC<TaskCardProps> = ({ task }) => {
 
             <div>
                 <p className="text-gray-600">Status: {task.status}</p>
-                <p className="text-gray-600">Assigned to: {task.assignee}</p>
                 <p className="text-gray-600">Date: {new Date(task.date).toLocaleDateString()}</p>
                 <p className="text-gray-600">Pond: {task.pond.name}</p>
             </div>
 
             <div className="absolute bottom-4 right-4">
                 <ChevronRight
-                    className="w-6 h-6 text-[#ff8585] hover:text-[#ff8585] cursor-pointer"
+                    className="w-6 h-6 text-[#2254C5] hover:text-[#1e46a1] cursor-pointer"
                     onClick={handleClick}
                     aria-label="Navigate to pond"
                 />
