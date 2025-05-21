@@ -23,7 +23,6 @@ const AddForum: React.FC<AddForumProps> = ({
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
           <button className="flex items-center justify-center gap-2 px-4 h-[30px] bg-white rounded-md shadow text-[#2254C5] font-semibold text-[14px] whitespace-nowrap">
-            {/* SVG Icon */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -39,10 +38,9 @@ const AddForum: React.FC<AddForumProps> = ({
           </button>
         </DialogTrigger>
 
-
         <DialogContent
           title=""
-          className="p-0 bg-[#EAF0FF] border-0 shadow-none rounded-md"
+          className="p-0 bg-[#EAF0FF] border-0 shadow-none rounded-md w-[400px]"
         >
           <ForumForm
             setIsModalOpen={setIsModalOpen}
