@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { Modal } from '@/components/ui/modal';
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
 import ReplyForm from '@/components/forum/ReplyForm';
 
 interface AddReplyProps {
@@ -33,13 +32,13 @@ const AddReply: React.FC<AddReplyProps> = ({ parentForumId, onReplyAdded }) => {
           </button>
         </DialogTrigger>
 
-        <Modal title="Tambah Balasan">
+        <DialogContent className="bg-transparent border-none p-0 max-w-[95vw]">
           <ReplyForm
             setIsModalOpen={setIsModalOpen}
             parentForumId={parentForumId}
             onReplyAdded={onReplyAdded}
           />
-        </Modal>
+        </DialogContent>
       </Dialog>
     </div>
   );
