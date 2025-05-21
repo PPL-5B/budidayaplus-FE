@@ -38,7 +38,7 @@ const AddPondQuality: React.FC<AddPondQualityProps> = ({ pondId, cycleId, pondQu
           >
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-[#2154C5] font-semibold text-base">
-                Timpa Data Jumlah Makanan
+                Timpa Data Kualitas Air
               </h2>
               <DialogClose asChild>
                 <button aria-label="Close">
@@ -48,7 +48,7 @@ const AddPondQuality: React.FC<AddPondQualityProps> = ({ pondId, cycleId, pondQu
             </div>
 
             <p className="text-sm text-[#2154C5] mb-6 text-center">
-              Apakah Anda yakin untuk menimpa data Jumlah Makanan sebelumnya?
+              Apakah Anda yakin untuk menimpa data Kualitas Air sebelumnya?
             </p>
 
             <div className="flex justify-center gap-3">
