@@ -4,7 +4,7 @@ import SeePage from "@/components/forum/SeePage";
 const PreviewForum = ({ forums }: { forums: any[] }) => {
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Forum</h2>
+      <h2 className="text-[22px] text-[#2154C5] font-bold mb-4">Forum</h2>
       {forums.length > 0 ? (
         <div className="flex flex-col space-y-4">
           {forums.slice(0, 2).map((forum) => (

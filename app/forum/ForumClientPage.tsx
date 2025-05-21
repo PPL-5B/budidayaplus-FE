@@ -52,7 +52,7 @@ const ForumPage: React.FC = () => {
 
       {/* Wrapper Judul + Tombol Buat Forum */}
       <div className="flex items-center justify-between mt-1">
-        <h1 className="text-[#14142B] text-[24px] font-bold">Daftar Forum</h1>
+        <h1 className="text-[#2154C5] text-[24px] font-bold">Daftar Forum</h1>
         <div className="translate-y-[1px]">
           <AddForum onForumAdded={handleForumAdded} />
         </div>
