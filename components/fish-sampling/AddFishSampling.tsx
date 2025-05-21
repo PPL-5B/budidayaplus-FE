@@ -47,7 +47,7 @@ const AddFishSampling: React.FC<AddFishSamplingProps> = ({ pondId, fishSampling,
               </DialogClose>
             </div>
             <p className="text-sm text-[#2154C5] mb-6">
-              Apakah anda yakin untuk menimpa data Jumlah Ukuran yang sebelumnya?
+              Apakah anda yakin untuk menimpa data Ukuran Ikan yang sebelumnya?
             </p>
             <div className="flex justify-center gap-3">
               <DialogClose asChild>

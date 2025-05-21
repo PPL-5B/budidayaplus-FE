@@ -36,7 +36,7 @@ const FoodSamplingDashboard: React.FC<FoodSamplingDashboardProps> = ({ pondId, c
           className="flex items-center text-[#2154C5] mb-4 focus:outline-none"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          <span className="text-[#2154C5] font-bold text-base">Lihat Riwayat Jumlah Makanan</span>
+          <span className="text-[#2154C5] font-bold text-base">Kembali</span>
         </button>
 
         <h2 className="text-lg font-bold text-black mb-4">Dasbor Jumlah Makanan Terbaru</h2>

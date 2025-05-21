@@ -10,7 +10,7 @@ import { useUser } from '@/hooks/useUser';
 import { useForumNavigation } from '@/lib/forum/forumNavigation';
 import EditForumForm from '@/components/forum/EditForum';
 import { cn, truncateText } from '@/lib/utils';
-import { fetchVoteSummary } from '@/lib/forum/voteForum'; // Pastikan ini tersedia dan benar
+import { fetchVoteSummary } from '@/lib/forum/voteForum'; 
 
 interface ForumCardProps {
   forum: Forum;

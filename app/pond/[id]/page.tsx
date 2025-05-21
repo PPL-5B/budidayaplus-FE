@@ -40,8 +40,8 @@ const PondDetailPage = async ({ params }: { params: { id: string } }) => {
                 <Popover>
                   <PopoverTrigger>
                     <div className='flex gap-3 items-center'>
-                      <div className={cn('text-lg h-3 w-3 rounded-full', thresholdStatus === 'Sehat' ? 'bg-green-500' : thresholdStatus === 'Moderat' ? 'bg-yellow-500' : 'bg-red-500')} />
-                      <p className={`text-lg ${thresholdStatus === 'Sehat' ? 'text-green-500' : thresholdStatus === 'Moderat' ? 'text-yellow-500' : 'text-red-500'}`}>
+                      <div className={cn('text-lg h-3 w-3 rounded-full', thresholdStatus === 'Sehat' ? 'bg-green-600' : thresholdStatus === 'Moderat' ? 'bg-yellow-600' : 'bg-red-600')} />
+                      <p className={`text-lg ${thresholdStatus === 'Sehat' ? 'text-green-600' : thresholdStatus === 'Moderat' ? 'text-yellow-600' : 'text-red-600'}`}>
                         {thresholdStatus === 'Sehat' ? 'Sehat' : thresholdStatus === 'Moderat' ? 'Moderat' : 'Tidak Sehat'}
                       </p>
                     </div>
@@ -51,10 +51,10 @@ const PondDetailPage = async ({ params }: { params: { id: string } }) => {
                       <ul className='flex flex-col gap-y-2'>
                         {thresholdData.violations.length > 0 ? (
                           thresholdData.violations.map((item) => (
-                            <li className='text-[#ff8585]' key={item}>- {item}</li>
+                            <li className='text-red-600' key={item}>- {item}</li>
                           ))
                         ) : (
-                          <p className='text-sm text-green-500'>Selamat, kolam anda dalam kondisi sehat</p>
+                          <p className='text-sm text-green-600'>Selamat, kolam anda dalam kondisi sehat</p>
                         )}
                       </ul>
                     </div>

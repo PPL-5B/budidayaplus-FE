@@ -32,7 +32,7 @@ const FishSamplingDashboard: React.FC<FishSamplingDashboardProps> = ({ pondId })
           className="flex items-center text-[#2154C5] mb-4 focus:outline-none"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          <span className="text-[#2154C5] font-bold text-base">Lihat Riwayat Ukuran Ikan</span>
+          <span className="text-[#2154C5] font-bold text-base">Kembali</span>
         </button>
 
         {/* Judul */}
