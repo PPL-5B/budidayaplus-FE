@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import PreviewForum from '@/components/community/ForumPreviewSection';
 import PreviewArticle from '@/components/community/ArticlePreviewSection';
 import { getListForum } from '@/lib/forum/getListForum';
@@ -10,16 +8,6 @@ const CommunityPage = async () => {
 
   return (
     <div className="p-6 space-y-4">
-      {/* Tombol kembali */}
-      <div className="mb-2">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline transition ml-1"
-        >
-          <ChevronLeft size={18} />
-          Kembali
-        </Link>
-      </div>
       {/* Heading dan deskripsi */}
       <div className="text-center">
         <h1 className="text-[#2154C5] text-[30px] font-bold">Komunitas</h1>
