@@ -62,7 +62,7 @@ const LoginPage = () => {
         >
           <div>
             <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
-              <Phone className="w-4 h-4 mr-2" /> Nomor Ponsel
+              <Phone className="w-4 h-4 mr-2" fill="currentColor" /> Nomor Ponsel
             </label>
             <input
               type="text"
@@ -76,7 +76,7 @@ const LoginPage = () => {
 
           <div>
             <label className="flex items-center text-[#2254C5] font-medium text-sm mb-1">
-              <Key className="w-4 h-4 mr-2" /> Password
+              <Key className="w-4 h-4 mr-2" fill="currentColor" /> Password
             </label>
             <input
               type="password"
