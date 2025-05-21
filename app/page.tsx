@@ -13,7 +13,7 @@ export default function Home() {
     <div className="flex flex-col items-center w-full mb-20 py-8">
       <div className="flex justify-between items-center mb-3 w-[80%] font-medium text-neutral-600">
         <div className="leading-snug">
-          <h1 className="text-3xl font-bold text-neutral-800">Welcome to</h1>
+          <h1 className="text-3xl font-bold text-neutral-800">Selamat Datang di</h1>
           <h2 className="text-3xl font-semibold text-[#2154C5]">BudidayaPlus</h2>
         </div>
 

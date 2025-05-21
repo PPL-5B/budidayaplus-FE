@@ -13,6 +13,7 @@ import { Phone, User, Key } from 'lucide-react'
 const RegisterPage = () => {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
   const {
     register,
@@ -26,12 +27,17 @@ const RegisterPage = () => {
   const onSubmit = async (data: RegisterForm) => {
     try {
       setError(null)
+      setSuccess(false)
       const response = await handleRegisterSubmit(data)
 
       if (!response.ok) return setError(response.message)
 
       reset()
-      router.push('/')
+      setSuccess(true)
+
+      setTimeout(() => {
+        router.push('/')
+      }, 1500)
     } catch {
       setError('Terjadi kesalahan pada registrasi')
     }
@@ -112,10 +118,17 @@ const RegisterPage = () => {
             type="submit"
             disabled={isSubmitting}
           >
+        
             {isSubmitting ? <LoadingSpinner className="h-5 w-5" /> : 'Daftar'}
           </Button>
 
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+          {success && (
+            <p className="text-green-600 text-sm text-center">
+              Registrasi berhasil
+            </p>
+          )}
         </form>
 
         <p className="text-sm mt-4">
