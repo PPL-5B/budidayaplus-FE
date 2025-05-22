@@ -12,7 +12,10 @@ export const handleVote = async (
   const token = cookies().get('accessToken')?.value;
   if (!token) throw new Error('Token tidak ditemukan');
 
-const endpoint = `/api/forum/upvote/${forumId}`;
+let endpoint = '';
+
+if (type === 'up') {
+  endpoint = `/api/forum/upvote/${forumId}`;}
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'POST',
