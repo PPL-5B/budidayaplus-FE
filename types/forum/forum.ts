@@ -11,6 +11,5 @@ export type Forum = {
     parent_id: string | null;
     replies: Forum[];
     upvotes: number;
-    downvotes: number;
 };
 

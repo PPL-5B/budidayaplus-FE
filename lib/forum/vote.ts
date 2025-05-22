@@ -54,8 +54,7 @@ export const cancelVote = async (forumId: string): Promise<void> => {
 
 export async function getVoteSummary(forumId: string): Promise<{
     upvotes: number;
-    downvotes: number;
-    user_vote: 'up' | 'down' | null; 
+    user_vote: 'up' | null; 
   }> {
     const accessToken = cookies().get('accessToken')?.value;
     if (!accessToken) throw new Error('Token tidak ditemukan');

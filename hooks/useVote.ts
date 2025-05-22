@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { upvoteForum, downvoteForum, cancelVote, fetchVoteSummary, fetchUserVotes } from "@/lib/forum/voteForum";
+import { upvoteForum, cancelVote, fetchVoteSummary, fetchUserVotes } from "@/lib/forum/voteForum";
 
 export const useVote = (forumId: string) => {
   const [upvotes, setUpvotes] = useState(0);
-  const [downvotes, setDownvotes] = useState(0);
   const [userVote, setUserVote] = useState<string | null>(null); // "upvote", "downvote", atau null
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false); // Tambahkan state ini
@@ -13,7 +12,6 @@ export const useVote = (forumId: string) => {
       // Ambil ringkasan vote untuk forum
       const summary = await fetchVoteSummary(forumId);
       setUpvotes(summary.upvotes);
-      setDownvotes(summary.downvotes);
 
       // Ambil data vote user
       const userVotes = await fetchUserVotes();
@@ -51,18 +49,6 @@ export const useVote = (forumId: string) => {
     }
   };
 
-  const handleDownvote = async () => {
-    try {
-      setIsLoading(true);
-      await downvoteForum(forumId);
-      await fetchData(); // Ambil ulang data setelah vote
-    } catch (error) {
-      console.error("Error downvoting:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleCancelVote = async () => {
     try {
       setIsLoading(true);
@@ -77,12 +63,10 @@ export const useVote = (forumId: string) => {
 
   return {
     upvotes,
-    downvotes,
     userVote,
     isLoading,
     isInitialized, // Return state ini
     handleUpvote,
-    handleDownvote,
     handleCancelVote,
   };
 };

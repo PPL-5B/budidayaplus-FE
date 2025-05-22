@@ -13,7 +13,6 @@ export function useForumVote(forumId: string) {
       try {
         const summary = await getVoteSummary(forumId);
         setLikeCount(summary.upvotes);
-        setDislikeCount(summary.downvotes);
         setUserVote(summary.user_vote);
       } catch (err) {
         console.error('Gagal ambil vote:', err);
@@ -22,7 +21,7 @@ export function useForumVote(forumId: string) {
     fetch();
   }, [forumId]);
 
-  const vote = async (type: 'up' | 'down') => {
+  const vote = async (type: 'up') => {
     if (userVote === type) {
       await cancelVote(forumId);
       setUserVote(null);
@@ -33,7 +32,6 @@ export function useForumVote(forumId: string) {
 
     const summary = await getVoteSummary(forumId);
     setLikeCount(summary.upvotes);
-    setDislikeCount(summary.downvotes);
     setUserVote(summary.user_vote);
   };
 
